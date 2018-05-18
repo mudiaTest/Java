@@ -1,0 +1,19 @@
+<html
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"> 
+<head>
+	<title>Spittr</title>
+	<link 
+		rel="stylesheet"
+		type="text/css"
+		th:href="@{style.css}">
+    </link>
+</head>
+<body>
+	<h1>Witamy w aplikacji Spittre</h1>
+	<img alt="img2"  th:src="@{img2.jpg}" />
+    <img alt="img3"  th:src="@{img3.jpg}" />
+	<a th:href="@{/spittles}">Spittle</a> | Łącza do stron th:href
+	<a th:href="@{/spitter/register}">Zarejestruj</a>
+</body>
+</html>
