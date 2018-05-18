@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM 
+          "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="stdOut" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-7p %d [%t] %c %x - %m%n" />
+		</layout>
+	</appender>
+	<appender name="fOut" class="org.apache.log4j.FileAppender">
+		<param name="File" value="./Logi/log1_XML.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-7p %d [%t] %c %x - %m%n" />
+		</layout>
+	</appender>
+	<appender name="fOutErr" class="org.apache.log4j.RollingFileAppender">
+		<param name="File" value="./Logi/logErr_XML.log" />
+		<param name="Threshold" value="ERROR" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%-7p %d [%t] %c %x - %m%n" />
+		</layout>
+	</appender>
+	<root>
+		<!-- określa jaki level bedzie przesyłany do logów: TRACE, DEBUG, INFO, ERROR --> 
+		<level value="DEBUG" />
+		<appender-ref ref="stdOut" />
+		<appender-ref ref="fOut" />
+		<appender-ref ref="fOutErr" />
+	</root>
+</log4j:configuration>

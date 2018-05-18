@@ -1,0 +1,39 @@
+buildscript {
+	ext {
+		springBootVersion = '2.0.2.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'll.test'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-web') {
+      exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging' 
+  	}
+	
+	compile('org.apache.tomcat.embed:tomcat-embed-jasper')
+    compile('javax.servlet:jstl') //konieczne do dzia³ania <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+	
+	//compile('org.springframework.boot:spring-boot-starter-log4j2');
+		compile('org.apache.logging.log4j:log4j-api')
+		compile('org.apache.logging.log4j:log4j-slf4j-impl')
+		//compile('org.slf4j:jul-to-slf4j')	
+}

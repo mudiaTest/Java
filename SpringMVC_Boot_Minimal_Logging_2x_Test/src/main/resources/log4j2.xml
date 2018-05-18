@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="60">
+
+	<Properties>
+	    <Property name="log-path">Logi</Property>
+	    <Property name="archive">${log-path}/archive</Property>
+	</Properties>
+	 
+	<Appenders>	
+		<!-- https://logging.apache.org/log4j/2.0/manual/appenders.html -->
+	
+	    <Console name="stdOut" target="SYSTEM_OUT">
+	        <PatternLayout>
+	            <pattern>
+	                [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+	            </pattern>>
+	        </PatternLayout>
+	    </Console>
+	    
+	    <!-- immediateFlush spowoduje natychmiastowy zapis (bez buforowania), co może spowodować spowolnienie programu -->
+	    <File name="fOut" fileName="${log-path}/logAll.log" immediateFlush="true">
+	        <PatternLayout>
+	            <pattern>
+	                [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+	            </pattern>
+	        </PatternLayout>	        
+	    </File>    
+	    
+	    <File name="fOutE" fileName="${log-path}/logErr.log" immediateFlush="true">
+	        <PatternLayout>
+	            <pattern>
+	                [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+	            </pattern>
+	        </PatternLayout>	        
+	    </File>   
+	    
+	    <File name="fOut_ll.test" fileName="${log-path}/log_ll.test.log" immediateFlush="true">
+	        <PatternLayout>
+	            <pattern>
+	                [%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n
+	            </pattern>
+	        </PatternLayout>	        
+	    </File>  
+	        
+	</Appenders>
+	 
+	<Loggers>
+	
+		<!-- ten logger będzie logowal tylko logi spod 'll.test' i poziomu 'info' lub wyzej -->
+        <Logger name ="ll.test" level="info">  
+        	<!-- ten appender zawezi zapis do 'error' i wyzej -->         
+            <AppenderRef ref="fOut_ll.test" level="error"/>             
+        </Logger>
+        
+        <!-- ten logger będzie logowal z każdego miejsca i poziomu 'debug' lub wyzej -->
+        <Root level="debug">
+            <AppenderRef ref="stdOut"/>
+            <AppenderRef ref="fOut"/>
+            <AppenderRef ref="fOutE" level="error"/>                                  
+        </Root>
+        
+    </Loggers>
+</Configuration>
