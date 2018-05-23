@@ -11,9 +11,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MainController {
 
 	@RequestMapping("/home")
-	public String hej2() {
+	public String home() {
 		System.out.println("home(...)");
 		return "home";
+	}
+	
+	@RequestMapping("/home2")
+	public String home2() {
+		System.out.println("home2(...)");
+		return "home2";
 	}
 	
 	//Nie zadzia³a - nale¿y u¿y ChainViewResolver

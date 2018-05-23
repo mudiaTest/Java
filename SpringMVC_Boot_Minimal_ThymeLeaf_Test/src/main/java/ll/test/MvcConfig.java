@@ -18,9 +18,9 @@ import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
 
-//@EnableWebMvc
-//@Configuration
-//@ComponentScan
+@EnableWebMvc
+@Configuration
+@ComponentScan
 public class MvcConfig implements WebMvcConfigurer {
 
 	@Autowired
@@ -37,6 +37,8 @@ public class MvcConfig implements WebMvcConfigurer {
         templateResolver.setApplicationContext(ctx);
         templateResolver.setPrefix("/WEB-INF/views/");
         templateResolver.setSuffix(".html");
+        // !!! SUPER HIPER BARDZO WA¯NE !!! jeœli chcemy miec opcjê reload
+        templateResolver.setCacheable(false);
         return templateResolver;
      }    
 
@@ -54,13 +56,18 @@ public class MvcConfig implements WebMvcConfigurer {
     }	
     
     //niezbêdne, aby zadzia³a³o pobieranie styli przez szablon
-    /*public void addResourceHandlers(ResourceHandlerRegistry registry) {    	       
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {    	       
         //zasoby z podkatalogu webapp
         registry.addResourceHandler("/resources/**")
         	.addResourceLocations("/resources/")
-        	.setCachePeriod(3600) 
+        	.setCachePeriod(1) 
         	.resourceChain(true)
-        	.addResolver(new PathResourceResolver());        
-    }*/
+        	.addResolver(new PathResourceResolver());      
+        registry.addResourceHandler("/static/**")
+    	.addResourceLocations("/static/")
+    	.setCachePeriod(1) 
+    	.resourceChain(true)
+    	.addResolver(new PathResourceResolver());        
+    }
 }
 

@@ -6,11 +6,18 @@
 	<link 
 		rel="stylesheet"
 		type="text/css"
-		th:href="@{/resources/style.css}">
+		th:href="@{style.css}">
     </link>
 </head>
 <body>
 	<h1>Witamy w aplikacji Spittre</h1>
+	<img alt="img2"  th:src="@{img2.jpg}" />
+	<img alt="img2"  th:src="@{static/img2.jpg}" />
+	<img alt="img2"  th:src="@{resources/img2.jpg}" />
+    <img alt="img3"  th:src="@{img3.jpg}" />
+    <img alt="img4"  th:src="@{img4.jpg}" />
+    <img alt="img5"  th:src="@{res2/img5.jpg}" />
+    <img alt="img7"  th:src="@{img6.jpg}" />
 	<a th:href="@{/spittles}">Spittle</a> | Łącza do stron th:href
 	<a th:href="@{/spitter/register}">Zarejestruj</a>
 </body>

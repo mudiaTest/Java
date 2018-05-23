@@ -1,0 +1,67 @@
+<!-- wewnatrz forma bedziemy odnosic sie do pol z obiektu okreslonego w th:object -->
+<form action="#" th:action="@{/saveStudentCheck}" th:object="${student}" method="post">
+    <table border="1">
+    
+        <tr>
+            <td>Imiê</td>
+            <td><input type="name" th:field="*{name}"></td>
+            <!-- sprawdza istnitni bledu dla konkretnego pola #fields.hasErrors('xxx') 
+            	 i wyswietla b³ad na wybrane pole th:errors="*{xxx}" gdzie xxx to nazwa 
+            	 pola w obiekcie-->
+            <td><span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"/></td>
+        </tr>
+        
+        <tr>
+            <td>P³eæ</td>
+            <td><select th:field="*{gender}">
+					<option th:value="'M'" th:text="Mezczyzna"></option>
+					<option th:value="'K'" th:text="Kobieta"></option>
+				</select>
+			</td>
+			<td>
+				 <span th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}">
+			</td>
+        </tr>
+        
+        <tr>
+            <td>Wiek</td>
+            <td><select th:field="*{age}">
+				<option th:value="'15'" th:text="15"></option>
+				<option th:value="'16'" th:text="16"></option>
+				<option th:value="'17'" th:text="17"></option>
+				<option th:value="'18'" th:text="18"></option>
+				<option th:value="'19'" th:text="19"></option>
+				<option th:value="'20'" th:text="20"></option>
+				<option th:value="'21'" th:text="21"></option>
+				<option th:value="'22'" th:text="22"></option>
+				<option th:value="'23'" th:text="23"></option>
+				<option th:value="'24'" th:text="24"></option>
+				<option th:value="'25'" th:text="25"></option>
+				<option th:value="'26'" th:text="26"></option>
+				<option th:value="'27'" th:text="27"></option>
+				<option th:value="'28'" th:text="28"></option>
+				<option th:value="'29'" th:text="29"></option>
+			</select>
+			</td>
+			<td>
+				 <span th:if="${#fields.hasErrors('age')}" th:errors="*{age}">
+			</td>
+        </tr>
+                
+        <!-- zbiorcze wyswietlanie bledow 
+        	 #fields.errors(xxx) - odwo³anie do b³êdu dla pola xxx
+        	 #fields.errors(*) - odwo³anie do b³êdu dla dowolnego pola
+        	 #fields.detailedErrors() - iteracja po blêdach obiektu
+        	 -->
+        <ul>
+		    <li th:each="error : ${#fields.detailedErrors()}" th:class="${error.global}? globalerr : fielderr">
+		        <span th:text="${error.global}? '*' : ${error.fieldName}">The field name</span>: 
+		        <span th:text="${error.message}">The error message</span>
+		    </li>
+		</ul>              
+        
+        <tr>
+            <td><input type="submit" value="Submit" /></td>
+        </tr>             
+    </table>
+</form>
