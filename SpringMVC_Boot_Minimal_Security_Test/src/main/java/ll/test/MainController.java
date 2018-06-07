@@ -4,7 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /*
- * dodanie compile('org.apache.tomcat.embed:tomcat-embed-jasper') jest waøne!
+ * dodanie compile('org.apache.tomcat.embed:tomcat-embed-jasper') jest wa≈ºne!
  */
 
 @Controller
@@ -22,7 +22,7 @@ public class MainController {
 		return "hello";
 	}
 	
-	//Nie zadzia≥a  - resolver chyba nie rozpoznale tego jako template'u
+	//Nie zadzia≈Ça  - resolver chyba nie rozpoznale tego jako template'u
 	@RequestMapping("/img3")
 	public String img3() {
 		System.out.println("img3(...)");
