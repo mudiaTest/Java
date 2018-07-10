@@ -30,5 +30,7 @@ dependencies {
     
     compile('org.springframework.boot:spring-boot-starter-thymeleaf') 
     
-    compile('org.springframework.boot:spring-boot-starter-security')
+    compile('org.springframework.security:spring-security-core')
+	compile('org.springframework.security:spring-security-config') //wymaga do działania spring-security-web bo inaczej daje bład przykompilacji
+	compile('org.springframework.security:spring-security-web')
 }
