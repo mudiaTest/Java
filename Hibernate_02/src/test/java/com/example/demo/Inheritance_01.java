@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.inheritance.doa.Person_01Doa;
 import com.example.demo.inheritance.doa.WorkerDoa;
 import com.example.demo.inheritance.dto.Person;
+import com.example.demo.inheritance.dto.Person_gen;
 import com.example.demo.inheritance.dto.Worker;
 
 @EnableTransactionManagement
@@ -40,7 +41,7 @@ public class Inheritance_01 {
 		Worker w1 = new Worker("p01", "tech");
 		//repo01.save(w1);
 		//ntw.inTrans(() -> em.persist(w1));
-		em.persist(w1);
+		em.persist(w1);	
 		return w1.getId();
 	}
 	

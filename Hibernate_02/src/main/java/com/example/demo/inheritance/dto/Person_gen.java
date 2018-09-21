@@ -7,9 +7,10 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
 import lombok.Data;
+import lombok.Getter;
 
 @Entity
-@Data
+@Getter
 //@Inheritance(strategy=InheritanceType.JOINED)
 public class Person_gen {
 

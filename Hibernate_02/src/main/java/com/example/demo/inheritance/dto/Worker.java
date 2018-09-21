@@ -9,10 +9,8 @@ import lombok.Data;
 @Data
 @Entity
 @NamedQueries(
-{@NamedQuery(name="delAll", query="DELETE FROM Worker")
-
- ,@NamedQuery(name="getById", query="SELECT w FROM Worker w WHERE w.id=:id")
- 
+{ @NamedQuery(name="delAll", query="DELETE FROM Worker")
+ ,@NamedQuery(name="getById", query="SELECT w FROM Worker w WHERE w.id=:id") 
 })
 public class Worker extends PersonInWork {
 	
