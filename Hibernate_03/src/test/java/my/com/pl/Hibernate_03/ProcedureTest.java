@@ -3,9 +3,11 @@ package my.com.pl.Hibernate_03;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Parameter;
 import javax.persistence.ParameterMode;
 import javax.persistence.Query;
 import javax.persistence.StoredProcedureQuery;
+import javax.sql.DataSource;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,8 +16,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import my.com.pl.Hibernate_03.dao.Test1Dao;
-import my.com.pl.Hibernate_03.domain.SubClass1;
-import my.com.pl.Hibernate_03.domain.Test1;
 import my.com.pl.Hibernate_03.utils.NewTransactionWrapper;
 
 @RunWith(SpringRunner.class)
@@ -33,6 +33,9 @@ public class ProcedureTest {
 	
 	@Autowired
 	Test1Dao t1d;
+	
+	@Autowired
+	DataSource ds;
 		
 	/*
 	 * RZUCI EXCEPTION !!!
@@ -160,6 +163,25 @@ public class ProcedureTest {
 		}
 	}
 	
+//	@Test
+	public void emInctest72() {
+		try {
+			StoredProcedureQuery q = em.createStoredProcedureQuery("inctest72");
+			q.registerStoredProcedureParameter("i", Integer.class, ParameterMode.IN);
+//			q.registerStoredProcedureParameter("o1", Integer.class, ParameterMode.OUT);
+			q.setParameter("i", Integer.valueOf(4));
+			boolean gotRes = q.execute();
+			/*Poni¿sze oddaje null*/
+			List<Object[]> postComments = q.getResultList();
+			/*Poni¿sze rzuca Exception, ale to jest chyba b³¹d H, bo wszystkie tutoriale podaj¹ taki kod*/
+			int res = (Integer)q.getOutputParameterValue("o2");
+			int t = 0;
+		}
+		catch (Exception e) {
+			int t = 0;
+		}
+	}
+	
 	private void runEmInctest71() {
 		try {
 			Query q = em.createNativeQuery("Select * FROM inctest71(:val);");
@@ -172,7 +194,7 @@ public class ProcedureTest {
 		}
 	}
 	
-	@Test
+//	@Test
 	public void emInctest71() {
 		ntw.inNewTrans(()->runEmInctest71());
 	}
@@ -186,6 +208,139 @@ public class ProcedureTest {
 			int t = 0;
 		}
 		catch (Exception e) {
+			int t = 0;
+		}
+	}
+	
+//	@Test 
+	public void repoInctest71() {
+		try {
+			List<Object> res = t1d.inctest73(3);
+			int t = 0;
+		}
+		catch (Exception e) {
+			int t = 0;
+		}
+	}
+	
+//	@Test 
+	public void repoInctest72() {
+		try {
+			StoredProcedureQuery q = em.createNamedStoredProcedureQuery("test");
+			q.execute();
+			Object res = q.getResultList();
+			int t = 0;
+		}
+		catch (Exception e) {
+			int t = 0;
+		}
+	}
+	
+//	@Test 
+	public void repoInctest73() {
+		try {
+			List<Object> res = t1d.inctest73(3);
+			int t = 0;
+		}
+		catch (Exception e) {
+			int t = 0;
+		}
+	}
+	
+//----------------------------------------------------
+	
+	/*Zwracanie pojedynczej wartoœci z uzyciem @NamedStoredProcedureQuery*/
+//	@Test
+	public void domP61() {
+		try {
+			StoredProcedureQuery q = em.createNamedStoredProcedureQuery("t61");
+			q.setParameter("i", 5);
+			Integer res = (Integer) q.getSingleResult();
+			int t = 0;
+		}
+		catch(Exception e) {
+			int t = 0;
+		}
+	}
+	
+	/*Zwracanie pojedynczej wartoœci z uzyciem @StoredProcedureQuery*/
+//	@Test
+	public void domP611() {
+		try {
+			StoredProcedureQuery q = em.createStoredProcedureQuery("p61");
+			q.registerStoredProcedureParameter(1, Integer.class, ParameterMode.IN); 
+			q.setParameter(1, 6);
+			Integer res = (Integer) q.getSingleResult();
+			int t = 0;
+		}
+		catch(Exception e) {
+			int t = 0;
+		}
+	}
+	
+	//----------------------------------------
+	
+	private void dodaop61() {
+		try {
+			Integer res = t1d.p61(5);
+			int t = 0;
+		}
+		catch(Exception e) {
+			int t = 0;
+		}
+	}
+	
+	/*Ok - wewn¹trz TRANSAKCJI!!! */
+	@Test
+	public void daoP61_trans() {
+		ntw.inNewTrans(()->dodaop61());
+	}
+	
+	/*nie dzia³a - BRAK TRANSAKCJI !!!*/
+	@Test
+	public void daoP61_noTrans() {
+		try {
+			Integer res = t1d.p61(5);
+			int t = 0;
+		}
+		catch(Exception e) {
+			int t = 0;
+		}
+	}
+	
+	//------------------------
+	
+	private void dodomP61_2() {
+		try {
+			StoredProcedureQuery q = em.createNamedStoredProcedureQuery("t62");
+			q.setParameter("i", 5);
+			q.execute();
+			Object r = q.getOutputParameterValue("o");
+		}
+		catch(Exception e) {
+			int t = 0;
+		}
+	}
+
+	/*Zwracanie pojedynczej wartoœci z uzyciem @StoredProcedureQuery i output parameter
+	 * KONIECZNIE wewn¹trz transakcji !!!*/
+//	@Test
+	public void domP61_2() {
+		ntw.inTrans(()->dodomP61_2());
+	}
+	
+	/*
+	 * Tak jak powy¿sze, ale bez transakcji i zamyka zapytanie nie pozwalaj¹c pobraæ wyniku
+	 */
+//	@Test
+	public void domP61_2_NoTrans() {
+		try {
+			StoredProcedureQuery q = em.createNamedStoredProcedureQuery("t62");
+			q.setParameter("i", 5);
+			q.execute();
+			Object r = q.getOutputParameterValue("o");
+		}
+		catch(Exception e) {
 			int t = 0;
 		}
 	}

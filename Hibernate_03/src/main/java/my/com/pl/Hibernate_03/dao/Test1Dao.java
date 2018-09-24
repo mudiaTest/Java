@@ -4,8 +4,10 @@ import java.util.List;
 
 import javax.persistence.ColumnResult;
 import javax.persistence.ConstructorResult;
+import javax.persistence.ParameterMode;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.SqlResultSetMappings;
+import javax.persistence.StoredProcedureParameter;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +15,9 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import my.com.pl.Hibernate_03.domain.SubObj;
@@ -47,4 +51,19 @@ public interface Test1Dao extends CrudRepository<Test1, Long>, CustomDao {
 	@Modifying
 	@Query("DELETE FROM Test1 WHERE id=?1")
 	public void bulkTest1Delete(Long id);
+	
+	@Procedure
+	public List<Object> inctest71(int i);
+	
+	@Procedure
+	public List<Object> inctest72(int i);
+	
+	@Procedure
+	public List<Object> inctest73(int i);
+	
+	@Procedure
+	public Integer p61(@Param("i") Integer i);
+	
+	@Procedure(value = "public.p61", outputParameterName = "r")
+	Integer p61inout(@Param("i") Integer i);
 }
