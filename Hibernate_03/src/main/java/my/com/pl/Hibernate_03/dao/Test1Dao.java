@@ -22,6 +22,7 @@ import org.springframework.stereotype.Repository;
 
 import my.com.pl.Hibernate_03.domain.SubObj;
 import my.com.pl.Hibernate_03.domain.Test1;
+import my.com.pl.Hibernate_03.domain.Test3;
 import my.com.pl.Hibernate_03.domain.Test4;
 import my.com.pl.Hibernate_03.domain.Test5_1;
 
@@ -38,15 +39,30 @@ public interface Test1Dao extends CrudRepository<Test1, Long>, CustomDao {
 	@Query(value="SELECT t3.intVal1 FROM Test3 t3 JOIN t3.t2 t2 ")
 	public Page<Integer> getPaged(Pageable pageable); 
 	
-	@Query(value="SELECT t4 FROM Test4 t4 LEFT JOIN FETCH t4.t2",
-			countQuery="SELECT count(t4) FROM Test4 t4 LEFT JOIN t4.t2")
+	//Brak countQuery powoduje automatyczne utworzenie odpowiedniega zapytania, ale 
+	//nazwa metody musi byæ odpowiednia, a to nie wiem jak uzyskaæ
+//	@Query(value="SELECT t3 FROM Test3 t3 LEFT JOIN FETCH t3.t2")
+//	public Page<Test3> findTest3(Pageable pageable); 
+	
+	@Query(	
+			value="SELECT t4 FROM Test4 t4 LEFT JOIN FETCH t4.t2"
+			//countQuery jest niezbêdne, jeœli w zapytaniu wystêpuje FETCH inaczej wystêpuje b³¹d
+			//query specified join fetching, but the owner of the fetched association was not present in the select list
+			,countQuery="SELECT count(t4) FROM Test4 t4 LEFT JOIN t4.t2"
+			)
 	public Page<Test4> getPagedFetch(Pageable pageable);
 	
 	@Query("SELECT t3.intVal1 FROM Test3 t3 JOIN t3.t2 t2 ")
 	public List<Integer> getSorted(Sort sort); 
 	
+	@Query("SELECT t3.intVal1 FROM Test3 t3")
+	public List<Integer> getSorted2(Sort sort); 
+	
 	@Query("SELECT t3.intVal1 FROM Test3 t3 JOIN t3.t2 t2 ")
 	public Slice<Integer> getSliced(Pageable pageable); 
+	
+	@Query("SELECT t2.intVal FROM Test2 t2")
+	public Slice<Integer> getSlicedTest2(Pageable pageable); 
 	
 	@Modifying
 	@Query("DELETE FROM Test1 WHERE id=?1")
@@ -63,6 +79,12 @@ public interface Test1Dao extends CrudRepository<Test1, Long>, CustomDao {
 	
 	@Procedure
 	public Integer p61(@Param("i") Integer i);
+
+	@Procedure
+	public Integer p62(@Param("i") Integer i);
+	
+	@Procedure
+	public List<Object[]> p72(@Param("i") Integer i);
 	
 	@Procedure(value = "public.p61", outputParameterName = "r")
 	Integer p61inout(@Param("i") Integer i);

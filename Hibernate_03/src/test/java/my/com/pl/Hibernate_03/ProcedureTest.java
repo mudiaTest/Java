@@ -1,5 +1,6 @@
 package my.com.pl.Hibernate_03;
 
+import java.sql.ResultSet;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -18,6 +19,7 @@ import org.hibernate.result.Output;
 import org.hibernate.result.ResultSetOutput;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.postgresql.jdbc.PgResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -48,7 +50,7 @@ public class ProcedureTest {
 	 * RZUCI EXCEPTION !!!
 	 * Hibernate nie lubi jak funkcja zwraca void. Mo¿na 
 	 * - zmianiæ zwracany typ na int i zwracaæ wartoœæ dummy
-	 * - zmianiæ sposób wywo³ania tej funkcji
+	 * - zmianiæ sposób wywo³ania tej funkcji - zamiast execute() zrobiæ getFirstResult();
 	 */
 //	@Test
 	public void emReturnVoidTest() {
@@ -56,7 +58,9 @@ public class ProcedureTest {
 			StoredProcedureQuery q = em.createStoredProcedureQuery("inctest2");
 			q.registerStoredProcedureParameter(0, Integer.class, ParameterMode.IN);
 			q.setParameter(0, Integer.valueOf(2));
-			q.execute();
+//			q.execute();
+			q.getFirstResult();
+			int t = 0;
 		}
 		catch (Exception e) {
 			int t = 0;
@@ -362,14 +366,14 @@ public class ProcedureTest {
 		});
 	}
 	
-	@Autowired
-    private EntityManagerFactory emf;
-	
 	/*
 	 * OK !!!
 	 */
 	
-	@Test
+	@Autowired
+	private EntityManagerFactory emf;
+	
+//	@Test
 	public void emP73_2() {
 		ntw.inTrans(()->{
 			try {
@@ -388,6 +392,48 @@ public class ProcedureTest {
 				//Zwraca List. Mo¿na rzutowanæ List<Object[]> lub List<List<Integer>>
 				List<List<Integer>> results = (List<List<Integer>>) resultSetOutput.getResultList();
 									
+				int t = 0;
+			}
+			catch(Exception e) {
+				int t = 0;
+			}
+		});
+	}
+	
+	/*
+	 * NIE ZNALAZ£EM sposobu aby zwracaæ listê wyników za pomoc¹ named query.
+	 * Jedynie gdy zwracamy Entity to MO¯NA SPOBOWAÆ dodaæ resultClasses.
+	 * Mo¿e zadzia³a, ale nie próbowa³em.
+	 * Mo¿na próbowaæ te¿ zwracaæ ResultSet i jakoœ z niego wyci¹gaæ wartoœci, ale 
+	 * nic konkretnego nie mam.
+	 */
+//	@Test
+	public void domP71() {
+		ntw.inTrans(()->{
+			try {
+				StoredProcedureQuery q = em.createNamedStoredProcedureQuery("t71");
+				q.setParameter(2, 6);				
+				q.execute();
+				Object rCol1 = q.getOutputParameterValue(1);
+				//rCol1 -> PgResultSet -> ResultSet 
+				ResultSet r = (ResultSet) rCol1; 
+				
+				int t = 0;
+			}
+			catch(Exception e) {
+				int t = 0;
+			}
+		});
+	}
+	
+	/*
+	 * Nie jestem w stanie wykonac zapytania w ¿aden sposób
+	 */
+//	@Test
+	public void domP71_() {
+		ntw.inTrans(()->{
+			try {
+				Object r = t1d.p72(6);				
 				int t = 0;
 			}
 			catch(Exception e) {

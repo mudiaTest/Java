@@ -16,8 +16,11 @@ import org.springframework.data.domain.AfterDomainEventPublication;
 import org.springframework.data.domain.DomainEvents;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 
 @NamedStoredProcedureQueries(value = {
@@ -37,6 +40,17 @@ import lombok.Data;
 			@StoredProcedureParameter(name = "o", mode = ParameterMode.OUT, type = Integer.class) 
 		}
 )
+,
+@NamedStoredProcedureQuery(
+		name = "t71", 
+		procedureName = "p71", 
+		resultClasses = Object.class,
+		parameters = {
+				//Can't mix namer parameters and ref
+				@StoredProcedureParameter(mode = ParameterMode.REF_CURSOR, type = void.class), 
+				@StoredProcedureParameter(mode = ParameterMode.IN, type = Integer.class) 
+		}
+		)
 })
 
 public class Test1 {

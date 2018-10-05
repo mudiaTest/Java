@@ -4,6 +4,7 @@ import java.lang.reflect.Executable;
 import java.util.function.Supplier;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,7 @@ public class NewTransactionWrapper {
 		return proc.get();
 	}
 	
-	@Transactional(propagation=Propagation.REQUIRES_NEW)
+	@Transactional(isolation=Isolation.REPEATABLE_READ)
 	public void inNewTrans(Runnable proc){
 		proc.run();
 	}
