@@ -49,13 +49,8 @@ public class ScrollableTest {
 	
 	@Autowired
 	private ApplicationContext ac;
-	
-	//@Autowired
-	//SessionFactory sfa;
-	
-	@Transactional
-	public void fillTest1UsingRepo() {
-//		ntw.inTrans(()->{
+
+	private void fillTest1UsingRepo() {
 			for(int i = 1; i<10; i++) {
 				Test1 t1;
 				t1 = new Test1();
@@ -75,8 +70,15 @@ public class ScrollableTest {
 				so0.setSubIntVal1(10+i);
 				so0.setSubStVal1("a");
 				
+				//Pobiera Session od repozytoriów
 				Session s = em.unwrap(Session.class);
-				
+				/*
+				 * Ró¿nica pomiêdzy "s.persist" a "t1d.save".
+				 * Save zrobi merge a nie persist. Jest to prawdopodobnie 
+				 * spowodowane tym, ¿e rêcznie ustaliliœmy wartoœæ id.
+				 * Z tego powodu (prawdopodobnie) s.contains(t1) da false i dopiero
+				 */
+				//s.persist(t1);
 				t1d.save(t1);
 				s.flush();
 				/*Pobieranie klucza z cache i sprawdzanie jego wartoœci*/
@@ -92,33 +94,34 @@ public class ScrollableTest {
 				Optional<Test1> t2 = t1d.findById(Long.valueOf(t1.getId()));
 				//badanie cache L2				
 				//boolean czyCache2 = s3.getSessionFactory().getCache().containsEntity( Test1.class, t1.getId() );
-				czyCache = s.contains(t0);
-				czyCache = s.contains(t1);
-				czyCache = s.contains(t2.get());
-				
+				czyCache = s.contains(t0);//false
+				czyCache = s.contains(t1);//false
+				czyCache = s.contains(t2.get());//true/false w zale¿noœci od powy¿szej uwagi odnoœnie zapisu				
 				t = 0;
 			}
-//		});
 	}
 	
 	//Testowanie stateless session dla em
 	@Test	
-	@Transactional
 	public void emTest() {
 		try {
 			SessionFactory sf = emf.unwrap(SessionFactory.class);
-//			ntw.inNewTrans(()->{
+			ntw.inNewTrans(()->{
 					fillTest1UsingRepo();
-//			});
+			});
+			/*
+			 * Sesja pobrana w tym miejscu bêdzie mia³a obiekty w cache, o ile 
+			 * jest to ta sama transakcja, która je pobra³a/wstawi³a do DB.
+			 */
+//			Session s = em.unwrap(Session.class);
+//			SessionStatistics ss = s.getStatistics();
+//			Set<EntityKey> sk = ss.getEntityKeys();
+//			EntityKey k = sk.iterator().next();
 			
-			Session s2 = sf.openSession();
-			SessionStatistics ss = s2.getStatistics();
-			Set<EntityKey> sk = ss.getEntityKeys();
-			EntityKey k = sk.iterator().next();
-			
-			StatelessSession s= sf.openStatelessSession();
+			StatelessSession s2= sf.openStatelessSession();
 			ScrollableResults r;
-			r = s.createQuery("SELECT t1 FROM Test1 t1").scroll(ScrollMode.FORWARD_ONLY);
+			//To query zostanie odpalone tylko 1 raz, ale wyniki bêda pobierane pojedynczo
+			r = s2.createQuery("SELECT t1 FROM Test1 t1").scroll(ScrollMode.FORWARD_ONLY);
 		    while (r.next()) {		    	
 		    	Test1 t1 = (Test1) r.get()[0];
 		    	int t = 0;
