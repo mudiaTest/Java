@@ -29,11 +29,12 @@ import my.com.pl.Hibernate_03.domain.Test5_1;
 @Repository
 public interface Test1Dao extends CrudRepository<Test1, Long>, CustomDao {
 
-	/* "as v3" jest istotne, bo bez tego H oddaje nazwy, których nie moge rozpoznaæ 
-	 * i zbudowanie  metody get w interface jest niemo¿liwe. "getInt_val1" nie dzia³a. 
+	/* "as v3" jest dla uproszczenia
+	 * "getint_val1" DZIA£A. 
+	 * "getInt_val1" NIE DZIA£A. 
 	 */
 
-	@Query(value="SELECT t3.int_val1 as v3, t2.int_val as v2 FROM Test3 t3 LEFT JOIN Test2 t2 ON t3.t2_id = t2.id", nativeQuery = true)
+	@Query(value="SELECT t3.int_val1 as v3, t2.int_val FROM Test3 t3 LEFT JOIN Test2 t2 ON t3.t2_id = t2.id", nativeQuery = true)
 	public List<SubObj> getSubObj(); 
 	
 	@Query(value="SELECT t3.intVal1 FROM Test3 t3 JOIN t3.t2 t2 ")

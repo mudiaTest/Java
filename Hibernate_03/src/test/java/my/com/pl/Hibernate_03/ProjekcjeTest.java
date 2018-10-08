@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -63,14 +64,14 @@ public class ProjekcjeTest {
 	@Autowired
 	Test1Dao t1d;
 	
-	//Testowanie projekcji
-//	@Test
+	//Testowanie projekcji native
+	@Test
 	public void projectionTest2() {
 		ntw.inNewTrans(()->fillTest3());	
 		List<SubObj> lst = t1d.getSubObj();		
 		SubObj so = lst.get(0);
-		int t = so.getV2();
-		t = 0;
+		int r = so.getint_val();
+		int t = 0;
 	}
 	
 

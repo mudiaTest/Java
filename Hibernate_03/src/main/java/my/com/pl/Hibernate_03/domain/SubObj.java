@@ -7,5 +7,5 @@ package my.com.pl.Hibernate_03.domain;
  */
 public interface SubObj {
 	public Integer getV3();
-	public Integer getV2();
+	public Integer getint_val();
 }
