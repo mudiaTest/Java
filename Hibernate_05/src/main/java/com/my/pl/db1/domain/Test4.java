@@ -1,19 +1,21 @@
-package com.my.pl.domain;
+package com.my.pl.db1.domain;
+
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 
 import lombok.Data;
 
 @Data
 @Entity
-public class Test3 {
+public class Test4 {
 	@Id
 	private long id;
 	private int intVal1;	
-	@OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-	private Test2 t2;
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+	private List<Test2> t2;
 }

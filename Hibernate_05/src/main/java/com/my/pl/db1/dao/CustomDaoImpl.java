@@ -1,4 +1,4 @@
-package com.my.pl.dao;
+package com.my.pl.db1.dao;
 
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package com.my.pl.dao;
+package com.my.pl.db1.dao;
 
 import java.util.Optional;
 
@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.my.pl.domain.Test6;
+import com.my.pl.db1.domain.Test6;
 
 public interface Test6Dao extends CrudRepository<Test6, Long> {
 	

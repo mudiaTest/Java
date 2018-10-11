@@ -1,4 +1,4 @@
-package com.my.pl.domain;
+package com.my.pl.db1.domain;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.my.pl.dao;
+package com.my.pl.db1.dao;
 
 import java.util.List;
 
@@ -20,11 +20,11 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.my.pl.domain.SubObj;
-import com.my.pl.domain.Test1;
-import com.my.pl.domain.Test3;
-import com.my.pl.domain.Test4;
-import com.my.pl.domain.Test5_1;
+import com.my.pl.db1.domain.SubObj;
+import com.my.pl.db1.domain.Test1;
+import com.my.pl.db1.domain.Test3;
+import com.my.pl.db1.domain.Test4;
+import com.my.pl.db1.domain.Test5_1;
 
 @Repository
 public interface Test1Dao extends CrudRepository<Test1, Long>, CustomDao {

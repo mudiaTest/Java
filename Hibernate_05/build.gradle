@@ -1,3 +1,9 @@
+/*
+ * JOOQ
+ * gradlew clean build - powoduje wybudowanie pliku konfiguracji \build\tmp\generate[nazwa funkcji]JooqSchemaSource i jego wywołanie
+ * gradle generate[nazwa funkcji]JooqSchemaSource - powoduje tylko przebudowanie wygenerowanych plików - uzywać gdy zmieniamy baze danych, ale nie build.gradle 						
+ */
+
 buildscript {
 	ext {
 		springBootVersion = '2.0.5.RELEASE'
@@ -26,13 +32,14 @@ plugins {
   id "nu.studer.jooq" version "3.0.2"
 }
 
+//JOOQ - dla springa
 ext['jooq.version'] = '3.11.5'
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-
+//JOOQ
 apply plugin: "nu.studer.jooq"
 
 group = 'com.example'
@@ -72,7 +79,7 @@ dependencies {
 jooq {
   version = '3.11.5'
   edition = 'OSS'
-  sample(sourceSets.main) {
+  db1(sourceSets.main) {//nazwa funkcji jest dowolna
     jdbc {
       driver = 'org.postgresql.Driver'
       url = 'jdbc:postgresql://Ursus/ll/hibernate05'
@@ -117,8 +124,10 @@ jooq {
         // ...
       }
       target {
-        packageName = 'nu.studer.sample'
+        packageName = 'com.my.pl.jooq.db1'//package name ustawiany w generowych plikach 
         // directory = ...
+        //directory = 'src/main/java'
+        directory = 'build/generated-src/jooq/db1'//ten katalog należy dodać ręcznie do zródeł, jeśli nie wykonał tego automat. Properties->Jvaa Build Path->Add Folder
       }
     }
   }

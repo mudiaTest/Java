@@ -1,11 +1,11 @@
-package com.my.pl.dao;
+package com.my.pl.db1.dao;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 import org.springframework.data.jpa.repository.Query;
 
-import com.my.pl.domain.Test1;
+import com.my.pl.db1.domain.Test1;
 
 public interface Test1CustomDao extends Test1GenDao<Test1, Integer>{
 	@Query("SELECT a FROM Test1 a")
