@@ -1,0 +1,125 @@
+buildscript {
+	ext {
+		springBootVersion = '2.0.5.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+		mavenLocal()
+		 maven {
+	      url "https://plugins.gradle.org/m2/"
+	    }
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		
+		//JOOQ
+		//classpath 'org.jooq:jooq-codegen:3.11.5'
+		//classpath 'org.postgresql:postgresql:42.2.5'		
+		//classpath "javax.activation:javax.activation-api:1.2.0"
+		//classpath "javax.xml.bind:jaxb-api:2.4.0-b180830.0359"
+		classpath "org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438"//!
+		//classpath "nu.studer:gradle-jooq-plugin:3.0.2"
+	}
+}
+
+plugins {
+  id "nu.studer.jooq" version "3.0.2"
+}
+
+ext['jooq.version'] = '3.11.5'
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+apply plugin: "nu.studer.jooq"
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = 10
+
+repositories {
+	mavenCentral()
+	mavenLocal()
+	maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+}
+
+
+dependencies {
+	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+	implementation('org.springframework.boot:spring-boot-starter-jooq')
+	runtimeOnly('org.postgresql:postgresql:42.2.5')
+	compileOnly('org.springframework.boot:spring-boot-configuration-processor')
+	compileOnly('org.projectlombok:lombok')
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	
+	
+	//JOOQ
+	compile 'org.jooq:jooq:3.11.5'
+	//compile "javax.activation:javax.activation-api:1.2.0"
+	//compile "javax.xml.bind:jaxb-api:2.4.0-b180830.0359"
+	//compile "org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438"
+	//jooqRuntime "javax.activation:javax.activation-api:1.2.0"
+	//jooqRuntime "javax.xml.bind:jaxb-api:2.4.0-b180830.0359"
+	jooqRuntime "org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438"//!
+	jooqRuntime "org.postgresql:postgresql:42.2.5"//!
+	//jooqRuntime "nu.studer:gradle-jooq-plugin:3.0.2"
+}
+
+jooq {
+  version = '3.11.5'
+  edition = 'OSS'
+  sample(sourceSets.main) {
+    jdbc {
+      driver = 'org.postgresql.Driver'
+      url = 'jdbc:postgresql://Ursus/ll/hibernate05'
+      user = 'system'
+      password = 'system'
+      /*properties {
+        property {
+          key = 'ssl'
+          value = 'true'
+        }
+      }*/
+    }
+    generator {
+      name = 'org.jooq.codegen.DefaultGenerator'
+      strategy {
+        name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+        // ...
+      }
+      database {
+        name = 'org.jooq.meta.postgres.PostgresDatabase'
+        inputSchema = 'public'
+        forcedTypes {
+          forcedType {
+            name = 'varchar'
+            expression = '.*'
+            types = 'JSONB?'
+          }
+          forcedType {
+            name = 'varchar'
+            expression = '.*'
+            types = 'INET'
+          }
+        }
+        // ...
+      }
+      generate {
+        relations = true
+        deprecated = false
+        records = true
+        immutablePojos = true
+        fluentSetters = true
+        // ...
+      }
+      target {
+        packageName = 'nu.studer.sample'
+        // directory = ...
+      }
+    }
+  }
+}
