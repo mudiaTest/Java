@@ -47,12 +47,15 @@ public class ConfigDB2 {
 		em.setPackagesToScan("com.example.demo.db2");
 		em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 		
-		//Pobieranie ustawieñ Hibernate z z application.properties
+		//Pobieranie ustawieñ Hibernate z z application.properties lub hardcoded
 		HashMap<String, Object> properties = new HashMap<>();
 		properties.put("hibernate.hbm2ddl.auto", "create");
 		properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL9Dialect");
 		properties.put("hibernate.temp.use_jdbc_metadata_defaults",  false);
-		properties.put("hibernate.show-sql", true);
+		properties.put("hibernate.show_sql", true);
+		properties.put("hibernate.format_sql", true);
+		properties.put("hibernate.type", "TRACE");
+		properties.put("hibernate.use_sql_comments", true);
 		//Ustawia strategiê generowania nazw zgodnie z tym co domyœlnie ustawia spring.
 		//Bez tego intVal zostanie przerobiony na kolumnê intval, podczas gdy spring robi int_val
 		//Mog¹ byæ problemy co pod³¹czeniu gotowej bazy danych - koniecznoœæ rêczego ustalania nazw tabel i kolumn
