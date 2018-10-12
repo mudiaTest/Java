@@ -18,7 +18,12 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
-//basePackages wskazuje na package gdzie bêd¹ dao. Wtedy odnosz¹c siê do tego dao bêdziemy odpytywaæ konkretn¹ bazê
+/*
+ * basePackages wskazuje - na package gdzie bêd¹ dao. Wtedy odnosz¹c siê do tego dao bêdziemy odpytywaæ konkretn¹ bazê
+ * 	w tym samym pakiecie bêd¹ entity
+ * entityManagerFactoryRef wskazuje na to jakiego entityManagera maj¹ u¿ywac DAO
+ * transactionManagerRef - wskazuje manager transakcji, którego maj¹ u¿ywaæ DAO
+ */
 @Configuration
 @EnableJpaRepositories(
 		basePackages = "com.example.demo.db2",
