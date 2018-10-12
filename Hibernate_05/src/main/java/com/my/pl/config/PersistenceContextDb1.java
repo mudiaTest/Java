@@ -1,4 +1,9 @@
-package com.my.pl;
+/*
+ * Ważne jest odpowiednie nazewnictwo, bo używając @Qualifier("...") bedziemy 
+ * wskazywali na konkretny entityManager, transakcje etc 
+ */
+
+package com.my.pl.config;
 
 import java.util.HashMap;
 
@@ -31,6 +36,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan({"com.my.pl"})
 @EnableTransactionManagement
+/*
+ * basePackages wskazuje - na package gdzie będą dao. Wtedy odnosząc się do tego dao będziemy odpytywać konkretną bazę
+ * 	w tym samym pakiecie będą entity
+ * entityManagerFactoryRef wskazuje na to jakiego entityManagera mają używac DAO
+ * transactionManagerRef - wskazuje manager transakcji, którego mają używać DAO
+ */
 @EnableJpaRepositories(
 	basePackages = "com.my.pl.db1",
 	entityManagerFactoryRef = "entityManagerDb1",
@@ -41,8 +52,6 @@ public class PersistenceContextDb1 {
 
 	@Autowired
 	private Environment environment;
-	
-	
 	 
 	@Bean(name="dataSourceDb1")
 	public DataSource dataSourceDb1() {
@@ -83,7 +92,6 @@ public class PersistenceContextDb1 {
 		return em;
 	}
 	
-	
 	@Bean(name="transactionManagerDb1")
 	@Primary
 	public PlatformTransactionManager transactionManagerDb1() {
@@ -100,7 +108,10 @@ public class PersistenceContextDb1 {
 	    return new TransactionAwareDataSourceProxy(dataSourceDb1());
 	}
 	 
-	
+/*
+ * Nie budujemy transactionManagera (jak to pokazano w tutorialu), bo jest on 
+ * wybudowany już dla JPA i będzie współuzytkowany.	
+ */
 //	@Bean
 //	public DataSourceTransactionManager transactionManager() {
 //	    return new DataSourceTransactionManager(dataSourceDb1());

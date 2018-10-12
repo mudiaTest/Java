@@ -1,4 +1,4 @@
-package com.my.pl;
+package com.my.pl.config;
 
 import java.util.HashMap;
 
@@ -31,6 +31,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @ComponentScan({"com.my.pl"})
 @EnableTransactionManagement
+/*
+ * basePackages wskazuje - na package gdzie będą dao. Wtedy odnosząc się do tego dao będziemy odpytywać konkretną bazę
+ * 	w tym samym pakiecie będą entity
+ * entityManagerFactoryRef wskazuje na to jakiego entityManagera mają używac DAO
+ * transactionManagerRef - wskazuje manager transakcji, którego mają używać DAO
+ */
 @EnableJpaRepositories(
 	basePackages = "com.my.pl.db2",
 	entityManagerFactoryRef = "entityManagerDb2",
