@@ -5,6 +5,7 @@ import java.util.HashMap;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy;
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.context.annotation.Bean;
@@ -27,19 +28,17 @@ public class ConfigDB2 {
 	@Autowired
     private Environment env;
 	
+	/*
+	 * Konfiguracja jest pobierana z odpowiednich wpisów z application.properties
+	 */
 	@Bean
-	
+	@ConfigurationProperties(prefix="second.ds")
 	public DataSource db2DataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName("org.postgresql.Driver");
-		dataSource.setUrl("jdbc:postgresql://Ursus/ll/hibernate04_db2");
-		dataSource.setUsername("system");
-		dataSource.setPassword("system");
 		return dataSource;
 	}
 	
-	@Bean
-	
+	@Bean	
     public LocalContainerEntityManagerFactoryBean db2EntityManager() {
 		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 		
@@ -65,8 +64,7 @@ public class ConfigDB2 {
 		return em;
 	}
 	
-	@Bean
-	
+	@Bean	
 	public PlatformTransactionManager db2TransactionManager() {
 		JpaTransactionManager result = new JpaTransactionManager();
 		result.setEntityManagerFactory(db2EntityManager().getObject());

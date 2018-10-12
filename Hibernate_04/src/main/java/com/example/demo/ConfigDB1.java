@@ -28,6 +28,9 @@ public class ConfigDB1 {
 	@Autowired
     private Environment env;
 	
+	/*
+	 * Konfiguracja jest hardcoded
+	 */
 	@Bean
 	@Primary
 	public DataSource db1DataSource() {
