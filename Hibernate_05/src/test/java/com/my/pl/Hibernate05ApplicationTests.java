@@ -1,117 +1,123 @@
 package com.my.pl;
 
-import static com.my.pl.jooq.db1.tables.Test5.TEST5;
-import static com.my.pl.jooq.db1.tables.Test5T2.TEST5_T2;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.List;
+import static com.my.pl.jooq.db1.tables.Test1.TEST1;
+import static com.my.pl.jooq.db2.tables.Test2.TEST2;
 
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 
-import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
+import org.jooq.impl.DefaultDSLContext;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.my.pl.db1.dao.Test1Dao;
-import com.my.pl.db1.domain.SubClass2;
-import com.my.pl.db1.domain.Test5;
+import com.my.pl.db1.domain.Test1;
+import com.my.pl.db2.dao.Test2Dao;
+import com.my.pl.db2.domain.Test2;
 import com.my.pl.utils.NewTransactionWrapper;
-
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @EnableTransactionManagement
-//@EnableAutoConfiguration//(exclude = {JmxAutoConfiguration.class}) 
-@ContextConfiguration(classes = { PersistenceContext.class })
+@ContextConfiguration(classes = { PersistenceContextDb1.class, PersistenceContextDb2.class })
 public class Hibernate05ApplicationTests {
 	
 	@Autowired
 	Test1Dao t1d;
 	@Autowired
-	Environment env;
+	Test2Dao t2d;
 	@Autowired
-	EntityManager em;
+	Environment env;	
 	@Autowired
 	NewTransactionWrapper ntw;
 	
-	private void fillTest5() {
-		Test5 t51 = new Test5();
-		t51.setId(1);
-		t51.setIntVal1(11);
-		List<SubClass2> t21 = t51.getT2();
-		t21.add(new SubClass2(1, "a"));
-		t21.add(new SubClass2(2, "b"));
-		em.persist(t51);
+	@Autowired
+	@Qualifier("entityManagerDb1")
+	EntityManager emDb1;	
+	@Autowired
+	@Qualifier("dslDb1")
+	DefaultDSLContext dslDb1;
+	
+	@Autowired
+	@Qualifier("entityManagerDb2")
+	EntityManager emDb2;
+	@Autowired
+	@Qualifier("dslDb2")
+	DefaultDSLContext dslDb2;
+	
+	private void fillTest1() {
+		Test1 t1 = new Test1();
+		t1.setId(1);
+		t1.setIntVal1(11);
 		
-		Test5 t52 = new Test5();
-		t52.setId(3);
-		t52.setIntVal1(12);
-		List<SubClass2> t22 = t52.getT2();
-		t22.add(new SubClass2(3, "c"));
-		t22.add(new SubClass2(4, "d"));
-		em.persist(t52);
+		Test2 t2 = new Test2();
+		t2.setId(2);
+		t2.setStVal1("a");
 		
-		Test5 t53 = new Test5();
-		t53.setId(5);
-		t53.setIntVal1(13);
-		List<SubClass2> t23 = t53.getT2();
-		t23.add(new SubClass2(5, "e"));
-		t23.add(new SubClass2(6, "f"));
-		em.persist(t53);
-		em.flush();
+		t1d.save(t1);
+		t2d.save(t2);
 	}
 
 	@Test
-	@Transactional
+	/*
+	 * @Transactional i @Transactional("transactionManagerDb1") są równznaczne, bo transactionManagerDb1 jest @Primary
+	 */
+	@Transactional("transactionManagerDb1")
 	@Commit
 	public void contextLoads() {
-		ntw.inTrans(()->fillTest5());
+		ntw.inTrans(()->fillTest1());
+		/*
+		 * Wymuszamy zapis do bazy, bo inaczej obekt może zostać w PC i Jooq go nie odnajdzie
+		 * Może to oczywiście spowodować spadek wydajności, bo próba pobrania przez H tego obiektu do 
+		 * dalszych zmian, będzie pociągala za soba konieczność sunchronizacji (Selecta) z DB.
+		 */
+		emDb1.flush();
+		/*
+		 * Poniższe wybychnie, bo brak akrywnej transakcji.
+		 * Jest to logiczne, bo @Transactional odnosi się do db1, więc t2d.save 
+		 * nie przejmie tej transakcji, tylko otworzy własną i potem ją zamknie.
+		 */
+		//emDb2.flush();
 		
-		String userName = env.getProperty("spring.datasource.username");
-        String password = env.getProperty("spring.datasource.password");
-        String url = env.getProperty("spring.datasource.url");
+		String userName = "system";
+        String password = "system";
+        String url = "jdbc:postgresql://Ursus/ll/hibernate05_db1";
 
-        // Connection is the only JDBC resource that we need
-        // PreparedStatement and ResultSet are handled by jOOQ, internally
-        try (Connection conn = DriverManager.getConnection(url, userName, password)) {
-        	DSLContext create = DSL.using(conn, SQLDialect.POSTGRES);
-        	String sql = create
-				.select()
-				.from(TEST5
-						.leftJoin(TEST5_T2)
-							.on(TEST5.ID.eq(TEST5_T2.TEST5_ID))
-				)
-				.getSQL();
-        	Result<Record> result = create
+        try {
+        	/*
+        	 * dslDb1 będzie współdzielić transakcję z emDb1 i t1d
+        	 */
+        	Result<Record> result1 = dslDb1
     			.select()
-    			.from(TEST5
-    					.leftJoin(TEST5_T2)
-    						.on(TEST5.ID.eq(TEST5_T2.TEST5_ID))
-    			)
+    			.from(TEST1)
     			.fetch();
         	
-        	for (Record r : result) {
-        	    Long id = r.getValue(TEST5.ID);
-        	    Integer intval1 = r.getValue(TEST5.INTVAL1);
-        	    Integer subintval1 = r.getValue(TEST5_T2.SUBINTVAL1);
-
-        	    System.out.println("ID: " + id + " intval1: " + intval1 + " subintval1: " + subintval1);
+        	Result<Record> result2 = dslDb2
+        			.select()
+        			.from(TEST2)
+        			.fetch();
+        	
+        	for (Record r : result1) {
+        	    Long id = r.getValue(TEST1.ID);
+        	    Integer intval1 = r.getValue(TEST1.INT_VAL1);
+        	    System.out.println("ID: " + id + " intval1: " + intval1);
         	}
+        	for (Record r : result2) {
+        	    Long id = r.getValue(TEST2.ID);
+        	    String stval1 = r.getValue(TEST2.ST_VAL1);
+        	    System.out.println("ID: " + id + " stval1: " + stval1);
+        	}
+        	
         	int t = 0;
         } 
         catch (Exception e) {

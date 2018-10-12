@@ -1,4 +1,4 @@
-package com.my.pl.db1.domain;
+package com.my.pl.db2.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,8 +18,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Test1 {
+public class Test2 {
 	@Id
 	private long id;
-	private int intVal1;	
+	private String stVal1;
+
 }

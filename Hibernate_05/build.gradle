@@ -82,7 +82,7 @@ jooq {
   db1(sourceSets.main) {//nazwa funkcji jest dowolna
     jdbc {
       driver = 'org.postgresql.Driver'
-      url = 'jdbc:postgresql://Ursus/ll/hibernate05'
+      url = 'jdbc:postgresql://Ursus/ll/hibernate05_db1'
       user = 'system'
       password = 'system'
       /*properties {
@@ -128,6 +128,59 @@ jooq {
         // directory = ...
         //directory = 'src/main/java'
         directory = 'build/generated-src/jooq/db1'//ten katalog należy dodać ręcznie do zródeł, jeśli nie wykonał tego automat. Properties->Jvaa Build Path->Add Folder
+      }
+    }
+  }
+
+  db2(sourceSets.main) {//nazwa funkcji jest dowolna
+    jdbc {
+      driver = 'org.postgresql.Driver'
+      url = 'jdbc:postgresql://Ursus/ll/hibernate05_db2'
+      user = 'system'
+      password = 'system'
+      /*properties {
+        property {
+          key = 'ssl'
+          value = 'true'
+        }
+      }*/
+    }
+    generator {
+      name = 'org.jooq.codegen.DefaultGenerator'
+      strategy {
+        name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+        // ...
+      }
+      database {
+        name = 'org.jooq.meta.postgres.PostgresDatabase'
+        inputSchema = 'public'
+        forcedTypes {
+          forcedType {
+            name = 'varchar'
+            expression = '.*'
+            types = 'JSONB?'
+          }
+          forcedType {
+            name = 'varchar'
+            expression = '.*'
+            types = 'INET'
+          }
+        }
+        // ...
+      }
+      generate {
+        relations = true
+        deprecated = false
+        records = true
+        immutablePojos = true
+        fluentSetters = true
+        // ...
+      }
+      target {
+        packageName = 'com.my.pl.jooq.db2'//package name ustawiany w generowych plikach 
+        // directory = ...
+        //directory = 'src/main/java'
+        directory = 'build/generated-src/jooq/db2'//ten katalog należy dodać ręcznie do zródeł, jeśli nie wykonał tego automat. Properties->Jvaa Build Path->Add Folder
       }
     }
   }

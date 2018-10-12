@@ -32,33 +32,32 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan({"com.my.pl"})
 @EnableTransactionManagement
 @EnableJpaRepositories(
-		basePackages = "com.my.pl.db1",
-		entityManagerFactoryRef = "db1EntityManager",
-		transactionManagerRef = "db1TransactionManager")
-//@PropertySource("classpath:intro_config.properties")
+	basePackages = "com.my.pl.db2",
+	entityManagerFactoryRef = "entityManagerDb2",
+	transactionManagerRef = "transactionManagerDb2"
+)
 
-public class PersistenceContext {
+public class PersistenceContextDb2 {
 
 	@Autowired
 	private Environment environment;
 	 
-	@Bean
-	public DataSource dataSource() {
+	@Bean(name="dataSourceDb2")
+	public DataSource dataSourceDb2() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName(environment.getProperty("spring.datasource.driver-class-name"));
-		dataSource.setUrl(environment.getProperty("spring.datasource.url"));
+		dataSource.setUrl("jdbc:postgresql://Ursus/ll/hibernate05_db2");
 		dataSource.setUsername(environment.getProperty("spring.datasource.username"));
 		dataSource.setPassword(environment.getProperty("spring.datasource.password"));
 		return dataSource;
 	}
 	
-	@Bean
-	@Primary
-    public LocalContainerEntityManagerFactoryBean db1EntityManager() {
+	@Bean(name="entityManagerDb2")
+    public LocalContainerEntityManagerFactoryBean entityManagerDb2() {
 		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 		
-		em.setDataSource(dataSource());
-		em.setPackagesToScan("com.my.pl.db1");
+		em.setDataSource(dataSourceDb2());
+		em.setPackagesToScan("com.my.pl.db2");
 		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();		 
         em.setJpaVendorAdapter(vendorAdapter);
 		
@@ -67,58 +66,66 @@ public class PersistenceContext {
 		properties.put("hibernate.hbm2ddl.auto", "create");
 		properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL9Dialect");
 		properties.put("hibernate.temp.use_jdbc_metadata_defaults",  false);
-		properties.put("hibernate.show-sql", true);
+		properties.put("hibernate.show_sql", true);
+		properties.put("hibernate.format_sql", true);
+		properties.put("hibernate.type", "TRACE");
+		properties.put("hibernate.use_sql_comments", true);
+		//Ustawia strategię generowania nazw zgodnie z tym co domyślnie ustawia spring.
+		//Bez tego intVal zostanie przerobiony na kolumnę intval, podczas gdy spring robi int_val
+		//Mogą być problemy co podłączeniu gotowej bazy danych - konieczność ręczego ustalania nazw tabel i kolumn
 		properties.put("hibernate.physical_naming_strategy", SpringPhysicalNamingStrategy.class.getName());
 		properties.put("hibernate.implicit_naming_strategy", SpringImplicitNamingStrategy.class.getName());
 		//Podłączenie mapy KONIECZNIE po jej wypełnieniu, bo inicjalizuje ono wartości w em.
 		em.setJpaPropertyMap(properties);
 		return em;
 	}
-	/*
-	@Bean
-	@Primary
-	public PlatformTransactionManager db1TransactionManager() {
+	
+	
+@Bean(name="transactionManagerDb2")
+	public PlatformTransactionManager transactionManagerDb2() {
 		JpaTransactionManager result = new JpaTransactionManager();
-		result.setEntityManagerFactory(db1EntityManager().getObject());
+		result.setEntityManagerFactory(entityManagerDb2().getObject());
 		return result;
 	}
 	
-	@Bean
-	public TransactionAwareDataSourceProxy transactionAwareDataSource() {
-	    return new TransactionAwareDataSourceProxy(dataSource());
-	}
-	 
-	@Bean
-	public DataSourceTransactionManager transactionManager() {
-	    return new DataSourceTransactionManager(dataSource());
-	}
-	 
-	@Bean
-	public DataSourceConnectionProvider connectionProvider() {
-	    return new DataSourceConnectionProvider(transactionAwareDataSource());
-	}
-	 
-	@Bean
-	public ExceptionTranslator exceptionTransformer() {
-	    return new ExceptionTranslator();
-	}
-	     
-	@Bean
-	public DefaultDSLContext dsl() {
-	    return new DefaultDSLContext(configuration());
-	}
+	// JOOQ
 	
-	@Bean
-	public DefaultConfiguration configuration() {
-	    DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
-	    jooqConfiguration.set(connectionProvider());
-	    jooqConfiguration.set(new DefaultExecuteListenerProvider(exceptionTransformer()));
-	 
-	    String sqlDialectName = "POSTGRES";//environment.getProperty("...");//inne, np POSTGRES_9_3
-	    SQLDialect dialect = SQLDialect.valueOf(sqlDialectName);
-	    jooqConfiguration.set(dialect);
-	 
-	    return jooqConfiguration;
+		@Bean(name="transactionAwareDataSourceDb2")
+		public TransactionAwareDataSourceProxy transactionAwareDataSourceDb2() {
+		    return new TransactionAwareDataSourceProxy(dataSourceDb2());
+		}
+		 
+//		@Bean
+//		public DataSourceTransactionManager transactionManager() {
+//		    return new DataSourceTransactionManager(dataSourceDb1());
+//		}
+		 
+		@Bean
+		public DataSourceConnectionProvider connectionProviderDb2() {
+		    return new DataSourceConnectionProvider(transactionAwareDataSourceDb2());
+		}
+		 
+		@Bean
+		public ExceptionTranslator exceptionTransformerDb2() {
+		    return new ExceptionTranslator();
+		}
+		
+		@Bean
+		public DefaultConfiguration configurationDb2() {
+		    DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
+		    jooqConfiguration.set(connectionProviderDb2());
+		    jooqConfiguration.set(new DefaultExecuteListenerProvider(exceptionTransformerDb2()));
+		 
+		    String sqlDialectName = "POSTGRES"; //environment.getProperty("..."); //inne, np POSTGRES_9_3
+		    SQLDialect dialect = SQLDialect.valueOf(sqlDialectName);
+		    jooqConfiguration.set(dialect);
+		 
+		    return jooqConfiguration;
+		}
+		
+		@Bean(name="dslDb2")
+		public DefaultDSLContext dslDb2() {
+			return new DefaultDSLContext(configurationDb2());
+		}
+		
 	}
-	*/
-}
