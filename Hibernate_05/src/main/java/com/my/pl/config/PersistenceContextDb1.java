@@ -53,6 +53,9 @@ public class PersistenceContextDb1 {
 	@Autowired
 	private Environment environment;
 	 
+	//Spring
+	//Customowe podłaczeni do DataSource - pozwala na podłaczenie do wielu DS
+	
 	@Bean(name="dataSourceDb1")
 	public DataSource dataSourceDb1() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -110,7 +113,7 @@ public class PersistenceContextDb1 {
 	 
 /*
  * Nie budujemy transactionManagera (jak to pokazano w tutorialu), bo jest on 
- * wybudowany już dla JPA i będzie współuzytkowany.	
+ * już wybudowany powyżej dla JPA i będzie współuzytkowany.	
  */
 //	@Bean
 //	public DataSourceTransactionManager transactionManager() {
@@ -146,7 +149,12 @@ public class PersistenceContextDb1 {
 	@Bean(name="dslDb1")
 	@Primary
 	public DefaultDSLContext dslDb1() {
-		return new DefaultDSLContext(configurationDb1());
+		DefaultDSLContext result = new DefaultDSLContext(configurationDb1());
+		/*
+		 * Właczy opcję "ładnego" generowania SQL - nowe linia i wcięcia
+		 */
+		result.settings().withRenderFormatted(true);
+		return result;
 	}
 	
 }

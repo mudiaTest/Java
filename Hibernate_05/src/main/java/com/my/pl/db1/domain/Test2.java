@@ -18,7 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Test1 {
+public class Test2 {
 	@Id
 	private long id;
 	private int intVal1;	

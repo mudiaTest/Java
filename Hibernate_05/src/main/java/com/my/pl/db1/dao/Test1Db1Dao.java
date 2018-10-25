@@ -4,6 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.my.pl.db1.domain.Test1;
 
-public interface Test1Dao extends CrudRepository<Test1, Long>{
+public interface Test1Db1Dao extends CrudRepository<Test1, Long>{
 
 }

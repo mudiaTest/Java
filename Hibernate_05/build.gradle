@@ -1,7 +1,7 @@
 /*
  * JOOQ
  * gradlew clean build - powoduje wybudowanie pliku konfiguracji \build\tmp\generate[nazwa funkcji]JooqSchemaSource i jego wywołanie
- * gradle generate[nazwa funkcji]JooqSchemaSource - powoduje tylko przebudowanie wygenerowanych plików - uzywać gdy zmieniamy baze danych, ale nie build.gradle 						
+ * gradlew generate[nazwa funkcji]JooqSchemaSource - powoduje tylko przebudowanie wygenerowanych plików - uzywać gdy zmieniamy baze danych, ale nie build.gradle 						
  */
 
 buildscript {
@@ -11,7 +11,7 @@ buildscript {
 	repositories {
 		mavenCentral()
 		mavenLocal()
-		 maven {
+		maven {
 	      url "https://plugins.gradle.org/m2/"
 	    }
 	}
@@ -76,8 +76,11 @@ dependencies {
 	//jooqRuntime "nu.studer:gradle-jooq-plugin:3.0.2"
 }
 
+ext['jooq_db1_dir'] = 'build/generated-src/jooq/db1'
+ext['jooq_db2_dir'] = 'build/generated-src/jooq/db2'
+
 jooq {
-  version = '3.11.5'
+  version = "${jooq.version}"
   edition = 'OSS'
   db1(sourceSets.main) {//nazwa funkcji jest dowolna
     jdbc {
@@ -113,7 +116,9 @@ jooq {
             types = 'INET'
           }
         }
-        // ...
+        //ustawia nazwę kolumny uzywanej do wersjonowania - bez tego store będzie wpierw 
+        //robiło select i porównywało wszysktie wartości, z tym będzie dodawało WHERE do UPDATE 
+        recordVersionFields = 'public.Test1.rv'
       }
       generate {
         relations = true
@@ -127,7 +132,7 @@ jooq {
         packageName = 'com.my.pl.jooq.db1'//package name ustawiany w generowych plikach 
         // directory = ...
         //directory = 'src/main/java'
-        directory = 'build/generated-src/jooq/db1'//ten katalog należy dodać ręcznie do zródeł, jeśli nie wykonał tego automat. Properties->Jvaa Build Path->Add Folder
+        directory = "${jooq_db1_dir}"//ten katalog należy dodać ręcznie do zródeł, jeśli nie wykonał tego automat. Properties->Jvaa Build Path->Add Folder
       }
     }
   }
@@ -180,8 +185,15 @@ jooq {
         packageName = 'com.my.pl.jooq.db2'//package name ustawiany w generowych plikach 
         // directory = ...
         //directory = 'src/main/java'
-        directory = 'build/generated-src/jooq/db2'//ten katalog należy dodać ręcznie do zródeł, jeśli nie wykonał tego automat. Properties->Jvaa Build Path->Add Folder
+        directory = "${jooq_db2_dir}"//ten katalog należy dodać ręcznie do zródeł, jeśli nie wykonał tego automat. Properties->Jvaa Build Path->Add Folder
       }
     }
+  }
+  
+  task cleanDB1 {
+    delete "${jooq_db1_dir}"
+  }
+  task cleanDB2 {
+    delete "${jooq_db2_dir}"
   }
 }
