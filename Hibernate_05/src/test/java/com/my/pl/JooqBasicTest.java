@@ -44,6 +44,7 @@ import com.my.pl.db1.domain.Test2;
 import com.my.pl.jooq.db1.tables.records.Test1Record;
 import com.my.pl.utils.NewTransactionWrapper;
 
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @EnableTransactionManagement
@@ -364,31 +365,32 @@ public class JooqBasicTest {
 		}
 	}
 	
+	//Poniższe nie zadział bez ustawionego FK, a to doddaję ręcznie,więc nie skompiluje się bez zmian w DB i ponownego generowania zródłe
 	//@Test
 	//@Transactional
-	@Commit
-	public void implicitJoinTest() {	
-		ntw.inTrans(()->fillTest1Test2());	
-		try (
-				DSLContext create = dsl1;
-				) {	
-			String s1 = create.select(
-					TEST2.test1().INT_VAL1.as("t1Val") 
-					,TEST2.INT_VAL1.as("t2Val") 
-					//Poniższe nie jest potrzebne
-					,TEST2.ID
-					)
-				.from(TEST2)
-				//Poniższe nie jest potrzebne
-				.join(TEST1).on(TEST2.test1().ID.eq(TEST1.ID))
-
-			.getSQL();									
-			int t = 0;
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	@Commit
+//	public void implicitJoinTest() {	
+//		ntw.inTrans(()->fillTest1Test2());	
+//		try (
+//				DSLContext create = dsl1;
+//				) {	
+//			String s1 = create.select(
+//					TEST2.test1().INT_VAL1.as("t1Val") 
+//					,TEST2.INT_VAL1.as("t2Val") 
+//					//Poniższe nie jest potrzebne
+//					,TEST2.ID
+//					)
+//				.from(TEST2)
+//				//Poniższe nie jest potrzebne				
+//				.join(TEST1).on(TEST2.test1().ID.eq(TEST1.ID))
+//
+//			.getSQL();									
+//			int t = 0;
+//		} 
+//		catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 	//@Test
 	//@Transactional
@@ -600,7 +602,7 @@ public class JooqBasicTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	//@Transactional
 	@Commit
 	public void seekTest() {	
@@ -628,7 +630,7 @@ public class JooqBasicTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	//@Transactional
 	@Commit
 	public void unionTest() {	
@@ -642,14 +644,163 @@ public class JooqBasicTest {
 			com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
 			
 			String s1 = create.selectFrom(t1)
-					.union(create.selectFrom(t1))
-					.except(create.selectFrom(t1).where(t1.ID.gt((long)3)))
+					.union(create.selectFrom(t1))//LIMIT i ORDER BY są implementowane przez J przez odpowiednie obudowywanie podzapytań
+					.except(create.selectFrom(t1).where(t1.ID.gt((long)3)) )
 					.getSQL();	
 			
 			s1 = create.selectFrom(t1)
 					.where(t1.ID.gt((long)2))
 					.getSQL();	
 			
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//@Test
+	//@Transactional
+	@Commit
+	public void InsertTest() {	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			// Pozwala na sworzenie SQL z wpisanymi na stałe wartościami - użyte TYLKO w celu debugowania
+			create.settings().setStatementType(StatementType.STATIC_STATEMENT);
+			//Alias
+			com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
+			
+			/*
+			 * Insert z użyciem VALUES
+			 */
+			String s1 = create
+					.insertInto(t1, t1.ID, t1.INT_VAL1)
+					.values((long)1, 11)
+					.values((long)2, 22)				
+					.getSQL();
+			
+			/*
+			 * Insert z użyciem SET
+			 */
+			String s2 = create
+					.insertInto(t1)
+					.set(t1.ID, (long)3)
+					.set(t1.INT_VAL1, 33)
+					.newRecord()
+					.set(t1.ID, (long)4)
+					.set(t1.ST_VAL2, "44")
+					.getSQL();	
+			
+			/*
+			 * Insert z użyciem .onDuplicateKeyUpdate()
+			 */
+			String s3 = create
+					.insertInto(t1)
+					.set(t1.ID, (long)1)
+					.set(t1.INT_VAL1, 11)
+					.getSQL();
+			String s4 = create
+					.insertInto(t1, t1.ID, t1.INT_VAL1)
+					.values((long)1, 12)
+					/*
+					 * nie działa dla Postgres 9.1. Chce robić za pomocą "ON CONFLICT"
+					 */
+					.onDuplicateKeyUpdate()
+					.set(t1.ID, (long)2)
+					/*
+					 * DZiała dla 9.1, ale uzywa obejścia "where not exists" wpp "ON CONFLICT"
+					 */
+					//.onDuplicateKeyIgnore()
+					.getSQL();
+			
+			/*
+			 * Insert returning
+			 */
+			String s5 = create
+					.insertInto(TEST1, TEST1.ID, TEST1.INT_VAL1, TEST1.RV)
+					.values((long)1, 11, 0)
+					.values((long)2, 22, 0)
+					.returning(TEST1.ID, TEST1.INT_VAL1, TEST1.ST_VAL2)
+					.getSQL();
+			
+			String s6 = create
+			.insertInto(TEST1, TEST1.ID, TEST1.INT_VAL1, TEST1.RV)
+			.select(       create.select(DSL.inline((long)1), DSL.inline(111), DSL.inline(0))
+					.union(create.select(TEST1.ID.add(10), DSL.inline(111), TEST1.RV).from(TEST1))//też zadziała
+					.union(create.select(TEST1.ID.add(20), TEST1.INT_VAL1, TEST1.RV).from(TEST1))//też zadziała
+					)
+			.getSQL();
+			
+			/*
+			 * Poniższe może dać PK violation w SQL, bo przepisujemy z tej samej tabeli, ale to tyko przykład
+			 */
+			String s7 = create
+			.insertInto(TEST1)
+			.select(
+					create
+					.selectFrom(t1)
+					.where(t1.ID.gt((long)1)))					
+			.getSQL();
+			
+			
+			/*
+			 * Pobieranie danych RAW - jeszcze nie ma żadnego rzutowania
+			 */
+			Result<?> result = create.fetch(s5);
+			
+			
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	//@Transactional
+	@Commit
+	public void updateTest() {	
+		ntw.inTrans(()->fillTest1_5());	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			// Pozwala na sworzenie SQL z wpisanymi na stałe wartościami - użyte TYLKO w celu debugowania
+			create.settings().setStatementType(StatementType.STATIC_STATEMENT);
+			//Alias
+			com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
+			
+			/*
+			 * Basic
+			 */
+			String s1 = create.update(t1)
+					.set(t1.INT_VAL1, 111)					
+					.set(t1.ST_VAL2, "111")					
+					.getSQL();	
+			
+			/*
+			 * UPDATE FROM SELECT pojedynczej wartości
+			 */
+			String s2 = create.update(t1)
+					.set(t1.INT_VAL1, select(DSL.inline(112))	)				
+					.getSQL();	
+			
+			/*
+			 * Wstawianie listy wartości - ROW
+			 */
+			String s3 = create.update(t1)
+					.set(DSL.row(t1.INT_VAL1, t1.ST_VAL2), DSL.row(113, "113"))					
+					.getSQL();	
+			
+			/*
+			 * UPDATE FROM SELECT wielu wartości
+			 * Zadziała, ale dopiero POSTGRES 9.5 ma to zaimplementowane
+			 */
+			String s4 = create.update(t1)
+					.set(DSL.row(t1.INT_VAL1, t1.ST_VAL2), 
+						 select(t1.INT_VAL1, DSL.inline("114")).from(t1) 
+					)					
+					.getSQL();		
 			int t = 0;
 		} 
 		catch (Exception e) {

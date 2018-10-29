@@ -139,8 +139,9 @@ public class PersistenceContextDb1 {
 	    jooqConfiguration.set(connectionProviderDb1());
 	    jooqConfiguration.set(new DefaultExecuteListenerProvider(exceptionTransformerDb1()));
 	 
-	    String sqlDialectName = "POSTGRES"; //environment.getProperty("..."); //inne, np POSTGRES_9_3
-	    SQLDialect dialect = SQLDialect.valueOf(sqlDialectName);
+	    String sqlDialectName = "POSTGRES_9_3"; //environment.getProperty("..."); //inne, np POSTGRES_9_3
+	    //SQLDialect dialect = SQLDialect.valueOf(sqlDialectName);
+	    SQLDialect dialect = SQLDialect.POSTGRES_9_3;
 	    jooqConfiguration.set(dialect);
 	 
 	    return jooqConfiguration;
