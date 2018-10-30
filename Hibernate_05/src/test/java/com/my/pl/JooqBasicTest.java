@@ -13,10 +13,13 @@ import javax.persistence.EntityManager;
 
 import org.jooq.CommonTableExpression;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Record1;
+import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
+import org.jooq.Table;
 import org.jooq.WindowDefinition;
 import org.jooq.conf.StatementType;
 import org.jooq.impl.DSL;
@@ -757,9 +760,9 @@ public class JooqBasicTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	//@Transactional
-	@Commit
+	//@Commit
 	public void updateTest() {	
 		ntw.inTrans(()->fillTest1_5());	
 		try (
@@ -801,6 +804,274 @@ public class JooqBasicTest {
 						 select(t1.INT_VAL1, DSL.inline("114")).from(t1) 
 					)					
 					.getSQL();		
+			
+			/*
+			 * 
+			 */
+			String s5 = create.update(t1)
+					.set(t1.INT_VAL1, 111)
+					.returning()
+					.getSQL();		
+			String s6 = create.update(t1)
+					.set(t1.INT_VAL1, 111)
+					.returning(t1.INT_VAL1)
+					.getSQL();		
+			String s7 = create.update(t1)
+					.set(t1.INT_VAL1, 111)
+					.returning(t1.ID, t1.INT_VAL1)
+					.getSQL();	
+			
+			/*
+			 * Da błąd, ponieważ zwracane będzie wiele wyników, a fetchOne pozwala obsłużyć tylko jeden
+			 */
+			//Record r1 = create.fetchOne(s5);
+			Result<Record> r2 = create.fetch(s5);
+			//r2.get(0).valuesRow().field(0).getName(); //pobranie wartości, ale nazwa dziwna
+			r2.get(1).getValue(0).toString(); //pobieranie wartości jest możliwe tylko jako string
+			((Long)r2.get(1).getValue(0)).longValue(); //pobieranie wartości po rzutowaniu jest możliwe do poprawnej wartości
+			((Long)r2.get(1).get(0)).longValue(); //jw, String lub rzutowanie
+			r2.getValue(2, 0).getClass();//jw, String lub rzutowanie
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//@Test
+	//@Transactional
+	@Commit
+	public void deleteTest() {	
+		ntw.inTrans(()->fillTest1_5());	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			// Pozwala na sworzenie SQL z wpisanymi na stałe wartościami - użyte TYLKO w celu debugowania
+			create.settings().setStatementType(StatementType.STATIC_STATEMENT);
+			//Alias
+			com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
+			
+			String s1 = create.delete(t1).getSQL();
+			String s2 = create.delete(t1).where(t1.ID.eq((long)1)).getSQL();
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//@Test
+	//@Transactional
+	@Commit
+	public void mergeTest() {	
+		ntw.inTrans(()->fillTest1_5());	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			// Pozwala na sworzenie SQL z wpisanymi na stałe wartościami - użyte TYLKO w celu debugowania
+			create.settings().setStatementType(StatementType.STATIC_STATEMENT);
+			//Alias
+			com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
+			
+			String s1 = create
+					.mergeInto(t1)
+					.using(DSL.selectOne())//.usingDual()
+					.on(t1.ID.eq((long)1))
+					.getSQL();
+			
+			String s2 = create
+					.mergeInto(t1)
+					.using(DSL.selectOne())//.usingDual()
+					.on(t1.ID.eq((long)1))
+					.getSQL();
+			
+			String s3 = create
+					.mergeInto(t1)
+					.using(DSL.selectOne())//.usingDual()
+					.on(t1.ID.eq((long)1))
+					.whenMatchedThenUpdate()
+					.set(t1.INT_VAL1, 111)
+					.whenNotMatchedThenInsert(t1.ID, t1.INT_VAL1, t1.RV)
+					.values((long)8, 88, 0)
+					//.whenNotMatchedThenInsert()
+					//.set()
+					.getSQL();
+			
+			String s4 = create
+					.mergeInto(t1)
+					.using(DSL.selectOne())//.usingDual()
+					.on(t1.ID.eq((long)1))
+					.whenMatchedThenUpdate()
+					.set(t1.INT_VAL1, 111)
+					.whenNotMatchedThenInsert()
+					.set(t1.ID, (long)9)
+					.set(t1.RV, 0)
+					.set(t1.INT_VAL1, 99)
+					.getSQL();			
+			
+			/*
+			 * POSTGRES nie obsługuje MERGE. Nalezy używać INSERT ... ON CONFLICT
+			 */
+			String s5 = create
+					.insertInto(TEST1)
+					.values((long)7, 77, 0, "7")//.usingDual()
+					.onConflict(TEST1.ID).doUpdate().set(TEST1.INT_VAL1, 77)
+					.getSQL();
+			
+			int t = 0;
+			
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	//@Transactional
+	@Commit
+	public void aliasTest() {	
+		ntw.inTrans(()->fillTest1_5());	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			// Pozwala na sworzenie SQL z wpisanymi na stałe wartościami - użyte TYLKO w celu debugowania
+			create.settings().setStatementType(StatementType.STATIC_STATEMENT);
+			/*
+			 * Alias tabeli
+			 */
+			com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
+			com.my.pl.jooq.db1.tables.Test1 t2 = TEST1.as("t2");
+			com.my.pl.jooq.db1.tables.Test1 t11 = TEST1.as("t11");
+			/*
+			 * Aliasy kolumn
+			 */
+			Field<Long> f1 = t1.field(t1.ID);
+			Field<?> f2 = t1.field("int_val1");
+			
+			String s1 = create.select(f1, f2)
+					.from(t1)					
+					.getSQL();
+			
+			String s21 = create.select(t1.INT_VAL1)
+					.from(select(t1.ID).from(t1).asTable())					
+					.getSQL();
+			
+			/*
+			 * select() pobierze wszystkie kolumny z podzapytania i nada im oryginalne nazwy
+			 * 
+			 * Jeśli nazwy kolumn podamy z palca i pomylimy się, to kolumny zostaną pominięte bez rzycenia błędem
+			 * 
+			 * JOOQ nie sprawdzi też, czy nazwy podajemy poprawne. Dlatego warto posługiwać się 
+			 * aliasami, zamiast wpisywać z palca - mniejsze prawdopodobieństwo wystąpienia błędu.
+			 * Można też zamiast "asTable(t2)" napisać "asTable()" i automatycznie zostanie nadana nazwa oryginalnej tabeli
+			 * 
+			 */
+			String s22 = create.select(t1.ID)
+				.from(select(t1.ID, t1.INT_VAL1).from(t1).asTable("t2"))					
+				.getSQL();
+			
+			/*
+			 * BŁąD - Alias tabeli nadaniy automatycznie, więc jest inny niż alias w SELECT nadany ręcznie
+			 */
+			String s23 = create.select(t1.ID)
+				.from(
+					select(t1.ID, t1.INT_VAL1)
+					.from(t1).join(t2)
+					.on(t1.ID.eq(t2.ID))
+					.asTable() 
+					)					
+				.getSQL();
+			
+			/*
+			 * BŁąD - Alias tabeli inny niż alias w SELECT
+			 */
+			String s25 = create.select(t1.ID)
+					.from(
+							select(t1.ID, t1.INT_VAL1)
+							.from(t1).join(t2)
+							.on(t1.ID.eq(t2.ID))
+							.asTable("tmp") 
+							)
+					.getSQL();
+			
+			/*
+			 * OK - Brak Aliasu w subSelect - Aliasy w SELECT zostaną wypełnione automatycznie
+			 */
+			String s26 = create.select()
+					.from(
+							select(t1.ID, t1.INT_VAL1)
+							.from(t1).join(t2)
+							.on(t1.ID.eq(t2.ID))
+							.asTable("tmp") 
+							)
+					.getSQL();
+			
+			/*
+			 * OK - Brak Aliasu w subSelect i SELECT - zostanie wypełnione automatycznie
+			 */
+			String s27 = create.select()
+					.from(
+							select(t1.ID, t1.INT_VAL1)
+							.from(t1).join(t2)
+							.on(t1.ID.eq(t2.ID))
+							)
+					.getSQL();
+			
+			/*
+			 * OK - Używamy Aliasu, aby nie pomylić się w nazwach kolumn
+			 */
+			String s28 = create.select(t11.ID)
+				.from(
+					select(t1.ID, t1.INT_VAL1)
+					.from(t1)
+					.join(t2).on(t1.ID.eq(t2.ID))
+					.asTable(t11.getName())
+						)
+				.getSQL();
+			
+			/*
+			 * OK - Nadajemy Alias t dla tabeli i "a" oraz "b" jako nazwy kolumn
+			 */
+			String s29 = create
+				.select()
+				.from(DSL.values(
+					DSL.row(1, 2),
+					DSL.row(3, 4)
+						).as("t", "a", "b"))
+				.getSQL();
+			
+			
+			Table<Record1<Long>> s31 = create
+					.select(t1.ID)
+					.from(t1)
+					.asTable();
+			Table<Record2<Long, Integer>> s32 = create
+					.select(t1.ID, t1.INT_VAL1)
+					.from(t1)
+					.asTable();
+			Table<Record> s33 = create
+					.select()
+					.from(t1)
+					.asTable();
+			
+			/*
+			 * Pytamy o wszystkie pola z podzapytania
+			 */
+			String s41 = create.select().from(s32).getSQL();
+			/*
+			 * Pytamy o konkretne pole z podzapytania. Rzutowanie nie jest konieczne, w przykładzie rozpoznał drugie pole jako Integer.
+			 * Jeśli zapytamy po pole, które nie jest zwracane ("int_val2" to bład - "powinno być int_val1"), to... pominie podczas budowy bez rzucania błędem
+			 */
+			String s43 = create
+					.select(s32.field(0, Long.class), s32.field("int_val2"))
+					.from(s32)
+					.getSQL();
+			Record r44 = create
+					.select(s32.field(0), s32.field("int_val1"))
+					.from(s32)
+					.limit(1)
+					.fetchOne();
+			
 			int t = 0;
 		} 
 		catch (Exception e) {
