@@ -17,6 +17,7 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Record1;
 import org.jooq.Record2;
+import org.jooq.Record3;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
@@ -929,7 +930,7 @@ public class JooqBasicTest {
 	@Test
 	//@Transactional
 	@Commit
-	public void aliasTest() {	
+	public void aliasIJoinTest() {	
 		ntw.inTrans(()->fillTest1_5());	
 		try (
 				DSLContext create = dsl1;
@@ -1030,9 +1031,72 @@ public class JooqBasicTest {
 				.getSQL();
 			
 			/*
+			 * OK - Używamy Aliasu, aby nie pomylić się w nazwach kolumn
+			 */
+			String s29 = create.select(t11.ID)
+					.from(
+							select(t1.ID, t2.INT_VAL1)
+							.from(t1)
+							.join(t2).on(t1.ID.eq(t2.ID))
+							.asTable(t11.getName())
+							)
+					.join(t2).on(t2.ID.eq(t11.ID))
+					.getSQL();
+			
+			/*
+			 * SELEFT FROM subselect zwracający customowe kolumny (niebędący kalką istniejącej tabeli)
+			 * 1 - Definiujemy zapytanie
+			 * 2 - Definiujemy obiekt reprezentujący pierwszą zwracaną kolumnę
+			 * 3 - Definiujemy obiekt reprezentujący kolumnę o wybranej nazwie.
+			 * 		Dla t2.col piszemy tylko col
+			 * 		Jeśli jest więcej kolumn o tej samej nazwie, dodajemy do kolumn aliasy 
+			 * 4 - Definiujemy obiekt reprezentujący kolumnę o wybranej nazwie - zwracającą stałą.
+			 */
+				//1
+			Table<Record3<Long, Integer, String>> t12 = create
+					.select(t1.ID, t2.INT_VAL1.as("t2Int"), DSL.inline("fff").as("cst"))
+					.from(t1)
+					.join(t2).on(t1.ID.eq(t2.ID))
+					.asTable("tmp");
+				//2
+			//Field<Long> t12Id = t12.field(0, Long.class);
+			//getType odda Integer.class
+			//getRecordType
+			Field<Long> t12Id = t12.field(t2.ID.getName(), t2.ID.getType());
+				//3
+			//Field t12Int = t12.field("INT_VAL1");
+			Field t12Int = t12.field("t2Int");
+				//4
+			Field t12Str = t12.field("cst");
+			
+			String s291 = create.select(t2.ID, t12Id, t12.field("t2Int"), t12Str)
+					.from(t12)
+					.join(t2).on(t2.ID.eq(t12Id))
+					.getSQL();
+			
+			/*
+			 * Poniższe jest przykładem próby bez użycia dodatkowych obiektów. 
+			 * Nie ma jak dodwołać się w zewnętrznym SQL do t2.INT_VAL1
+			 */
+			/*String s292 = create.select(
+						t11.ID, 
+						// Oba poniższę zadziałają zle
+						//DSL.inline("t11.INT_VAL1"),
+						//t11.getName()+"."+t2.INT_VAL1.getName()
+						)
+					.from(
+							select(t1.ID, t2.INT_VAL1)
+							.from(t1)
+							.join(t2).on(t1.ID.eq(t2.ID))
+							.asTable(t11.getName())
+							)
+					.join(t2).on(t2.ID.eq(t11.ID))
+					.getSQL();*/
+			
+			/*
 			 * OK - Nadajemy Alias t dla tabeli i "a" oraz "b" jako nazwy kolumn
 			 */
-			String s29 = create
+			String s299 = create
 				.select()
 				.from(DSL.values(
 					DSL.row(1, 2),
