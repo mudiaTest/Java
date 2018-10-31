@@ -1369,6 +1369,7 @@ public class JooqBasicTest {
 			 * zrobi concat w losowej kolejności po wszystkich wierszach
 			 */
 			Field<String> field2 = DSL.groupConcat(TEST1.INT_VAL1).as("agg");
+			może spróbować skonstruować to zapytanie samemu używając window?
 			/*
 			 * OVER() not supported on GROUP_CONCA
 			 */
