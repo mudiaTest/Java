@@ -14,6 +14,7 @@ import javax.persistence.EntityManager;
 import org.jooq.CommonTableExpression;
 import org.jooq.DSLContext;
 import org.jooq.Field;
+import org.jooq.FieldLike;
 import org.jooq.Record;
 import org.jooq.Record1;
 import org.jooq.Record2;
@@ -25,6 +26,8 @@ import org.jooq.WindowDefinition;
 import org.jooq.conf.StatementType;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDSLContext;
+import org.jooq.impl.SQLDataType;
+import org.jooq.util.postgres.PostgresDataType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,6 +128,57 @@ public class JooqBasicTest {
 		t2d.save(t2);
 	}
 	
+	private void fillDivideTest() {
+		Test1 t1;
+		t1 = new Test1();
+		t1.setId(1);
+		t1.setIntVal1(11);	
+		t1.setStVal2("a");	
+		t1d.save(t1);
+		
+		t1 = new Test1();
+		t1.setId(2);
+		t1.setIntVal1(11);		
+		t1.setStVal2("b");	
+		t1d.save(t1);
+
+		t1 = new Test1();
+		t1.setId(3);
+		t1.setIntVal1(11);	
+		t1.setStVal2("c");		
+		t1d.save(t1);
+		
+		t1 = new Test1();
+		t1.setId(4);
+		t1.setIntVal1(12);	
+		t1.setStVal2("a");		
+		t1d.save(t1);
+		
+		t1 = new Test1();
+		t1.setId(5);
+		t1.setIntVal1(12);		
+		t1.setStVal2("c");	
+		t1d.save(t1);
+		
+		t1 = new Test1();
+		t1.setId(6);
+		t1.setIntVal1(12);		
+		t1.setStVal2("d");	
+		t1d.save(t1);
+		
+		
+		Test2 t2;
+		t2 = new Test2();
+		t2.setId(1);
+		t2.setStVal2("a");
+		t2d.save(t2);
+		
+		t2 = new Test2();
+		t2.setId(1);
+		t2.setStVal2("b");
+		t2d.save(t2);
+	}
+	
 	private DSLContext getDLSCtx(String dbName) {
 		String userName = "system";
         String password = "system";
@@ -206,7 +260,7 @@ public class JooqBasicTest {
 	/*
 	 * Pobieranie ustalonego typu
 	 */
-//	@Test
+	//@Test
 	@Transactional
 	@Commit
 	public void insertTest() {	
@@ -254,7 +308,7 @@ public class JooqBasicTest {
 				.fetchOne();
 	}
 
-//	@Test
+	//@Test
 	//@Transactional
 	@Commit
 	public void selectUpdateWithOptimistocLockingTest() {	
@@ -927,7 +981,7 @@ public class JooqBasicTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	//@Transactional
 	@Commit
 	public void aliasIJoinTest() {	
@@ -1071,7 +1125,7 @@ public class JooqBasicTest {
 			
 			String s291 = create.select(t2.ID, t12Id, t12.field("t2Int"), t12Str)
 					.from(t12)
-					.join(t2).on(t2.ID.eq(t12Id))
+					.join(t2).on(t2.ID.eq(t12Id))					
 					.getSQL();
 			
 			/*
@@ -1127,8 +1181,8 @@ public class JooqBasicTest {
 			 * Jeśli zapytamy po pole, które nie jest zwracane ("int_val2" to bład - "powinno być int_val1"), to... pominie podczas budowy bez rzucania błędem
 			 */
 			String s43 = create
-					.select(s32.field(0, Long.class), s32.field("int_val2"))
-					.from(s32)
+					.select(s32.field(0, Long.class), s32.field("int_val2"))					
+					.from(s32)					
 					.getSQL();
 			Record r44 = create
 					.select(s32.field(0), s32.field("int_val1"))
@@ -1143,7 +1197,216 @@ public class JooqBasicTest {
 		}
 	}
 	
+	//@Test
+	//@Transactional
+	@Commit
+	public void joinTest() {	
+		ntw.inTrans(()->fillDivideTest());	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			// Pozwala na sworzenie SQL z wpisanymi na stałe wartościami - użyte TYLKO w celu debugowania
+			create.settings().setStatementType(StatementType.STATIC_STATEMENT);
+			//Alias
+			com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
+			com.my.pl.jooq.db1.tables.Test2 t2 = TEST2.as("t2");
+			
+			String s1 = create.select()
+					.from(t1.divideBy(t2).on(t1.ST_VAL2.eq(t2.ST_VAL2)).returning(t1.INT_VAL1))					
+					.getSQL();	
+			
+			/*
+			 * Iloczyn karteziański bez warunków
+			 */
+			String s2 = create.select()					
+					.from(t1.crossJoin(t2))					
+					.getSQL();	
+			
+			/*
+			 * Iloczyn karteziański porównijący wszystkie kolumny i tych samych nazwach
+			 */
+			String s3 = create.select()					
+					.from(t1.naturalJoin(t2))					
+					.getSQL();	
+			
+			/*
+			 * Iloczyn karteziański ze zdefiniowanym warunkiem (lub wieloma)
+			 * INNER JOIN = JOIN, więc J używa tylko JOIN w obu przypadkach
+			 */
+			String s4 = create.select()					
+					.from( t1.innerJoin(t2).on(t1.ID.eq(t2.ID)) )					
+					.getSQL();				
+			String s41 = create.select()					
+					.from( t1.join(t2).on(t1.ID.eq(t2.ID)) )					
+					.getSQL();		
+			
+			/* Iloczyn karteziański ze zdefiniowanym warunkiem (lub wieloma)
+			 * , uzupełniający brakujące wiersze nullami po Lewej/Prawej stronie
+			 * LEFT JOIN = LEFT OUTER JOIN, więc J używa tylko LEFT OUTER JOIN w obu przypadkach
+			 */
+			String s5 = create.select()					
+					.from( t1.leftJoin(t2).on(t1.ID.eq(t2.ID)) )					
+					.getSQL();	
+			String s51 = create.select()					
+					.from( t1.leftOuterJoin(t2).on(t1.ID.eq(t2.ID)) )					
+					.getSQL();	
+			String s52 = create.select()					
+					.from( t1.rightJoin(t2).on(t1.ID.eq(t2.ID)) )					
+					.getSQL();
+			
+			/* Iloczyn karteziański ze zdefiniowanym warunkiem (lub wieloma)
+			 * , uzupełniający brakujące wiersze nullami po obu stronach
+			 * FULL JOIN = FULL OUTER JOIN, więc J używa tylko FULL OUTER JOIN w obu przypadkach
+			 */
+			String s6 = create.select()					
+					.from( t1.fullOuterJoin(t2).on(t1.ID.eq(t2.ID)) )					
+					.getSQL();	
+			String s61 = create.select()					
+					.from( t1.fullJoin(t2).on(t1.ID.eq(t2.ID)) )					
+					.getSQL();	
+			
+			/* leftSemiJoin - Oddaje t1, o ile jest odpowiedni (wg klauzuli ON) wpis w t2
+			 * leftAntiJoin - Oddaje t1, o ile brak odpowiedniego wpisu (wg klauzuli ON) w t2
+			 * Obie konstrukcje emulują za pomocą odpowiednich warunków WHERE
+			 */
+			String s7 = create.select()					
+					.from( t1.leftSemiJoin(t2).on(t1.ID.eq(t2.ID)) )					
+					.getSQL();	
+			
+			String s71 = create.select()					
+					.from( t1.leftAntiJoin(t2).on(t1.ID.eq(t2.ID)) )					
+					.getSQL();	
+			
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//@Test
+	//@Transactional
+	//@Test
+	//@Transactional
+	@Commit
+	public void valuesTest() {	
+		try (
+				DSLContext create = dsl1;
+				) {	
+				
+			
+			/*
+			 * Bezpośrednie odwołanie się do pola
+			 */
+			String s1 = create.select(DSL.field("t.a"))
+					.from( DSL.values(DSL.row(1, "a"), DSL.row(2, "b")).as("t", "a", "b"))
+					.getSQL();	
+			/*
+			 * Wyciągnięcie fragmentu zapytania do osobnego obiektu pozwala na 
+			 */
+			Table<?> tmp = DSL.values(DSL.row(1, "a"), DSL.row(2, "b")).as("t", "a", "b");
+			
+			String s2 = create.select(tmp.field("a"))
+				.from(tmp)
+				.getSQL();
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//@Test
+	//@Transactional
+	@Commit
+	public void SubqueryDerivedTableTest() {	
+		ntw.inTrans(()->fillTest1_5());	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			// Pozwala na sworzenie SQL z wpisanymi na stałe wartościami - użyte TYLKO w celu debugowania
+			create.settings().setStatementType(StatementType.STATIC_STATEMENT);
+			//Alias
+			com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
+			Table<?> t2 = DSL.values(DSL.row(1, "a"), DSL.row(2, "b")).as("t", "a", "b");
+			//Alias a = new Alias();
+			
+			String s1 = create.select( DSL.field("tt.*") )
+					.from( t1.asTable("tt").join(t2).on( DSL.field("tt.id").eq( DSL.field("t.a")) ) )
+					.orderBy( DSL.field("tt.id") )
+					.getSQL();	
+			
+			String s2 = create.select( DSL.field("tab.col") ).from( DSL.table("tab2") ).getSQL();
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Test
+	//@Transactional
+	@Commit
+	public void kolumnyTest() {	
+		ntw.inTrans(()->fillTest1_5());	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			// Pozwala na sworzenie SQL z wpisanymi na stałe wartościami - użyte TYLKO w celu debugowania
+			create.settings().setStatementType(StatementType.STATIC_STATEMENT);
+			//Alias
+			com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
+			//Alias a = new Alias();
+			
+			/*
+			 * withinGroupOrderBy - w Postgresie nie działa ORDER BY, więc SQL będzie błędny
+			 */
+			Field<String> field1 = DSL.listAgg(TEST1.INT_VAL1)
+                    .withinGroupOrderBy(TEST1.ID.asc())
+                    .over().partitionBy(TEST1.ST_VAL2);
+			
+			/*
+			 * zrobi concat w losowej kolejności po wszystkich wierszach
+			 */
+			Field<String> field2 = DSL.groupConcat(TEST1.INT_VAL1).as("agg");
+			/*
+			 * OVER() not supported on GROUP_CONCA
+			 */
+			//Field<String> field3 = DSL.groupConcat(TEST1.INT_VAL1)
+			//		.over().partitionBy(TEST1.ST_VAL2);
+			
+			String s1 = create.select(field1)
+					.from(TEST1)
+					.getSQL();	
+			/*
+			 * Typowy CAST SQL
+			 * Nie ma możliwości ustalenia ilości znaków dla VARCHAR
+			 */
+			String s2 = create.select(TEST1.ID, TEST1.ID.cast(SQLDataType.VARCHAR))
+					.from(TEST1)
+					.getSQL();	
+			/*
+			 * Castowanie na typ zadanej kolumny
+			 */
+			String s3 = create.select(TEST1.ID, TEST1.ID.cast(TEST1.ST_VAL2))
+					.from(TEST1)
+					.getSQL();
+			
+			/*
+			 * DSL.castNull castuje null na odpowiedni typ
+			 */
+			String s4 = create.select(DSL.gro(TEST1.ID))
+					.from(TEST1)
+					.getSQL();	
+				
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+		
+	//@Test
 	//@Transactional
 	@Commit
 	public void defaultTest() {	
@@ -1155,9 +1418,10 @@ public class JooqBasicTest {
 			create.settings().setStatementType(StatementType.STATIC_STATEMENT);
 			//Alias
 			com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
+			//Alias a = new Alias();
 			
-			String s1 = create.select(t1.ID)
-					.from(t1)
+			String s1 = create.select(DSL.field("tt.*"))
+					.from(t1.asTable("tt"))
 					.orderBy(
 							t1.ID, 
 							t1.INT_VAL1.asc(), 
