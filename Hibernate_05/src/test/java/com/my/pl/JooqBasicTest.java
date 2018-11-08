@@ -2,12 +2,17 @@ package com.my.pl;
 
 import static com.my.pl.jooq.db1.tables.Test1.TEST1;
 import static com.my.pl.jooq.db1.tables.Test2.TEST2;
+import static com.my.pl.jooq.db1.Routines.*;
+import static com.my.pl.jooq.db1.Sequences.*;
 import static org.jooq.impl.DSL.name;
 import static org.jooq.impl.DSL.select;
 import static org.jooq.impl.DSL.val;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 
@@ -15,14 +20,18 @@ import org.jooq.CommonTableExpression;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.FieldLike;
+import org.jooq.Param;
+import org.jooq.Query;
 import org.jooq.Record;
 import org.jooq.Record1;
 import org.jooq.Record2;
 import org.jooq.Record3;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
+import org.jooq.Select;
 import org.jooq.Table;
 import org.jooq.WindowDefinition;
+import org.jooq.conf.ParamType;
 import org.jooq.conf.StatementType;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDSLContext;
@@ -48,6 +57,9 @@ import com.my.pl.db1.dao.Test1Db1Dao;
 import com.my.pl.db1.dao.Test2Db1Dao;
 import com.my.pl.db1.domain.Test1;
 import com.my.pl.db1.domain.Test2;
+import com.my.pl.jooq.db1.routines.Echo;
+import com.my.pl.jooq.db1.tables.Echo2;
+import com.my.pl.jooq.db1.tables.Echo3;
 import com.my.pl.jooq.db1.tables.records.Test1Record;
 import com.my.pl.utils.NewTransactionWrapper;
 
@@ -1344,7 +1356,7 @@ public class JooqBasicTest {
 		}
 	}
 	
-	@Test
+	//@Test
 	//@Transactional
 	@Commit
 	public void kolumnyTest() {	
@@ -1359,6 +1371,7 @@ public class JooqBasicTest {
 			//Alias a = new Alias();
 			
 			/*
+			 * BŁAD !
 			 * withinGroupOrderBy - w Postgresie nie działa ORDER BY, więc SQL będzie błędny
 			 */
 			Field<String> field1 = DSL.listAgg(TEST1.INT_VAL1)
@@ -1369,16 +1382,31 @@ public class JooqBasicTest {
 			 * zrobi concat w losowej kolejności po wszystkich wierszach
 			 */
 			Field<String> field2 = DSL.groupConcat(TEST1.INT_VAL1).as("agg");
-			może spróbować skonstruować to zapytanie samemu używając window?
+			//może spróbować skonstruować to zapytanie samemu używając window?
 			/*
-			 * OVER() not supported on GROUP_CONCA
+			 * OVER() not supported on GROUP_CONCAT
 			 */
 			//Field<String> field3 = DSL.groupConcat(TEST1.INT_VAL1)
 			//		.over().partitionBy(TEST1.ST_VAL2);
 			
-			String s1 = create.select(field1)
-					.from(TEST1)
-					.getSQL();	
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//@Test
+	//@Transactional
+	@Commit
+	public void castCoerceTest() {	
+		ntw.inTrans(()->fillTest1_5());	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			// Pozwala na sworzenie SQL z wpisanymi na stałe wartościami - użyte TYLKO w celu debugowania
+			create.settings().setStatementType(StatementType.STATIC_STATEMENT);
+		
 			/*
 			 * Typowy CAST SQL
 			 * Nie ma możliwości ustalenia ilości znaków dla VARCHAR
@@ -1396,11 +1424,26 @@ public class JooqBasicTest {
 			/*
 			 * DSL.castNull castuje null na odpowiedni typ
 			 */
-			String s4 = create.select(DSL.gro(TEST1.ID))
+			String s4 = create.select(DSL.castNull(TEST1.ID))
 					.from(TEST1)
 					.getSQL();	
-				
+			
+			/*
+			 * coerce(java.class...) pozwala na castowanie wewnątrz J - wymuszenie jakiegoś 
+			 * typu, dzięki czemu nie będzie CAST w SQL.
+			 * 
+			 * Można tego uzywać przy porównywaniu kolumn o różnych typach (SQL pozwala a J nie pozwala).
+			 * 
+			 * Zalecana jest jednak ostrzożność, bo kontrola typów to dość ważna rzecz.
+			 * 
+			 * Przykład traktowania stringa jak waretości liczbowej
+			 */
+			String s5 = create.select()
+					.from(TEST1)
+					.where( TEST1.ID.eq(DSL.val("1").coerce(Long.class)) )
+					.getSQL();	
 			int t = 0;
+			
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
@@ -1410,7 +1453,31 @@ public class JooqBasicTest {
 	//@Test
 	//@Transactional
 	@Commit
-	public void defaultTest() {	
+	public void sequenceTest() {	
+		ntw.inTrans(()->fillTest1_5());	
+		try (
+				DSLContext create = dsl1;
+				) {				
+			/*
+			 * Pomocne jest dołączenie jako STATIC IMPORT poniższego
+			 * com.my.pl.jooq.db1.Sequences
+			 * 
+			 * currval w POSTGRES zadział tylko jeśli wartość została już ustalona, wpp da błąd.
+			 * W testach ustalałem wartość używając "nextval"
+			 */
+			String s1 = create.select( TESTSEQUENCE.currval(), TESTSEQUENCE.nextval() ).getSQL();
+			
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//@Test
+	//@Transactional
+	@Commit
+	public void functionTest() {	
 		ntw.inTrans(()->fillTest1_5());	
 		try (
 				DSLContext create = dsl1;
@@ -1419,20 +1486,287 @@ public class JooqBasicTest {
 			create.settings().setStatementType(StatementType.STATIC_STATEMENT);
 			//Alias
 			com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
+			
+			Echo2 e2 = Echo2.ECHO2.as("e2");
+			Echo3 e3 = Echo3.ECHO3.as("e3");
+
 			//Alias a = new Alias();
 			
-			String s1 = create.select(DSL.field("tt.*"))
-					.from(t1.asTable("tt"))
-					.orderBy(
-							t1.ID, 
-							t1.INT_VAL1.asc(), 
-							DSL.inline(1).desc(),
-							DSL.choose(t1.INT_VAL1).when(13, 1).otherwise(2),
-							DSL.choose().when(t1.INT_VAL1.mod(2).eq(0), 1).otherwise(2),
-							t1.INT_VAL1.sortAsc(14,15).nullsFirst()
-							)
+			/*
+			 * Pomocne jest dołączenie jako STATIC IMPORT poniższego
+			 * com.my.pl.jooq.db1.Routines
+			 * 
+			 * echo1 zwraca INTEGER
+			 * echo2 zwraca TABLE z polami stVal i longVal
+			 * echo3 zwraca TABLE z polami stVal i intVal
+			 * 
+			 * SQL wszystkie pozwala łączyć joinem, ale J WYMAGA aby funckcja zwracała tabelę (row chyba też łyknie) np:
+			 * from echo(2) as e join test1 as t1 on t1.id = e
+			 * Minus dla J
+			 */
+			
+			/*
+			 * Proste pobranie wyniku funkcji w klauzuli SELECT
+			 */
+			String s1 = create.select(/*com.my.pl.jooq.db1.Routines.*/echo(7)).getSQL();
+			
+			/*
+			 * Join funkcji zwracającej tabeleę z czymś innym
+			 */
+			String s2 = create.select(/*com.my.pl.jooq.db1.Routines.*/)
+					.from(
+							echo2(2).as(e2.getName())
+							.join(t1).on( t1.ID.eq(e2.LONGVAL) )
+					)
 					.getSQL();	
+					
+			/*
+			 * Przykład restrykcji przy porównywaniu Long i Integer. Konieczne jest castowanie
+			 */
+			String s3 = create.select(/*com.my.pl.jooq.db1.Routines.*/)
+					.from(
+							echo3(2).as(e3.getName())
+							.join(t1)
+								/* Poniższe castowanie jest konieczne bo Integer (e2.INTVAL) <> Long (t1.ID)
+								 * To jest restrykcja J, bo SQL nie miał by problemu z taką konstrukcją
+								 * Minus dla J :(
+								 */
+//								.on( t1.ID.equal(e3.INTVAL.cast(SQLDataType.BIGINT)) )
+								.on( t1.ID.equal(e3.INTVAL.coerce(Long.class)) )
+					)
+					.getSQL();
+					
+			/*
+			 * Poniższe nie zadziała w J, bo Integer (e2.INTVAL) <> Long (t1.ID)
+			 * To jest restrykcja J, bo SQL nie ma z taką konstrukcją problemu
+			 */
+			/*
+			String s4 = create.select()
+					.from( 
+							echo2(2).as(e2.getName())
+							.join(t1)
+								.on( e2.INTVAL.eq(t1.ID) ) 
+					)
+					.getSQL();
+			*/
+			
 			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//@Test
+	//@Transactional
+	@Commit
+	public void plainTest() {	
+		ntw.inTrans(()->fillTest1_5());	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			
+			/*
+			 * Konieczne, aby toSQL() oddawało SQL z paramterami wypelnionymi wartościami.
+			 * Jeśli używanmy fetch() nie jest to konieczne.
+			 */
+			create.settings().setStatementType(StatementType.STATIC_STATEMENT);
+			
+			/*
+			 * Plain w SELECT
+			 */
+			String s1 = create.select(DSL.field("t1.id")).from(TEST1.as("t1")).getSQL();
+			
+
+			/*
+			 * Plain w SELECT
+			 * 
+			 * Wielokrotne uzycie tej samej wartości
+			 * 
+			 * Nie rozumiem co daje SQLDataType.VARCHAR
+			 * 
+			 * coerce(String.class) działa jedynie na sprawdzenia J i nie wpływan na typ zwracany przez zapytanie SQL. 
+			 * Tu nalezy użyc cast 
+			 */
+			Field<Integer> f21 = val(3);
+			Field<String> f22 = val(3).coerce(String.class);
+			String s2 = create.select(DSL.field("{0} as str, {1}, {2}, {1}", SQLDataType.VARCHAR, 22, f21, f22)).from(TEST1.as("t1")).getSQL();
+
+			/*
+			 * Plain w FROM
+			 */
+			String s3 = create.select().from("test1 as t1").getSQL();
+			
+			
+			/*
+			 * Plain w parametrach
+			 */
+			
+			/*
+			 * Parametry podawane w kolejności
+			 * KONIECZNIE ustawić StatementType.STATIC_STATEMENT, bo zamiast wartości dostaniemy "?"
+			 */
+			String s4 = create.select().from(TEST1.as("t1")).where("t1.id > ? and t1.id < ?", 1, 4).getSQL();
+			
+			/*
+			 * Parametry numerowane
+			 * KONIECZNIE ustawić StatementType.STATIC_STATEMENT, bo zamiast wartości dostaniemy "?"
+			 */
+			String s5 = create.select().from(TEST1.as("t1")).where("t1.id > {1} and t1.id < {0}", 4, 1).getSQL();
+			
+			/*
+			 * Mieszanie parametrów
+			 * KONIECZNIE ustawić StatementType.STATIC_STATEMENT, bo zamiast wartości dostaniemy "?"
+			 */
+			String s51 = create.select().from(TEST1.as("t1")).where("t1.id > {1} and t1.id < ? and {0}=? and {0}=?", 4, 1).getSQL();
+			
+			/*
+			 * Podgląd o pobieranie parametrów
+			 * Typ zwracany przez where() dziedziczy po Select<?>
+			 */
+			Select<?> sel5 = create.select().from(TEST1.as("t1")).where("t1.id > {1} and t1.id < {0} and {1}={1}", 4, 1);
+			
+			//s6 będzie miało wypelnione wartości parametrów, ale dostęp będzie też możliwy przez poniższe kontenery
+			String s6 = sel5.getSQL();
+			
+			//Na liście będą 4 obiekty Integer o wartościach 1,4,1,1 - 
+			//Kolejność zgodna z kolejnością parametrów a nie ich numerami, bo JDBC obsługuje 
+			//tylko model z "?". "{}" to mechanizm J tłumaczony potem na "?"
+			List<Object> p1 = sel5.getBindValues();
+			
+			//Mapa analigoczna do powyższej listy, ale jako key ma numery parametrów zaczynające się od 1
+			Map<String, Param<?>> m1 = sel5.getParams();
+			
+			//Pobieranie konkretnego parametru
+			Param<?> param = sel5.getParam("3");
+			//Podmiana wartości setValue() / setConverted() została deprecated 
+
+			/*
+			 * Wartości hardcoded też są parametrami.
+			 * Parametry bez nazw
+			 * 
+			 * Typ zwracany przez where() dziedziczy po Query
+			 */
+			Query q7 = create.select().from(TEST1).where(TEST1.ID.eq((long)2));
+			//będzie WHERE id = 2
+			String s71 = q7.getSQL();
+			q7.bind(1, 3);
+			//będzie WHERE id = 3
+			String s72 = q7.getSQL();
+			//BŁąD - brak parametru o numerze 2
+			//q7.bind(2, 3);
+			
+			/*
+			 * Parametry z nazwami
+			 */
+			Query q8 = create.select().from(TEST1).where( TEST1.ID.eq(DSL.param("idp", Long.class)) );
+			//Jeśli nie ustawimy wartości to będzie
+			//będzie WHERE id = null //Nie "IS NULL"
+			String s8 = q8.getSQL();
+			
+			create.settings().setStatementType(StatementType.PREPARED_STATEMENT);
+			
+			Query q9 = create.select().from(TEST1).where( TEST1.ID.eq(DSL.param("idp", (long)2)).and( TEST1.ID.eq((long)2) ) );
+			//będzie WHERE id = 2
+			String s91 = q9.getSQL();
+			q9.bind("idp", 3);
+			//będzie WHERE id = 3
+			String s92 = q9.getSQL();
+			
+			/*
+			 * Generowanie stringa z parametrami
+			 */
+			//Param type not supported ???
+			//String s93 = q9.getSQL(ParamType.FORCE_INDEXED);
+			String s94 = q9.getSQL(ParamType.INDEXED);//"public"."test1"."id" = ? and "public"."test1"."id" = ?
+			String s95 = q9.getSQL(ParamType.INLINED);//"public"."test1"."id" = 3 and "public"."test1"."id" = 22
+			String s96 = q9.getSQL(ParamType.NAMED);//"public"."test1"."id" = :idp and "public"."test1"."id" = :2
+			String s97 = q9.getSQL(ParamType.NAMED_OR_INLINED);//"public"."test1"."id" = :idp and "public"."test1"."id" = 22
+			
+			/*
+			 * Wstawianie parametru wyrażonego obiektem J
+			 */
+			Field<Long> idl = DSL.val((long)4);
+			String s10 = create.select().from(TEST1).where("test1.id = {0}", idl).getSQL(ParamType.INLINED);
+			
+			/*
+			 * Odłączenie obiektu od kontekstu 
+			 * - pozbawia kontrolu nad sposobm formatowania wynikowego SQL
+			 * - powoduje BŁąD na fetch()/execute()
+			 */
+			q9.detach();
+			String s11 = q9.getSQL();
+			
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	@Test
+	//@Transactional
+	@Commit
+	public void fetchTest() {	
+		ntw.inTrans(()->fillTest1_5());	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			Select<?> sel1 = create.select().from(TEST1);
+			//Odda obiekty Test1Record
+			Result<?> r11 = sel1.fetch();
+			//Odda listę typu z kolumny
+			List<Long> r12 = sel1.fetch(TEST1.ID);
+			//Odda listę nieznanego typu
+			List<?> r13 = sel1.fetch(0);
+			//Odda listę wybranego typu
+			List<Long> r131 = sel1.fetch(0, Long.class);
+			//Zadziała konwersja, ale ODRADZAM
+			List<Double> r132 = sel1.fetch(0, Double.class);
+			//Odda BŁąD konwercji
+			//List<HashMap> r133 = sel1.fetch(0, HashMap.class);
+			//Odda listę nieznanego typu
+			List<?> r14 = sel1.fetch("id");
+			//Odda listę wybranego typu
+			List<Long> r141 = sel1.fetch("id", Long.class);
+			
+			//Jw., ale odda Array zamiast list  
+			Object[] r15 = sel1.fetchArray();
+			Long[] r16 = sel1.fetchArray(TEST1.ID);
+			Object[] r17 = sel1.fetchArray(0);
+			Long[] r171 = sel1.fetchArray(0, Long.class);
+			Object[] r18 = sel1.fetchArray("id");
+			Long[] r181 = sel1.fetchArray("id", Long.class);
+			
+			//Jw., ale odda Tylko jeden obiekt zamiast wielu  
+			Object r19 = sel1.fetchOne();
+			Long r20 = sel1.fetchOne(TEST1.ID);
+			Object r21 = sel1.fetchOne(0);
+			Long r211 = sel1.fetchOne(0, Long.class);
+			Object r22 = sel1.fetchOne("id");
+			Long r221 = sel1.fetchOne("id", Long.class);
+			
+			
+			
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//@Test
+	//@Transactional
+	@Commit
+	public void defaultTest() {	
+		ntw.inTrans(()->fillTest1_5());	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			
+			
+			
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
