@@ -1714,6 +1714,10 @@ public class JooqBasicTest {
 				DSLContext create = dsl1;
 				) {	
 			Select<?> sel1 = create.select().from(TEST1);
+			Select<?> sel11 = create.select(TEST1.asterisk()).from(TEST1);
+			Select<?> sel12 = create.select(TEST1.asterisk(), DSL.val(12.5).as("cst")).from(TEST1);
+			Select<?> sel13 = create.select().from(TEST1.leftJoin(TEST2).on(TEST1.ID.eq(TEST2.ID)));
+			Select<?> sel2 = create.select().from(TEST1).limit(1);
 			//Odda obiekty Test1Record
 			Result<?> r11 = sel1.fetch();
 			//Odda listę typu z kolumny
@@ -1740,12 +1744,93 @@ public class JooqBasicTest {
 			Long[] r181 = sel1.fetchArray("id", Long.class);
 			
 			//Jw., ale odda Tylko jeden obiekt zamiast wielu  
-			Object r19 = sel1.fetchOne();
-			Long r20 = sel1.fetchOne(TEST1.ID);
-			Object r21 = sel1.fetchOne(0);
-			Long r211 = sel1.fetchOne(0, Long.class);
-			Object r22 = sel1.fetchOne("id");
-			Long r221 = sel1.fetchOne("id", Long.class);
+			Object r19 = sel2.fetchOne();
+			Long r20 = sel2.fetchOne(TEST1.ID);
+			Object r21 = sel2.fetchOne(0);
+			Long r211 = sel2.fetchOne(0, Long.class);
+			Object r22 = sel2.fetchOne("id");
+			Long r221 = sel2.fetchOne("id", Long.class);
+			
+			/*
+			 * key - hibernetowy Test1. 
+			 *       J wypełni pola o nazwach pokrywających się z nazwami kolumn
+			 *       Jeśli jest wiele kolumn o tej samej nazwie, to weżmie ostatnią z klauzuli SELECT
+			 * val - Dla select() z 1 tabeli pola Test1Record, wpp RecordImpl z array "values"
+			 */
+			Map<Test1, ?> r23 = sel1.fetchMap(Test1.class);
+			Map<Test1, ?> r231 = sel11.fetchMap(Test1.class);
+			Map<Test1, ?> r232 = sel12.fetchMap(Test1.class);
+			Map<Test1, ?> r233 = sel13.fetchMap(Test1.class);
+			/* 
+			 * key - kolumna 1, typ nieznany. Tutaj będzie to Integer
+			 * val - RecordImpl z array "values"
+			 */
+			Map<?, ?> r24 = sel1.fetchMap(1);
+			Map<?, ?> r241 = sel11.fetchMap(1);
+			Map<?, ?> r242 = sel12.fetchMap(1);
+			Map<?, ?> r243 = sel13.fetchMap(1);
+			/* 
+			 * key - kolumna TEST1.ST_VAL2, typ znany.
+			 * val - RecordImpl z array "values"
+			 * 
+			 * Wystąpi BŁąD - pole wybrane na klucz ma wartości powtarzające się
+			 */
+			//Map<String, ?> r244 = sel1.fetchMap(DSL.field(TEST1.ST_VAL2));
+			//Map<String, ?> r245 = sel11.fetchMap(DSL.field(TEST1.ST_VAL2));
+			//Map<String, ?> r246 = sel12.fetchMap(DSL.field(TEST1.ST_VAL2));
+			//Map<String, ?> r247 = sel13.fetchMap(DSL.field(TEST1.ST_VAL2));
+			
+			/* 
+			 * key - kolumna TEST1.ID, typ znany.
+			 * val - RecordImpl z array "values", bo taka jest budowa obiektu; 
+			 *       J wypełni pola o nazwach pokrywających się z nazwami kolumn
+			 *      Jeśli jest wiele kolumn o tej samej nazwie, to weżmie ostatnią z klauzuli SELECT
+			 */
+			Map<Long, Test1Record> r25 = sel1.fetchMap(TEST1.ID, Test1Record.class);
+			Map<Long, Test1Record> r251 = sel11.fetchMap(TEST1.ID, Test1Record.class);
+			Map<Long, Test1Record> r252 = sel12.fetchMap(TEST1.ID, Test1Record.class);
+			Map<Long, Test1Record> r253 = sel13.fetchMap(TEST1.ID, Test1Record.class);
+			
+			/* 
+			 * key - kolumna TEST1.ID, typ znany.
+			 * val - RecordImpl z array "values", bo taka jest budowa obiektu; 
+			 *       J wypełni pola o nazwach pokrywających się z nazwami kolumn
+			 *       Jeśli jest wiele kolumn o tej samej nazwie, to weżmie ostatnią z klauzuli SELECT
+			 */
+			Map<Long, Test1> r26 = sel1.fetchMap(TEST1.ID, Test1.class);
+			Map<Long, Test1> r261 = sel11.fetchMap(TEST1.ID, Test1.class);
+			Map<Long, Test1> r262 = sel12.fetchMap(TEST1.ID, Test1.class);
+			Map<Long, Test1> r263 = sel13.fetchMap(TEST1.ID, Test1.class);
+			
+			/* 
+			 * key - kolumna TEST1.ID, typ znany.
+			 * val - wartość kolumny TEST1.ST_VAL2, typ znany.
+			 */
+			Map<Long, String> r27 = sel1.fetchMap(TEST1.ID, TEST1.ST_VAL2);
+			Map<Long, String> r271 = sel11.fetchMap(TEST1.ID, TEST1.ST_VAL2);
+			Map<Long, String> r272 = sel12.fetchMap(TEST1.ID, TEST1.ST_VAL2);
+			Map<Long, String> r273 = sel13.fetchMap(TEST1.ID, TEST1.ST_VAL2);
+			
+			/* 
+			 * key - kolumna TEST1.ID, typ znany.
+			 * val - wartość kolumny TEST1.ST_VAL2 (wpisanej z palca), typ nieznany.
+			 * UWAGA! nie budowac nazw ręcznie, tylko używć name(...) wpp powie, ze nie zna 
+			 * pola, nawet jeśli ręcznie wybudowane stringi wydają się ok.
+			 */
+			Map<Long, ?> r28 = sel1.fetchMap(TEST1.ID, DSL.field(name("test1","st_val2")));
+			//Spowoduje BŁąD, bo nie ma kolumny o nazwie "ggg"
+			//Map<Long, ?> r281 = sel11.fetchMap(TEST1.ID, DSL.field("ggg"));
+			/* 
+			 * key - kolumna TEST1.ID, typ znany.
+			 * val - wartość kolumny TEST1.ST_VAL2 (wpisanej z palca), typ znany, bo podany ptzy definiowaniu pola.
+			 */
+			Map<Long, String> r281 = sel11.fetchMap(TEST1.ID, DSL.field(name("test1","st_val2"), String.class));
+			Map<Long, ?> r282 = sel12.fetchMap(TEST1.ID, DSL.field(name("cst")));
+			/*
+			 * W tym przypadku podanie nazwy pola z palca zadziała, ale tylko 
+			 * dlatego, że tak samo (zxpalca) została podana w klauzuli SELECT
+			 */
+			Map<Long, ?> r2821 = sel12.fetchMap(TEST1.ID, DSL.field("cst"));
 			
 			
 			
