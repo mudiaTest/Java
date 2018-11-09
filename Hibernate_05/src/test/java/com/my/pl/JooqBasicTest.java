@@ -63,6 +63,15 @@ import com.my.pl.jooq.db1.tables.Echo3;
 import com.my.pl.jooq.db1.tables.records.Test1Record;
 import com.my.pl.utils.NewTransactionWrapper;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+class Test1Res {
+	private Long id;
+	public Double cst;
+}
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -1705,10 +1714,10 @@ public class JooqBasicTest {
 	}
 
 	
-	@Test
+	//@Test
 	//@Transactional
 	@Commit
-	public void fetchTest() {	
+	public void fetchBasicTest() {	
 		ntw.inTrans(()->fillTest1_5());	
 		try (
 				DSLContext create = dsl1;
@@ -1750,11 +1759,68 @@ public class JooqBasicTest {
 			Long r211 = sel2.fetchOne(0, Long.class);
 			Object r22 = sel2.fetchOne("id");
 			Long r221 = sel2.fetchOne("id", Long.class);
+						
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/*
+	 * Domyślne mapowanie
+	 * J porównuje nazy kolumn z danymi z obiektu i wypełnia obiekt jeśli nazwy się zgadzają
+	 * - jeśli jest choć jedna adnotacja JPA, to szyka adnotacji "name" (czyli także "Id" ect.)
+	 * - jeśli brak adnotacji to szuka domyślnego, atrybutu lub settera
+	 * - jeśli brak powyższych, to J szuka "najlepszego" konstruktora	 
+	 * */
+	
+	//@Test
+	//@Transactional
+	@Commit
+	public void fetchMapsTest() {	
+		ntw.inTrans(()->fillTest1_5());	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			Select<?> sel1 = create.select().from(TEST1);
+			Select<?> sel11 = create.select(TEST1.asterisk()).from(TEST1);
+			Select<?> sel12 = create.select(TEST1.asterisk(), DSL.val(12.5).as("cst")).from(TEST1);
+			Select<?> sel13 = create.select().from(TEST1.leftJoin(TEST2).on(TEST1.ID.eq(TEST2.ID)));
+			Select<?> sel2 = create.select().from(TEST1).limit(1);
+					
+			/* 
+			 * key - kolumna TEST1.ID, typ znany.
+			 * val - wartość kolumny TEST1.ST_VAL2, typ znany.
+			 */
+			List<Map<String, Object>> r1 = sel1.fetchMaps();
+			List<Map<String, Object>> r11 = sel11.fetchMaps();
+			List<Map<String, Object>> r12 = sel12.fetchMaps();
+			List<Map<String, Object>> r13 = sel13.fetchMaps();
 			
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	//@Transactional
+	@Commit
+	public void fetchMapTest() {	
+		ntw.inTrans(()->fillTest1_5());	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			Select<?> sel1 = create.select().from(TEST1);
+			Select<?> sel11 = create.select(TEST1.asterisk()).from(TEST1);
+			Select<?> sel12 = create.select(TEST1.asterisk(), DSL.val(12.5).as("cst")).from(TEST1);
+			Select<?> sel13 = create.select().from(TEST1.leftJoin(TEST2).on(TEST1.ID.eq(TEST2.ID)));
+			Select<?> sel2 = create.select().from(TEST1).limit(1);
+						
 			/*
-			 * key - hibernetowy Test1. 
-			 *       J wypełni pola o nazwach pokrywających się z nazwami kolumn
-			 *       Jeśli jest wiele kolumn o tej samej nazwie, to weżmie ostatnią z klauzuli SELECT
+			 * key - hibernetowy Test1. J mapuje
 			 * val - Dla select() z 1 tabeli pola Test1Record, wpp RecordImpl z array "values"
 			 */
 			Map<Test1, ?> r23 = sel1.fetchMap(Test1.class);
@@ -1780,10 +1846,11 @@ public class JooqBasicTest {
 			//Map<String, ?> r246 = sel12.fetchMap(DSL.field(TEST1.ST_VAL2));
 			//Map<String, ?> r247 = sel13.fetchMap(DSL.field(TEST1.ST_VAL2));
 			
+			Map<Long, ?> r244 = sel1.fetchMap(TEST1.ID);
+			
 			/* 
 			 * key - kolumna TEST1.ID, typ znany.
-			 * val - RecordImpl z array "values", bo taka jest budowa obiektu; 
-			 *       J wypełni pola o nazwach pokrywających się z nazwami kolumn
+			 * val - RecordImpl z array "values", bo taka jest budowa obiektu. J mapuje
 			 *      Jeśli jest wiele kolumn o tej samej nazwie, to weżmie ostatnią z klauzuli SELECT
 			 */
 			Map<Long, Test1Record> r25 = sel1.fetchMap(TEST1.ID, Test1Record.class);
@@ -1793,14 +1860,23 @@ public class JooqBasicTest {
 			
 			/* 
 			 * key - kolumna TEST1.ID, typ znany.
-			 * val - RecordImpl z array "values", bo taka jest budowa obiektu; 
-			 *       J wypełni pola o nazwach pokrywających się z nazwami kolumn
+			 * val - RecordImpl z array "values", bo taka jest budowa obiektu. J mapuje do obiektu JPA
 			 *       Jeśli jest wiele kolumn o tej samej nazwie, to weżmie ostatnią z klauzuli SELECT
 			 */
 			Map<Long, Test1> r26 = sel1.fetchMap(TEST1.ID, Test1.class);
 			Map<Long, Test1> r261 = sel11.fetchMap(TEST1.ID, Test1.class);
 			Map<Long, Test1> r262 = sel12.fetchMap(TEST1.ID, Test1.class);
 			Map<Long, Test1> r263 = sel13.fetchMap(TEST1.ID, Test1.class);
+			
+			/* 
+			 * key - kolumna TEST1.ID, typ znany.
+			 * val - RecordImpl z array "values", bo taka jest budowa obiektu. J mapuje do POJO bez adnotacji
+			 *       Jeśli jest wiele kolumn o tej samej nazwie, to weżmie ostatnią z klauzuli SELECT
+			 */
+			Map<Long, Test1Res> r29 = sel1.fetchMap(TEST1.ID, Test1Res.class);
+			Map<Long, Test1Res> r291 = sel11.fetchMap(TEST1.ID, Test1Res.class);
+			Map<Long, Test1Res> r292 = sel12.fetchMap(TEST1.ID, Test1Res.class);
+			Map<Long, Test1Res> r293 = sel13.fetchMap(TEST1.ID, Test1Res.class);
 			
 			/* 
 			 * key - kolumna TEST1.ID, typ znany.
@@ -1822,7 +1898,7 @@ public class JooqBasicTest {
 			//Map<Long, ?> r281 = sel11.fetchMap(TEST1.ID, DSL.field("ggg"));
 			/* 
 			 * key - kolumna TEST1.ID, typ znany.
-			 * val - wartość kolumny TEST1.ST_VAL2 (wpisanej z palca), typ znany, bo podany ptzy definiowaniu pola.
+			 * val - wartość kolumny TEST1.ST_VAL2 (wpisanej z palca), typ znany, bo podany przy definiowaniu pola.
 			 */
 			Map<Long, String> r281 = sel11.fetchMap(TEST1.ID, DSL.field(name("test1","st_val2"), String.class));
 			Map<Long, ?> r282 = sel12.fetchMap(TEST1.ID, DSL.field(name("cst")));
@@ -1832,8 +1908,37 @@ public class JooqBasicTest {
 			 */
 			Map<Long, ?> r2821 = sel12.fetchMap(TEST1.ID, DSL.field("cst"));
 			
+			int t = 0;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	//@Transactional
+	@Commit
+	public void fetchIntoPojoTest() {	
+		ntw.inTrans(()->fillTest1_5());	
+		try (
+				DSLContext create = dsl1;
+				) {	
+			Select<?> sel1 = create.select().from(TEST1);
+			Select<?> sel11 = create.select(TEST1.asterisk()).from(TEST1);
+			Select<?> sel12 = create.select(TEST1.ID, DSL.val(12).as(name("rv"))).from(TEST1);
+			Select<?> sel13 = create.select().from(TEST1.leftJoin(TEST2).on(TEST1.ID.eq(TEST2.ID)));
+			Select<?> sel2 = create.select().from(TEST1).limit(1);
 			
-			
+			/*
+			 * J mapuje
+			 * Jeśli jest wiele kolumn o tej samej nazwie, to wezmie ostatnią z klauzuli SELECT
+			 */
+			List<Test1> r1 = sel1.fetchInto(Test1.class);
+			List<Test1> r11 = sel11.fetchInto(Test1.class);
+			List<Test1> r12 = sel12.fetchInto(Test1.class);
+			//Wezmie wartości z test2, bo ona jest w SELECT po test1
+			List<Test1> r13 = sel13.fetchInto(Test1.class);
+						
 			int t = 0;
 		} 
 		catch (Exception e) {

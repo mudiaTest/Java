@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -23,5 +24,6 @@ public class Test1 {
 	private long id;
 	private int intVal1;	
 	private String stVal2;
+	@Column(name="rv")
 	private int rv;
 }
