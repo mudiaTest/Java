@@ -3,7 +3,7 @@
  * gradlew clean build - powoduje wybudowanie pliku konfiguracji \build\tmp\generate[nazwa funkcji]JooqSchemaSource i jego wywołanie
  * gradlew generate[nazwa funkcji]JooqSchemaSource - powoduje tylko przebudowanie wygenerowanych plików - uzywać gdy zmieniamy baze danych, ale nie build.gradle 						
  */
-
+ 
 buildscript {
 	ext {
 		springBootVersion = '2.0.5.RELEASE'
@@ -14,6 +14,7 @@ buildscript {
 		maven {
 	      url "https://plugins.gradle.org/m2/"
 	    }
+	    jcenter()
 	}
 	dependencies {
 		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
@@ -24,13 +25,19 @@ buildscript {
 		//classpath "javax.activation:javax.activation-api:1.2.0"
 		//classpath "javax.xml.bind:jaxb-api:2.4.0-b180830.0359"
 		classpath "org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438"//!
+		
 		//classpath "nu.studer:gradle-jooq-plugin:3.0.2"
+		
+		classpath 'org.jooq:jooq-codegen:3.11.5'
+		//classpath 'buildSrc'
 	}
 }
+
 
 plugins {
   id "nu.studer.jooq" version "3.0.2"
 }
+
 
 //JOOQ - dla springa
 ext['jooq.version'] = '3.11.5'
@@ -74,18 +81,31 @@ dependencies {
 	jooqRuntime "org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438"//!
 	jooqRuntime "org.postgresql:postgresql:42.2.5"//!
 	//jooqRuntime "nu.studer:gradle-jooq-plugin:3.0.2"
+	//Import codegen w celu utworzenia własnej stratego generowania
+	compile 'org.jooq:jooq-codegen:3.11.5'
+	
+	//ModelMapper
+	compile 'org.modelmapper:modelmapper:2.3.0'
+	compile 'org.modelmapper.extensions:modelmapper-jooq:2.3.0'
+	compile 'org.modelmapper.extensions:modelmapper-spring:2.3.0'
+	
+	jooqRuntime project(':custom-generator')
 }
 
 ext['jooq_db1_dir'] = 'build/generated-src/jooq/db1'
 ext['jooq_db2_dir'] = 'build/generated-src/jooq/db2'
 
 jooq {
+	//Zadziała po uaktywnieniu buildSrc
+	//new  com.my.pl.FieldWithTableAsPrefixStrategy()
+
   version = "${jooq.version}"
   edition = 'OSS'
   db1(sourceSets.main) {//nazwa funkcji jest dowolna
     jdbc {
       driver = 'org.postgresql.Driver'
-      url = 'jdbc:postgresql://Ursus/ll/hibernate05_db1'
+      //url = 'jdbc:postgresql://Ursus/ll/hibernate05_db1'
+      url = 'jdbc:postgresql://localhost:5432/ll/Hibernate05_db1'
       user = 'system'
       password = 'system'
       /*properties {
@@ -98,7 +118,8 @@ jooq {
     generator {
       name = 'org.jooq.codegen.DefaultGenerator'
       strategy {
-        name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+        //name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+        name = 'my.strategy.FieldWithTableAsPrefixStrategy'
         // ...
       }
       database {
@@ -118,7 +139,8 @@ jooq {
         }
         //ustawia nazwę kolumny uzywanej do wersjonowania - bez tego store będzie wpierw 
         //robiło select i porównywało wszysktie wartości, z tym będzie dodawało WHERE do UPDATE 
-        recordVersionFields = 'public.Test1.rv'
+        recordVersionFields = 'public.test1.rv'
+        recordTimestampFields = 'public.test11.rtv'
       }
       generate {
         relations = true
@@ -126,6 +148,8 @@ jooq {
         records = true
         immutablePojos = true
         fluentSetters = true
+        daos = true
+        pojos = true
         // ...
       }
       target {
@@ -140,7 +164,8 @@ jooq {
   db2(sourceSets.main) {//nazwa funkcji jest dowolna
     jdbc {
       driver = 'org.postgresql.Driver'
-      url = 'jdbc:postgresql://Ursus/ll/hibernate05_db2'
+      //url = 'jdbc:postgresql://Ursus/ll/hibernate05_db2'
+      url = 'jdbc:postgresql://localhost:5432/ll/Hibernate05_db2'
       user = 'system'
       password = 'system'
       /*properties {
@@ -189,11 +214,19 @@ jooq {
       }
     }
   }
-  
+    
   task cleanDB1 {
-    delete "${jooq_db1_dir}"
+  	doLast {
+	  	println 'Delete 1'
+	    delete "${jooq_db1_dir}"
+	}
   }
+  
   task cleanDB2 {
-    delete "${jooq_db2_dir}"
+  	doLast { 
+	  	println 'Delete 2'
+	    delete "${jooq_db2_dir}"
+    }
   }
+  
 }

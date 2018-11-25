@@ -52,7 +52,8 @@ public class PersistenceContextDb2 {
 	public DataSource dataSourceDb2() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName(environment.getProperty("spring.datasource.driver-class-name"));
-		dataSource.setUrl("jdbc:postgresql://Ursus/ll/hibernate05_db2");
+		//dataSource.setUrl("jdbc:postgresql://Ursus/ll/hibernate05_db2");
+		dataSource.setUrl(environment.getProperty("spring.datasource.ds2"));
 		dataSource.setUsername(environment.getProperty("spring.datasource.username"));
 		dataSource.setPassword(environment.getProperty("spring.datasource.password"));
 		return dataSource;
@@ -111,16 +112,19 @@ public class PersistenceContextDb2 {
 		    return new DataSourceConnectionProvider(transactionAwareDataSourceDb2());
 		}
 		 
-		@Bean
+		/*@Bean
 		public ExceptionTranslator exceptionTransformerDb2() {
 		    return new ExceptionTranslator();
-		}
+		}*/
 		
 		@Bean
 		public DefaultConfiguration configurationDb2() {
 		    DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
 		    jooqConfiguration.set(connectionProviderDb2());
-		    jooqConfiguration.set(new DefaultExecuteListenerProvider(exceptionTransformerDb2()));
+		    /*
+		     * Poniższe ustawienie powodowało, że JOOQ gubił się w typach błędów i nie działało .onErrorIgnore()
+		     */
+		    //jooqConfiguration.set(new DefaultExecuteListenerProvider(exceptionTransformerDb2()));
 		 
 		    String sqlDialectName = "POSTGRES"; //environment.getProperty("..."); //inne, np POSTGRES_9_3
 		    SQLDialect dialect = SQLDialect.valueOf(sqlDialectName);
