@@ -2987,26 +2987,55 @@ public class JooqBasicTest {
 			return result;
 		}
 		
-		public <R> List<Record> listRecordsByPkEqualsField(Iterable<Record> src, Field<R> pkField, Field<R>[] fieldChain){					
+		public <R,K> List<Record> listFilterRecordsByFieldPairs(Iterable<Record> src, Field<R>[][] fieldChain){					
 			Stream<Record> s = StreamSupport.stream(src.spliterator(), false);
+			
+			List<Record> result = StreamSupport.stream(src.spliterator(), false)
+				.filter( r -> {
+					Boolean satisfy = true;
+					for(int i=0; i<fieldChain.length-1; i++) 
+						satisfy = satisfy && r.getValue(fieldChain[i][0]).equals(r.getValue(fieldChain[i][1]));				
+					return satisfy;
+					})
+				.collect(Collectors.toList());
+				//.collect(Collectors.groupingBy(r -> r.get(keyField))				
+				//);
+			/*
 			for(int i=0; i<fieldChain.length-1; i++) {
-				Field<R> f1 = fieldChain[i];
-				Field<R> f2 = fieldChain[i+1];
+				Field<R>[] ft = fieldChain[i];
+				Field<R> f1 = ft[0];
+				Field<R> f2 = ft[1];				
+//				System.out.println("fields: " + f1.getName() + " / " +  f2.getName());
 				s = s
-					.peek(a -> 
-						{
-							System.out.println("1-> " + a +": "+ a.getValue(f1));
-							System.out.println("2-> " + a +": "+ a.getValue(f2));
-							System.out.println("== " + a.getValue(f1).equals(a.getValue(f2)));
-							System.out.println(a);
-							}
-					)
-					.filter( row -> row.getValue(f1).equals(row.getValue(f2)));
-					System.out.println("-------->");
-			}
-			s = s.filter( row -> row.getValue(fieldChain[fieldChain.length-1]).equals(row.getValue(pkField)));
+//					.peek(a -> 
+//						{
+//							System.out.println("0-> \n" + a);
+//							System.out.println("1-> " + f1.getName() + ": "+ a.getValue(f1));
+//							System.out.println("2-> " + f2.getName() + ": "+ a.getValue(f2));
+//							System.out.println("1= " + a.getValue(f1).equals(a.getValue(f2)));
+//							System.out.println(a);
+//							}
+//					)
+					.filter( row -> row.getValue(f1).equals(row.getValue(f2)))
+//					.peek(a -> 
+//					{
+//						System.out.println("0--> \n" + a);
+//						System.out.println("1--> " + f1.getName() + ": "+ a.getValue(f1));
+//						System.out.println("2--> " + f2.getName() + ": "+ a.getValue(f2));
+//						System.out.println("1= " + a.getValue(f1).equals(a.getValue(f2)));
+//						System.out.println(a);
+//					}
+//					)
+				;
+				System.out.println("next line");
+			}			
 			List<Record> result = s.collect(Collectors.toList());
+//			System.out.println("Return count: " + result.size());*/
 			return result;
+		}
+		
+		public <R> Map<R, List<Record>> mapFilterRecordsByFieldPairsByKeyField(Iterable<Record> src, Field<R> keyField, Field<R>[][] fieldChain){		
+			return mapRecordsByField(listFilterRecordsByFieldPairs(src, fieldChain), keyField);			
 		}
 
 		public <R> List<Record> listFirstRecordsByPKField(Iterable<Record> src, Field<R> f){
@@ -3028,12 +3057,12 @@ public class JooqBasicTest {
 			List<C> result = mapRecordsToObjects(src2, f, mapper, clazz);		
 			return result;
 		}
-		
-		public <R,C> List<C> listRecordsByFieldValueToObjects(Iterable<Record> src, Field<R> pkField, Field<R>[] fieldChain, ModelMapper mapper, Class<C> clazz){			
-			List<Record> src2 = listRecordsByPkEqualsField(src, pkField, fieldChain);
+		/*
+		public <R,C> List<C> listRecordsByFieldValueToObjects(Iterable<Record> src, Field<R> pkField, Field<R>[][] fieldChain, ModelMapper mapper, Class<C> clazz){			
+			List<Record> src2 = listFilterRecordsByFieldPairs(src, pkField, fieldChain);
 			List<C> result = mapRecordsToObjects(src2, pkField, mapper, clazz);		
 			return result;
-		}
+		}*/
 		
 		public <R,C> List<C> listRecordsByPKToObjects(Map<R, List<Record>> src, Field<R> f, ModelMapper mapper, Class<C> clazz, R pk){			
 			List<Record> src2 = listRecordsByFieldValue(src.get(pk), f, pk);
@@ -3072,15 +3101,6 @@ public class JooqBasicTest {
 			
 			Table<Test41Record> test41 = (Table<Test41Record>) getAliasedTable(TEST41, "");
 			Field<Long> test41_ID = getAliasedField(TEST41.ID, a41);
-			
-			
-			
-//			Table<Test1Record> tab2Test1 = (Table<Test1Record>) getAliasedTable(TEST1, "2");
-//			Field<Long> tab2Test1_ID = getAliasedField(TEST1.ID, getTableAlias(TEST1, "2"));
-//			
-//			Table<?> subTab4 = create.select().from(TEST4).asTable("Z");
-//			Table<?> subTab4Aliased = getAliasedTable(subTab4, "1");
-//			Field<?> subTab4Aliased_ID = getAliasedField(subTab4.field("id"), getTableAlias(subTab4, "1"));
 			
 			/*
 			 * 
@@ -3122,14 +3142,15 @@ public class JooqBasicTest {
 			String mainIDAlias = a4+"_id";			
 			
 			List<Test4> l4 = mapRecordsToObjects(res2, test4_ID, mm4, Test4.class);
-			Map<Long, List<Record>> map441 =  mapRecordsByField(res2, TEST4_SUB_OBJ_SET_TEST4_ID);
+			Map<Long, List<Record>> map441 =  mapFilterRecordsByFieldPairsByKeyField(res2, test41_ID, new Field[][]{{test4_ID, TEST4_SUB_OBJ_SET_TEST4_ID} ,{TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID, test41_ID}});
+			
 			for(Test4 o4: l4) {
 				/*List<Record> jl = map441.get(Long.valueOf(o4.getId()));
 				for(Record jr: jl) {
 					List<Test41> l41 = listRecordsByPKToObjects(res2, test41_ID, mm41, Test41.class, Long.valueOf( jr.getValue(TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID) ));
 					o4.getSubObjSet().addAll(l41);
 				}*/				
-				List<Test41> l41 = listRecordsByFieldValueToObjects(res2, test41_ID, new Field[]{test4_ID, TEST4_SUB_OBJ_SET_TEST4_ID ,TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID}, mm41, Test41.class);
+				List<Test41> l41 = listRecordsByFieldValueToObjects(res2, test41_ID, new Field[][]{{test4_ID, TEST4_SUB_OBJ_SET_TEST4_ID} ,{TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID, test41_ID}}, mm41, Test41.class);
 				o4.getSubObjSet().addAll(l41);
 			}
 			
