@@ -87,6 +87,7 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import javax.persistence.EntityManager;
 import javax.xml.transform.Source;
@@ -174,7 +175,11 @@ import com.my.pl.jooq.db1.tables.records.Test4Record;
 import com.my.pl.jooq.db1.tables.records.Test4SubObjSetRecord;
 import com.my.pl.jooq.db1.tables.records.Test51Record;
 import com.my.pl.jooq.db1.tables.records.Test5Record;
-import com.my.pl.jooq.db1.tables.records.TestnoupdatableRecord;
+/*
+ * Nie można załozyć przez H, bo ten wymaga ID, a cała rzecz w tym, żeby ID właśnie nie było.
+ * Tabelę nalezy założyć osobno. 
+ */
+//import com.my.pl.jooq.db1.tables.records.TestnoupdatableRecord;
 import com.my.pl.listener.ExecuteListener;
 import com.my.pl.listener.RecordListener;
 import com.my.pl.listener.RecordListener2;
@@ -1955,6 +1960,11 @@ public class JooqBasicTest {
 			Select<?> sel12 = create.select(TEST1.asterisk(), DSL.val(12.5).as("cst")).from(TEST1);
 			Select<?> sel13 = create.select().from(TEST1.leftJoin(TEST2).on(TEST1.ID.eq(TEST2.ID)));
 			Select<?> sel2 = create.select().from(TEST1).limit(1);
+			/*
+			 * selectFrom pozwala na oddanie obiekty konkretnej klasy zamiast ?
+			 */
+			Select<Test1Record> sel3 = create.selectFrom(TEST1).limit(1);
+			
 			//Odda obiekty Test1Record
 			Result<?> r11 = sel1.fetch();
 			//Odda listę typu z kolumny
@@ -1988,6 +1998,12 @@ public class JooqBasicTest {
 			Object r22 = sel2.fetchOne("id");
 			Long r221 = sel2.fetchOne("id", Long.class);
 						
+			/*
+			 * sel3 jest jest konkretnego typu, więc fetch(), fetchOne i FetchArray() pozwalają na zwtot konktetnej klasy
+			 */
+			List<Test1Record> r23 = sel3.fetch();
+			Test1Record r231 = sel3.fetchOne();
+			
 			int t = 0;
 		} 
 		catch (Exception e) {
@@ -2046,6 +2062,7 @@ public class JooqBasicTest {
 			Select<?> sel12 = create.select(TEST1.asterisk(), DSL.val(12.5).as("cst")).from(TEST1);
 			Select<?> sel13 = create.select().from(TEST1.leftJoin(TEST2).on(TEST1.ID.eq(TEST2.ID)));
 			Select<?> sel2 = create.select().from(TEST1).limit(1);
+			Select<Test1Record> sel3 = create.selectFrom(TEST1).limit(1);
 						
 			/*
 			 * key - hibernetowy Test1. J mapuje
@@ -2063,18 +2080,22 @@ public class JooqBasicTest {
 			Map<?, ?> r241 = sel11.fetchMap(1);
 			Map<?, ?> r242 = sel12.fetchMap(1);
 			Map<?, ?> r243 = sel13.fetchMap(1);
+			/*
+			 * sel3 jest jest konkretnego typu, więc fetch(), fetchOne i FetchArray() pozwalają na zwtot konktetnej klasy
+			 */
+			Map<?, Test1Record> r244 = sel3.fetchMap(1);
 			/* 
 			 * key - kolumna TEST1.ST_VAL2, typ znany.
 			 * val - RecordImpl z array "values"
 			 * 
 			 * Wystąpi BŁąD - pole wybrane na klucz ma wartości powtarzające się
 			 */
-			//Map<String, ?> r244 = sel1.fetchMap(DSL.field(TEST1.ST_VAL2));
-			//Map<String, ?> r245 = sel11.fetchMap(DSL.field(TEST1.ST_VAL2));
-			//Map<String, ?> r246 = sel12.fetchMap(DSL.field(TEST1.ST_VAL2));
-			//Map<String, ?> r247 = sel13.fetchMap(DSL.field(TEST1.ST_VAL2));
+			//Map<String, ?> r245 = sel1.fetchMap(DSL.field(TEST1.ST_VAL2));
+			//Map<String, ?> r246 = sel11.fetchMap(DSL.field(TEST1.ST_VAL2));
+			//Map<String, ?> r247 = sel12.fetchMap(DSL.field(TEST1.ST_VAL2));
+			//Map<String, ?> r248 = sel13.fetchMap(DSL.field(TEST1.ST_VAL2));
 			
-			Map<Long, ?> r244 = sel1.fetchMap(TEST1.ID);
+			Map<Long, ?> r249 = sel1.fetchMap(TEST1.ID);
 			
 			/* 
 			 * key - kolumna TEST1.ID, typ znany.
@@ -2960,6 +2981,66 @@ public class JooqBasicTest {
 		}
 	}
 	
+		public <R> Map<R, List<Record>> mapRecordsByField(Iterable<Record> src, Field<R> f){
+			Map<R, List<Record>> result = StreamSupport.stream(src.spliterator(), false)
+				.collect(Collectors.groupingBy( a -> a.get(f)));
+			return result;
+		}
+		
+		public <R> List<Record> listRecordsByPkEqualsField(Iterable<Record> src, Field<R> pkField, Field<R>[] fieldChain){					
+			Stream<Record> s = StreamSupport.stream(src.spliterator(), false);
+			for(int i=0; i<fieldChain.length-1; i++) {
+				Field<R> f1 = fieldChain[i];
+				Field<R> f2 = fieldChain[i+1];
+				s = s
+					.peek(a -> 
+						{
+							System.out.println("1-> " + a +": "+ a.getValue(f1));
+							System.out.println("2-> " + a +": "+ a.getValue(f2));
+							System.out.println("== " + a.getValue(f1).equals(a.getValue(f2)));
+							System.out.println(a);
+							}
+					)
+					.filter( row -> row.getValue(f1).equals(row.getValue(f2)));
+					System.out.println("-------->");
+			}
+			s = s.filter( row -> row.getValue(fieldChain[fieldChain.length-1]).equals(row.getValue(pkField)));
+			List<Record> result = s.collect(Collectors.toList());
+			return result;
+		}
+
+		public <R> List<Record> listFirstRecordsByPKField(Iterable<Record> src, Field<R> f){
+			return mapRecordsByField(src, f).values().stream().map(a -> a.get(0)).collect(Collectors.toList());
+		}
+		
+		public <K,C> List<C> mapRecordsToObjects(Iterable<Record> src, Field<K> f, ModelMapper mapper, Class<C> clazz){
+			List<C> result = new ArrayList<>();
+			listFirstRecordsByPKField(src, f).stream().forEach( a -> result.add(mapper.map(a, clazz)) );
+			return result;
+		}
+		
+		public <R> List<Record> listRecordsByFieldValue(Iterable<Record> src, Field<R> f, R key){
+			return mapRecordsByField(src, f).get(key);
+		}
+		
+		public <R,C> List<C> listRecordsByPKToObjects(Iterable<Record> src, Field<R> f, ModelMapper mapper, Class<C> clazz, R pk){			
+			List<Record> src2 = listRecordsByFieldValue(src, f, pk);
+			List<C> result = mapRecordsToObjects(src2, f, mapper, clazz);		
+			return result;
+		}
+		
+		public <R,C> List<C> listRecordsByFieldValueToObjects(Iterable<Record> src, Field<R> pkField, Field<R>[] fieldChain, ModelMapper mapper, Class<C> clazz){			
+			List<Record> src2 = listRecordsByPkEqualsField(src, pkField, fieldChain);
+			List<C> result = mapRecordsToObjects(src2, pkField, mapper, clazz);		
+			return result;
+		}
+		
+		public <R,C> List<C> listRecordsByPKToObjects(Map<R, List<Record>> src, Field<R> f, ModelMapper mapper, Class<C> clazz, R pk){			
+			List<Record> src2 = listRecordsByFieldValue(src.get(pk), f, pk);
+			List<C> result = mapRecordsToObjects(src2, f, mapper, clazz);		
+			return result;
+		}
+			
 	@Test
 	//@Transactional
 	@Commit
@@ -3017,7 +3098,7 @@ public class JooqBasicTest {
 									test41_ID.eq(TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID)
 							)
 					)
-					.where(test4_ID.eq((long)1))
+					//.where(test4_ID.eq((long)1))
 					.fetch(); 
 			
 			Result<Record> r = res2;
@@ -3028,31 +3109,30 @@ public class JooqBasicTest {
 			ModelMapper mm4 = new ModelMapper();
 			mm4.getConfiguration().addValueReader(new PrefixValueReader(a4));
 			mm4.getConfiguration().setSourceNameTokenizer(NameTokenizers.UNDERSCORE);
+			
 			ModelMapper mm4mm41 = new ModelMapper();
 			mm4mm41.getConfiguration().addValueReader(new PrefixValueReader(a4_41));
 			mm4mm41.getConfiguration().setSourceNameTokenizer(NameTokenizers.UNDERSCORE);
+			
 			ModelMapper mm41 = new ModelMapper();
 			mm41.getConfiguration().addValueReader(new PrefixValueReader(a41));
 			mm41.getConfiguration().setSourceNameTokenizer(NameTokenizers.UNDERSCORE);
-						
-			
-//			Test4 t4_1 = mm4.map(r.get(0), Test4.class);
-//			Test41 t41_1 = mm41.map(r.get(0), Test41.class);
-//			Test41 t41_2 = mm41.map(r.get(1), Test41.class);
 
+
+			String mainIDAlias = a4+"_id";			
 			
-			List<Record> l4tmp = res2
-					.stream()
-					.collect(Collectors.groupingBy( a -> a.field(a4+"_id")))
-					.values()
-					.stream()
-					.map( a -> (Record)a.get(0))
-					.collect(Collectors.toList());
-			List<Test4> l4 = new ArrayList<>();
-			for(Record rec: l4tmp)
-			{
-				l4.add(mm4.map(r.get(0), Test4.class));
+			List<Test4> l4 = mapRecordsToObjects(res2, test4_ID, mm4, Test4.class);
+			Map<Long, List<Record>> map441 =  mapRecordsByField(res2, TEST4_SUB_OBJ_SET_TEST4_ID);
+			for(Test4 o4: l4) {
+				/*List<Record> jl = map441.get(Long.valueOf(o4.getId()));
+				for(Record jr: jl) {
+					List<Test41> l41 = listRecordsByPKToObjects(res2, test41_ID, mm41, Test41.class, Long.valueOf( jr.getValue(TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID) ));
+					o4.getSubObjSet().addAll(l41);
+				}*/				
+				List<Test41> l41 = listRecordsByFieldValueToObjects(res2, test41_ID, new Field[]{test4_ID, TEST4_SUB_OBJ_SET_TEST4_ID ,TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID}, mm41, Test41.class);
+				o4.getSubObjSet().addAll(l41);
 			}
+			
 			
 			for(Test4 t4: l4)
 			{
@@ -3072,29 +3152,18 @@ public class JooqBasicTest {
 										.equals(recSub.getValue(TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID.getName()).toString()))
 								.collect(Collectors.toList());
 					if (rec41.size()>1) 
-						throw new Exception("Za du żo podobiektów");
+						throw new Exception("Za dużo podobiektów");
 					t4.getSubObjSet().add(mm41.map(rec41.get(0), Test41.class));
 				}					
 			}
 			
-			
-			
-			//em.
-			Test4 test4_1 = t4d.getTest4Test41ById((long)1);
-			
-//			r.intoMap(TEST1.ID, Test1Record.class);
-//			r.intoMap(TEST2.ID, Test2Record.class);
-//			r.intoMap(TEST1.ID, Test1.class);
-//			r.intoMap(TEST2.ID, Test2.class);
-//			r.intoMap(TEST1.ID, com.my.pl.jooq.db1.tables.pojos.Test1.class);
-//			r.intoMap(TEST2.ID, com.my.pl.jooq.db1.tables.pojos.Test2.class);
 			int t = 0;
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
+	}	
+
 	//@Test
 	//@Transactional
 	@Commit
