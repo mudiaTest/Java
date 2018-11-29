@@ -2,10 +2,15 @@ package com.my.pl.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -27,6 +32,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.logging.log4j.util.Strings;
+import org.javatuples.Pair;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.modelmapper.ModelMapper;
@@ -76,7 +82,8 @@ public class RecordStreamImpl<TT> implements RecordStream<TT>{
 
 	@Override
 	public RecordStream<TT> filter(Predicate<? super TT> arg0) {
-		return new RecordStreamImpl<TT>(stream.filter(arg0));
+		RecordStreamImpl<TT> r = new RecordStreamImpl<TT>(stream.filter(arg0));
+		return r;
 	}
 
 	@Override
@@ -255,22 +262,30 @@ public class RecordStreamImpl<TT> implements RecordStream<TT>{
 	 */
 	
 	@Override
-	public <R> RecordStream<List<TT>> recordsGroup(Field<R> field) {
+	public <R> RecordStreamImpl<List<TT>> recordsGroup(Field<R> field) {
 		Stream<List<TT>> r = 
 			stream
 			.collect(Collectors.groupingBy( rec -> ((Record) rec).get(field)))
 			.values().stream();
-		
-		return new RecordStreamImpl<>(r);
+		RecordStreamImpl<List<TT>> result = new RecordStreamImpl<>(r);
+		result.peek(a->{});
+		return result;
 		//return null;
 	}
-		public <R> RecordStream<TT> recordsGroup2(Field<R> field) {
+		public <R> RecordStreamImpl<TT> recordsGroup2(Field<R> field) {
 			Stream<TT> r = 
 					stream
 					.collect(Collectors.groupingBy( rec -> ((Record) rec).get(field)))
 					.values().stream().findFirst().get().stream();
 			
 			return new RecordStreamImpl<>(r);
+			//return null;
+		}
+		public <R> RecordStream<String> recordsGroup3(Field<R> field) {
+			List<String> l = new ArrayList<>();
+			
+			
+			return new RecordStreamImpl<>(l.stream());
 			//return null;
 		}
 	
@@ -282,7 +297,7 @@ public class RecordStreamImpl<TT> implements RecordStream<TT>{
 		}
 	
 	@Override
-	public <R> RecordStream<List<TT>> recordsGroup(Field[] fields) {
+	public <R> RecordStreamImpl<List<TT>> recordsGroup(Field[] fields) {
 		Stream<List<TT>> r = 
 			stream
 			.collect(Collectors.groupingBy( rec -> {
@@ -297,14 +312,14 @@ public class RecordStreamImpl<TT> implements RecordStream<TT>{
 	}
 
 	@Override
-	public <R> RecordStream<TT> recordsFilter(Field<R> field, R value) {
+	public <R> RecordStreamImpl<TT> recordsFilter(Field<R> field, R value) {
 		Stream<TT> r = stream
 			.filter(rec -> ((Record) rec).getValue(field).equals(value));
 		return new RecordStreamImpl<TT>(r);
 	}
 	
 	@Override
-	public <R,S> RecordStream<TT> recordsFilter(Field[][] fieldPairs){
+	public <R,S> RecordStreamImpl<TT> recordsFilter(Field[][] fieldPairs){
 		Stream<TT> r = new RecordStreamImpl<TT>(stream)
 			.filter(rec -> 
 			{
@@ -318,14 +333,14 @@ public class RecordStreamImpl<TT> implements RecordStream<TT>{
 	}
 	
 	@Override
-	public <R> RecordStream<TT> recordsFilter(Field<R> field1, Field<R> field2){
+	public <R> RecordStreamImpl<TT> recordsFilter(Field<R> field1, Field<R> field2){
 		Stream<TT> r = new RecordStreamImpl<TT>(stream)
 				.filter(rec -> ((Record) rec).get(field1).equals(((Record) rec).get(field2)));
 		return new RecordStreamImpl<TT>(r);
 	}
 	
 	@Override
-	public <R> RecordStream<TT> recordsDistinct(Field<R> field){
+	public <R> RecordStreamImpl<TT> recordsDistinct(Field<R> field){
 		Stream<TT> r = new RecordStreamImpl<TT>(stream)
 			.recordsGroup(field)
 			.map(lst -> lst.get(0));
@@ -333,7 +348,7 @@ public class RecordStreamImpl<TT> implements RecordStream<TT>{
 	}
 	
 	@Override
-	public <R> RecordStream<TT> recordsDistinct(Field[] fields){
+	public <R> RecordStreamImpl<TT> recordsDistinct(Field[] fields){
 		Stream<TT> r = new RecordStreamImpl<TT>(stream)
 			.recordsGroup(fields)
 			.map(lst -> lst.get(0));
@@ -341,13 +356,13 @@ public class RecordStreamImpl<TT> implements RecordStream<TT>{
 	}
 
 	@Override
-	public <C> RecordStream<C> objectsMap(ModelMapper mapper, Class<C> clazz) {
+	public <C> RecordStreamImpl<C> objectsMap(ModelMapper mapper, Class<C> clazz) {
 		Stream<C> r = stream.map(rec -> mapper.map(rec, clazz));
 		return new RecordStreamImpl<C>(r);
 	}
 	
 	@Override
-	public <R,C> RecordStream<C> objectsDistinctMap(Field[] fields, ModelMapper mapper, Class<C> clazz){
+	public <R,C> RecordStreamImpl<C> objectsDistinctMap(Field[] fields, ModelMapper mapper, Class<C> clazz){
 		Stream<C> r = new RecordStreamImpl<TT>(stream)
 			.recordsDistinct(fields)
 			.objectsMap(mapper, clazz);
@@ -359,28 +374,58 @@ public class RecordStreamImpl<TT> implements RecordStream<TT>{
 			if (fields!=null)
 				key = keyOfFields((Record)rec, fields);
 			if (fields==null || !keyList.contains(key)) {
-				C obj = mapper.map(rec, clazz);
-				lst.add( mapper.map(rec, clazz));
+				C obj = mapRecordToObj(rec, mapper, clazz);
+				lst.add( obj);
 				if (fields!=null)
 					keyList.add(key);
 			}
 		}
+		
+		private <C> C mapRecordToObj(TT rec,ModelMapper mapper, Class<C> clazz){
+			return mapper.map(rec, clazz);
+		}
 	
 	@Override
-	public <R,C> RecordStream<TT> mapRecordsToObjectList(List<C> lst, ExtModelMapper emm){
+	public <R,C> RecordStreamImpl<Pair<C,List<TT>>> mapRecordsToObjectList(List<C> lst, ExtModelMapper emm){
 		Field[] fields = emm.fields;
 		ModelMapper mapper = emm.mapper;
 		Class<C> clazz = emm.clazz;
 		
-		List<String> keyList = new ArrayList<>();
-//		RecordStream<TT> r = 
-		Stream<TT> r = 
-			stream
-			.peek( rec -> {
-				mapRecord(rec, lst, fields, mapper, clazz, keyList);
-			});
-		//return r;
-		return new RecordStreamImpl<TT>(r);
+		Map<String, Pair<C,List<TT>>> m = new HashMap<>(); 		
+		stream
+		.peek( rec -> {
+			String key = keyOfFields((Record)rec, fields);
+			if (!m.containsKey(key))
+			{
+				List<TT> l = new ArrayList<>() {{add(rec);}};
+				m.put(key, new Pair(mapRecordToObj(rec, mapper, clazz), l) );
+			}
+			else
+				m.get(key).getValue1().add(rec);
+		})
+		.toArray();
+		return new RecordStreamImpl<Pair<C,List<TT>>>( m.values().stream() );
+	}
+	
+	@Override
+	public <R,C> RecordStreamImpl<Pair<C,Collection<TT>>> mapRecordsToObjectList(Collection<C> lst, ExtModelMapper emm){
+		Field[] fields = emm.fields;
+		ModelMapper mapper = emm.mapper;
+		Class<C> clazz = emm.clazz;
+		
+		Map<String, Pair<C,Collection<TT>>> m = new HashMap<>(); 		
+		stream
+		.peek( rec -> {
+			String key = keyOfFields((Record)rec, fields);
+			if (!m.containsKey(key)) {
+				List<TT> l = new ArrayList<>() {{add(rec);}};
+				m.put(key, new Pair(mapRecordToObj(rec, mapper, clazz), l)  );
+			}
+			else
+				m.get(key).getValue1().add(rec);
+		}).
+		toArray();
+		return new RecordStreamImpl<Pair<C,Collection<TT>>>( m.values().stream() );
 	}
 
 	

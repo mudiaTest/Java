@@ -89,6 +89,9 @@ dependencies {
 	compile 'org.modelmapper.extensions:modelmapper-jooq:2.3.0'
 	compile 'org.modelmapper.extensions:modelmapper-spring:2.3.0'
 	
+	//tuple
+	compile 'org.javatuples:javatuples:1.2'
+	
 	jooqRuntime project(':custom-generator')
 }
 
@@ -104,8 +107,8 @@ jooq {
   db1(sourceSets.main) {//nazwa funkcji jest dowolna
     jdbc {
       driver = 'org.postgresql.Driver'
-      //url = 'jdbc:postgresql://Ursus/ll/hibernate05_db1'
-      url = 'jdbc:postgresql://localhost:5432/ll/Hibernate05_db1'
+      url = 'jdbc:postgresql://Ursus/ll/hibernate05_db1'
+      //url = 'jdbc:postgresql://localhost:5432/ll/Hibernate05_db1'
       user = 'system'
       password = 'system'
       /*properties {
@@ -164,8 +167,8 @@ jooq {
   db2(sourceSets.main) {//nazwa funkcji jest dowolna
     jdbc {
       driver = 'org.postgresql.Driver'
-      //url = 'jdbc:postgresql://Ursus/ll/hibernate05_db2'
-      url = 'jdbc:postgresql://localhost:5432/ll/Hibernate05_db2'
+      url = 'jdbc:postgresql://Ursus/ll/hibernate05_db2'
+      //url = 'jdbc:postgresql://localhost:5432/ll/Hibernate05_db2'
       user = 'system'
       password = 'system'
       /*properties {

@@ -76,6 +76,8 @@ import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -96,6 +98,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.assertj.core.util.Arrays;
 import org.jooq.CommonTableExpression;
 import org.jooq.Cursor;
 import org.jooq.DSLContext;
@@ -188,6 +191,7 @@ import com.my.pl.utils.ExtModelMapper;
 import com.my.pl.utils.IntToStringConverter;
 import com.my.pl.utils.NewTransactionWrapper;
 import com.my.pl.utils.PrefixValueReader;
+import com.my.pl.utils.RecordStream;
 import com.my.pl.utils.RecordStreamImpl;
 
 import lombok.Getter;
@@ -2983,10 +2987,6 @@ public class JooqBasicTest {
 		}
 	}
 	
-	private class RecordStream extends ArrayList{
-		
-	}
-	
 		
 		/*
 		 * Grupowanie rekordów po wartości pola 
@@ -3083,6 +3083,10 @@ public class JooqBasicTest {
 			result.getConfiguration().setSourceNameTokenizer(NameTokenizers.UNDERSCORE);
 			return result;
 		}
+		
+		public RecordStream<Record> recStream(Collection<Record> c){
+			return new RecordStreamImpl<Record>(c.stream());
+		}
 	@Test
 	//@Transactional
 	@Commit
@@ -3148,67 +3152,29 @@ public class JooqBasicTest {
 			mm41.getConfiguration().addValueReader(new PrefixValueReader(a41));
 			mm41.getConfiguration().setSourceNameTokenizer(NameTokenizers.UNDERSCORE);*/
 			
-			RecordStreamImpl s = new RecordStreamImpl<>(res2.stream());
+			RecordStream<Record> s = new RecordStreamImpl<>(res2.stream());
 			//Object[] a = s.objectsDistinctMap(test4_ID, mmByPrefix(a4), Test4.class).toArray();
 			
 			ExtModelMapper mm4 = new ExtModelMapper(Test4.class, mmByPrefix(a4), test4_ID);
+			ExtModelMapper mm41 = new ExtModelMapper(Test41.class, mmByPrefix(a41), test41_ID);
 			
 			//s
 			//	.filter(a->{})
 			
-			List<Test4> l4 = new ArrayList<>();
-			Object[] y = 
-					s
-					.mapRecordsToObjectList(l4, mm4)
-					.recordsGroup(test4_ID)
-					//.recordsGroup2(test4_ID)
-					.peek(a -> System.out.println(a.getClass().getName()))
-					.toArray()
-					;
-				;
-//			Object[] b = s.recordsGroup(test41_ID, mmByPrefix(a41), Test41.class);
 			
-			//List<Test4> l4 = objectListRecordsByPK(res2, test4_ID, mmByPrefix(a4), Test4.class);
+			
+			List<Test4> l4 = new ArrayList<>();
+			Object[] y = s
+				.mapRecordsToObjectList(l4, mm4)
+				.peek(pair-> {
+					recStream(pair.getValue1()).mapRecordsToObjectList(pair.getValue0().getSubObjSet(), mm41);
+				}
+					)	
+				.toArray()
+				;
+			;
 			
 			Map<Long, List<Record>> map441 =  mapFilterRecordsByFieldPairsByKeyField(res2, test41_ID, new Field[][]{{test4_ID, TEST4_SUB_OBJ_SET_TEST4_ID} ,{TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID, test41_ID}});
-			
-//			for(Test4 o4: l4) {			
-//				List<Test41> l41 = listRecordsByFieldValueToObjects(res2, test41_ID, new Field[][]{{test4_ID, TEST4_SUB_OBJ_SET_TEST4_ID} ,{TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID, test41_ID}}, mmByPrefix(a41), Test41.class);
-//				o4.getSubObjSet().addAll(l41);
-//			}
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-//			for(Test4 t4: l4)
-//			{
-//				List<Record> l4_41tmp = res2
-//						.stream()
-//						.filter(a -> 
-//							a.getValue(TEST4_SUB_OBJ_SET_TEST4_ID.getName()).toString().equals(Long.valueOf(t4.getId()).toString()) 
-//							)
-//						.collect(Collectors.toList());
-//				List<Record> rec41;
-//				for(Record recSub: l4_41tmp) {
-//					rec41 = 
-//							res2
-//								.stream()
-//								.filter(
-//										a -> a.getValue(TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID.getName()).toString()
-//										.equals(recSub.getValue(TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID.getName()).toString()))
-//								.collect(Collectors.toList());
-//					if (rec41.size()>1) 
-//						throw new Exception("Za dużo podobiektów");
-//					t4.getSubObjSet().add(mmByPrefix(a41).map(rec41.get(0), Test41.class));
-//				}					
-//			}
 			
 			int t = 0;
 		} 
