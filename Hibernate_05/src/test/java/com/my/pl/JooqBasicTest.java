@@ -189,6 +189,7 @@ import com.my.pl.listener.RecordListener2;
 import com.my.pl.listener.VisitListener;
 import com.my.pl.utils.ExtModelMapper;
 import com.my.pl.utils.IntToStringConverter;
+import com.my.pl.utils.MapperUtils;
 import com.my.pl.utils.NewTransactionWrapper;
 import com.my.pl.utils.PrefixValueReader;
 import com.my.pl.utils.RecordStream;
@@ -234,7 +235,8 @@ public class JooqBasicTest {
 	@Autowired
 	@Qualifier("dslDb2")
 	DefaultDSLContext dsl2;	
-		
+	MapperUtils mu;	
+	
 	private void fillTest1() {
 		Test1 t1 = new Test1();
 		t1.setId(1);
@@ -2987,106 +2989,6 @@ public class JooqBasicTest {
 		}
 	}
 	
-		
-		/*
-		 * Grupowanie rekordów po wartości pola 
-		 */
-		public <R> Map<R, List<Record>> recordsByField(Iterable<Record> src, Field<R> field){
-			Map<R, List<Record>> result = StreamSupport.stream(src.spliterator(), false)
-				.collect(Collectors.groupingBy( a -> a.get(field)));
-			return result;
-		}
-		
-		/*
-		 * Filtrowanie rekordów dla wartości pola
-		 */
-		public <R> List<Record> recordsByFieldValue(Iterable<Record> src, Field<R> field, R value){
-			List<Record> result = StreamSupport.stream(src.spliterator(), false)
-				.filter(rec -> rec.getValue(field).equals(value))
-				.collect(Collectors.toList());
-			return result;
-		}
-		
-		/*
-		 * Mapowanie rekordów na obiekty zadanej klasy
-		 */
-		public <R,C> List<C> objectsByMapper(Iterable<Record> src, ModelMapper mapper, Class<C> clazz){						
-			List<C> result = new ArrayList<>();
-			StreamSupport.stream(src.spliterator(), false).forEach( rec -> result.add(mapper.map(rec, clazz)) );
-			return result;
-		}
-		
-		
-			public <R> Map<R, List<Record>> mapFilterRecordsByFieldPairsByKeyField(Iterable<Record> src, Field<R> keyField, Field<R>[][] fieldChain){		
-				return recordsByField(listFilterRecordsByFieldPairs(src, fieldChain), keyField);			
-			}
-	
-			public <R> List<Record> listFirstRecordsByPKField(Iterable<Record> src, Field<R> f){
-				return recordsByField(src, f).values().stream().map(a -> a.get(0)).collect(Collectors.toList());
-			}
-			
-				public <K,C> List<C> objectListRecordsByPK(Iterable<Record> src, Field<K> pk, ModelMapper mapper, Class<C> clazz){
-					List<C> result = new ArrayList<>();
-					listFirstRecordsByPKField(src, pk).stream().forEach( a -> result.add(mapper.map(a, clazz)) );
-					return result;
-				}
-				
-				public <K,C> List<C> objectListRecordsByPKFilter(Iterable<Record> src, Field<K> pk, ModelMapper mapper, Class<C> clazz){
-					List<C> result = new ArrayList<>();
-					listFirstRecordsByPKField(src, pk).stream().forEach( a -> result.add(mapper.map(a, clazz)) );
-					return result;
-				}
-			
-			public <R> List<Record> recordListRecordsByFieldValue(Iterable<Record> src, Field<R> f, R key){
-				return recordsByField(src, f).get(key);
-			}
-		
-				public <R,C> List<C> objectListRecordsByPK(Iterable<Record> src, Field<R> f, ModelMapper mapper, Class<C> clazz, R pk){			
-					List<Record> src2 = recordListRecordsByFieldValue(src, f, pk);
-					List<C> result = objectListRecordsByPK(src2, f, mapper, clazz);		
-					return result;
-				}
-				/*
-				public <R,C> List<C> listRecordsByFieldValueToObjects(Iterable<Record> src, Field<R> pkField, Field<R>[][] fieldChain, ModelMapper mapper, Class<C> clazz){			
-					List<Record> src2 = listFilterRecordsByFieldPairs(src, pkField, fieldChain);
-					List<C> result = mapRecordsToObjects(src2, pkField, mapper, clazz);		
-					return result;
-				}*/
-				
-				public <R,C> List<C> listRecordsByPKToObjects(Map<R, List<Record>> src, Field<R> f, ModelMapper mapper, Class<C> clazz, R pk){			
-					List<Record> src2 = recordListRecordsByFieldValue(src.get(pk), f, pk);
-					List<C> result = objectListRecordsByPK(src2, f, mapper, clazz);		
-					return result;
-				}
-			
-		public <R,K> List<Record> listFilterRecordsByFieldPairs(Iterable<Record> src, Field<R>[][] fieldChain){					
-			Stream<Record> s = StreamSupport.stream(src.spliterator(), false);
-			
-			List<Record> result = StreamSupport.stream(src.spliterator(), false)
-					.filter( r -> {
-						Boolean satisfy = true;
-						for(int i=0; i<fieldChain.length-1; i++) 
-							satisfy = satisfy && r.getValue(fieldChain[i][0]).equals(r.getValue(fieldChain[i][1]));				
-						return satisfy;
-					})
-					.collect(Collectors.toList());
-			return result;
-		}
-		
-		public <R,C> void fillList(Map<R, List<Record>> src, List<C> dst, Class<C> clazz) {
-			
-		}
-		
-		public ModelMapper mmByPrefix(String prefix) {
-			ModelMapper result = new ModelMapper();
-			result.getConfiguration().addValueReader(new PrefixValueReader(prefix));
-			result.getConfiguration().setSourceNameTokenizer(NameTokenizers.UNDERSCORE);
-			return result;
-		}
-		
-		public RecordStream<Record> recStream(Collection<Record> c){
-			return new RecordStreamImpl<Record>(c.stream());
-		}
 	@Test
 	//@Transactional
 	@Commit
@@ -3119,48 +3021,28 @@ public class JooqBasicTest {
 			Table<Test41Record> test41 = (Table<Test41Record>) getAliasedTable(TEST41, "");
 			Field<Long> test41_ID = getAliasedField(TEST41.ID, a41);
 			
+			ExtModelMapper mm4 = new ExtModelMapper(Test4.class, mu.mmByPrefix(a4), test4_ID);
+			ExtModelMapper mm41 = new ExtModelMapper(Test41.class, mu.mmByPrefix(a41), test41_ID);
+			
 			/*
-			 * 
+			 * Zapytanie
 			 */
 			Result<Record> res2 = create
-					.select()					
-					.from(
-							test4
-							.leftJoin(test4SubObjSet)
-							.on(
-									test4_ID.eq(TEST4_SUB_OBJ_SET_TEST4_ID)
-							)
-							.leftJoin(test41)
-							.on(
-									test41_ID.eq(TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID)
-							)
+				.select()					
+				.from(
+					test4
+					.leftJoin(test4SubObjSet)
+					.on(
+						test4_ID.eq(TEST4_SUB_OBJ_SET_TEST4_ID)
 					)
-					//.where(test4_ID.eq((long)1))
-					.fetch(); 
-			
-			Result<Record> r = res2;
-			
-			/*
-			 * Definiowanie mapperów dla poszczególnych tabel
-			 */
-			
-			/*ModelMapper mm4mm41 = new ModelMapper();
-			mm4mm41.getConfiguration().addValueReader(new PrefixValueReader(a4_41));
-			mm4mm41.getConfiguration().setSourceNameTokenizer(NameTokenizers.UNDERSCORE);
-			
-			ModelMapper mm41 = new ModelMapper();
-			mm41.getConfiguration().addValueReader(new PrefixValueReader(a41));
-			mm41.getConfiguration().setSourceNameTokenizer(NameTokenizers.UNDERSCORE);*/
+					.leftJoin(test41)
+					.on(
+						test41_ID.eq(TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID)
+					)
+				)
+				.fetch(); 
 			
 			RecordStream<Record> s = new RecordStreamImpl<>(res2.stream());
-			//Object[] a = s.objectsDistinctMap(test4_ID, mmByPrefix(a4), Test4.class).toArray();
-			
-			ExtModelMapper mm4 = new ExtModelMapper(Test4.class, mmByPrefix(a4), test4_ID);
-			ExtModelMapper mm41 = new ExtModelMapper(Test41.class, mmByPrefix(a41), test41_ID);
-			
-			//s
-			//	.filter(a->{})
-			
 			
 			
 			List<Test4> l4 = new ArrayList<>();
@@ -3179,8 +3061,6 @@ public class JooqBasicTest {
 				.toArray()
 				;
 			;
-			
-			Map<Long, List<Record>> map441 =  mapFilterRecordsByFieldPairsByKeyField(res2, test41_ID, new Field[][]{{test4_ID, TEST4_SUB_OBJ_SET_TEST4_ID} ,{TEST4_SUB_OBJ_SET_SUB_OBJ_SET_ID, test41_ID}});
 			
 			int t = 0;
 		} 
