@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import org.springframework.data.domain.AfterDomainEventPublication;
 import org.springframework.data.domain.DomainEvents;
@@ -29,5 +30,7 @@ public class Test4 {
 	private long id;
 	private int intVal1;
 	@OneToMany(cascade=CascadeType.ALL)
-	private Set<Test41> subObjSet = new HashSet<>();;
+	private Set<Test41> subObjSet = new HashSet<>();
+	@Transient
+	private Set<Test41> subObjSet2 = new HashSet<>();
 }

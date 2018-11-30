@@ -1,5 +1,7 @@
 package com.my.pl.utils;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -385,30 +387,32 @@ public class RecordStreamImpl<TT> implements RecordStream<TT>{
 			return mapper.map(rec, clazz);
 		}
 	
+//	@Override
+//	public <R,C> RecordStreamImpl<Pair<C,List<TT>>> mapRecordsToObjectCollection(List<C> lst, ExtModelMapper emm){
+//		Field[] fields = emm.fields;
+//		ModelMapper mapper = emm.mapper;
+//		Class<C> clazz = emm.clazz;
+//		
+//		Map<String, Pair<C,List<TT>>> m = new HashMap<>(); 		
+//		stream
+//		.peek( rec -> {
+//			String key = keyOfFields((Record)rec, fields);
+//			if (!m.containsKey(key))
+//			{
+//				List<TT> l = new ArrayList<>() {{add(rec);}};
+//				C obj = mapRecordToObj(rec, mapper, clazz);
+//				m.put(key, new Pair(obj, l) );
+//				lst.add(obj);
+//			}
+//			else
+//				m.get(key).getValue1().add(rec);
+//		})
+//		.toArray();
+//		return new RecordStreamImpl<Pair<C,List<TT>>>( m.values().stream() );
+//	}
+			
 	@Override
-	public <R,C> RecordStreamImpl<Pair<C,List<TT>>> mapRecordsToObjectList(List<C> lst, ExtModelMapper emm){
-		Field[] fields = emm.fields;
-		ModelMapper mapper = emm.mapper;
-		Class<C> clazz = emm.clazz;
-		
-		Map<String, Pair<C,List<TT>>> m = new HashMap<>(); 		
-		stream
-		.peek( rec -> {
-			String key = keyOfFields((Record)rec, fields);
-			if (!m.containsKey(key))
-			{
-				List<TT> l = new ArrayList<>() {{add(rec);}};
-				m.put(key, new Pair(mapRecordToObj(rec, mapper, clazz), l) );
-			}
-			else
-				m.get(key).getValue1().add(rec);
-		})
-		.toArray();
-		return new RecordStreamImpl<Pair<C,List<TT>>>( m.values().stream() );
-	}
-	
-	@Override
-	public <R,C> RecordStreamImpl<Pair<C,Collection<TT>>> mapRecordsToObjectList(Collection<C> lst, ExtModelMapper emm){
+	public <R,C> RecordStreamImpl<Pair<C,Collection<TT>>> mapRecordsToObjectCollection(Collection<C> lst, ExtModelMapper emm){
 		Field[] fields = emm.fields;
 		ModelMapper mapper = emm.mapper;
 		Class<C> clazz = emm.clazz;
@@ -419,13 +423,153 @@ public class RecordStreamImpl<TT> implements RecordStream<TT>{
 			String key = keyOfFields((Record)rec, fields);
 			if (!m.containsKey(key)) {
 				List<TT> l = new ArrayList<>() {{add(rec);}};
-				m.put(key, new Pair(mapRecordToObj(rec, mapper, clazz), l)  );
+				C obj = mapRecordToObj(rec, mapper, clazz);
+				m.put(key, new Pair(obj, l) );
+				lst.add(obj);
 			}
 			else
 				m.get(key).getValue1().add(rec);
 		}).
 		toArray();
 		return new RecordStreamImpl<Pair<C,Collection<TT>>>( m.values().stream() );
+	}
+		
+		public static java.lang.reflect.Field getField(String name, Class<?> type) {
+			java.lang.reflect.Field field = null;
+			try {
+				field = type.getField(name);
+			}
+			catch(NoSuchFieldException e){
+				if (type.getSuperclass() != null)
+					field = getField(name, type.getSuperclass());
+			}			
+			return field;
+		}
+		
+		public static java.lang.reflect.Method getMethod(String name, Class<?> type) {
+			java.lang.reflect.Method method = null;
+			try {
+				method = type.getMethod(name);
+			}
+			catch(NoSuchMethodException e){
+				if (type.getSuperclass() != null)
+					method = getMethod(name, type.getSuperclass());
+			}			
+			return method;
+		}		
+
+		private <C> Collection<C> getCollection(String name, Object obj){
+			/*
+			 * Field to tylko reprezentacja (zbiór danych) i polu a nie samo pole
+			 */
+//			java.lang.reflect.Field f = null;
+//			try {
+////				java.lang.reflect.Field[] g = obj.getClass().getFields();
+////				String n = g[0].getName();
+//				f = obj.getClass().getDeclaredField(name);
+//			} catch (NoSuchFieldException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (SecurityException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+			
+			java.lang.reflect.Field f = null;
+			try{
+				f = getField(name, obj.getClass());
+			}
+			catch(SecurityException e){
+				e.printStackTrace();
+			}
+			
+			if ((f != null) && 
+				/*
+				 * Sprawdzanie, czy f implementuje Collection
+				 */
+				Collection.class.isAssignableFrom(f.getType()) && 
+				/*
+				 * Sprawdzanie, czy pole jest prywatne
+				 */
+				(!Modifier.isPrivate(f.getModifiers())) ){
+				/*
+				 * Field to tylko reprezentacja (zbiór danych) o polu a nie samo pole
+				 */
+				try {
+					return (Collection<C>)f.get(obj);
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+					return null;
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+					return null;
+				}
+			}
+			else 
+			{
+				java.lang.reflect.Method m = null;
+				try{
+					m = getMethod(name, obj.getClass());
+				}
+				catch(SecurityException e){
+					e.printStackTrace();
+				}
+				if ((m != null) && 
+					/*
+					 * Sprawdzanie, czy f implementuje Collection
+					 */
+					Collection.class.isAssignableFrom(m.getReturnType()) && 
+					/*
+					 * Sprawdzanie, czy pole jest prywatne
+					 */
+					(!Modifier.isPrivate(m.getModifiers())) ){
+						try {
+							/*
+							 * m to reprezentacja metody
+							 * m.invoke(obj, x, y, ...) -> obj.m(x, y, ...)
+							 */
+							Object q = m.invoke(obj, null);
+							Collection<C> w = (Collection<C>)m.invoke(obj, null);
+							return w;
+						} catch (IllegalAccessException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							return null;
+						} catch (IllegalArgumentException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							return null;
+						} catch (InvocationTargetException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+							return null;
+						}
+				}
+				else
+					return null;
+			}
+		}
+		
+		public RecordStream<TT> recStream(Collection<TT> c){
+			return new RecordStreamImpl<TT>(c.stream());
+		}
+
+	@Override
+	public <R, C, D> RecordStreamImpl<Pair<D,Collection<TT>>> mapRecordsToSubObjectCollection(String collectionName,
+			ExtModelMapper emm) {
+
+		List<Pair<D,Collection<TT>>> lst = new ArrayList<>();
+		stream
+		.peek( pair -> {
+			Pair<D, Collection<TT>> p = (Pair<D, Collection<TT>>)pair;
+			Collection<C> c = getCollection(collectionName, p.getValue0());
+			recStream(p.getValue1()).mapRecordsToObjectCollection(c, emm);
+			lst.add(p);
+		})
+		.toArray()
+		;
+		//return new RecordStreamImpl<TT>(stream);
+		return new RecordStreamImpl<Pair<D,Collection<TT>>>( lst.stream() );
 	}
 
 	

@@ -3165,11 +3165,17 @@ public class JooqBasicTest {
 			
 			List<Test4> l4 = new ArrayList<>();
 			Object[] y = s
-				.mapRecordsToObjectList(l4, mm4)
-				.peek(pair-> {
-					recStream(pair.getValue1()).mapRecordsToObjectList(pair.getValue0().getSubObjSet(), mm41);
-				}
-					)	
+				.mapRecordsToObjectCollection(l4, mm4)
+//				.peek(pair-> {
+//					Object o = pair.getValue1();
+//					int t = 0;
+//				})
+				.mapRecordsToSubObjectCollection("getSubObjSet", mm41)
+//				.peek(pair-> {
+//					Object o = pair.getValue1();
+//					int t = 0;
+//				})
+				.mapRecordsToSubObjectCollection("getSubObjSet2", mm41)
 				.toArray()
 				;
 			;

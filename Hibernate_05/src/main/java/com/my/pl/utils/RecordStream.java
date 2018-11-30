@@ -90,8 +90,9 @@ public interface RecordStream<TT> extends Stream<TT>{
 	 * Następnie wypełnia "lst" obiektami zmapowanymi za pomocą "mapper" do klasy "clazz".
 	 */
 //	public <R,C> RecordStream<TT> mapRecordsToObjectList(List<C> lst, ExtModelMapper emm);
-	public <R,C> RecordStream<Pair<C,List<TT>>> mapRecordsToObjectList(List<C> lst, ExtModelMapper emm);
-	public <R,C> RecordStream<Pair<C,Collection<TT>>> mapRecordsToObjectList(Collection<C> lst, ExtModelMapper emm);
+	//public <R,C> RecordStream<Pair<C,List<TT>>> mapRecordsToMasterObjectList(List<C> lst, ExtModelMapper emm);
+	public <R,C> RecordStream<Pair<C,Collection<TT>>> mapRecordsToObjectCollection(Collection<C> lst, ExtModelMapper emm);
+	public <R,C,D> RecordStream<Pair<D,Collection<TT>>> mapRecordsToSubObjectCollection(String collectionName, ExtModelMapper emm);
 	
 	
 	
