@@ -121,8 +121,8 @@ public class PersistenceContextDb1 {
 //	    return new DataSourceTransactionManager(dataSourceDb1());
 //	}
 	 
-	@Bean
-	@Primary
+	//@Bean
+	//@Primary
 	public DataSourceConnectionProvider connectionProviderDb1() {
 	    return new DataSourceConnectionProvider(transactionAwareDataSourceDb1());
 	}
@@ -133,8 +133,8 @@ public class PersistenceContextDb1 {
 	    return new ExceptionTranslator();
 	}*/
 	
-	@Bean
-	@Primary
+	//@Bean
+	//@Primary
 	public DefaultConfiguration configurationDb1() {
 	    DefaultConfiguration jooqConfiguration = new DefaultConfiguration();
 	    jooqConfiguration.set(connectionProviderDb1());
