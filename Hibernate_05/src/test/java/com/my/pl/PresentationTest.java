@@ -65,6 +65,7 @@ import static com.my.pl.jooq.db1.tables.Test2.TEST2;
 import static com.my.pl.jooq.db1.tables.Test11.TEST11;
 import static com.my.pl.jooq.db1.Routines.*;
 import static com.my.pl.jooq.db1.Sequences.*;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.jooq.impl.DSL.name;
 import static org.jooq.impl.DSL.select;
 import static org.jooq.impl.DSL.val;
@@ -120,6 +121,7 @@ import org.jooq.ResultQuery;
 import org.jooq.SQLDialect;
 import org.jooq.Select;
 import org.jooq.SelectConditionStep;
+import org.jooq.SelectHavingStep;
 import org.jooq.Table;
 import org.jooq.TableField;
 import org.jooq.WindowDefinition;
@@ -440,7 +442,7 @@ public class PresentationTest {
 	/*
 	 * Użycie class function - pozwala na stworzenie SQL, ale nie pobranie wyników
 	 */
-//	@Test
+	//@Test
 	@Transactional
 	@Commit
 	public void staticTest() {	
@@ -468,42 +470,56 @@ public class PresentationTest {
 	/*
 	 * Pobieranie rekordu - wynik bez ustalonego typu
 	 */
-//	@Test
-	@Transactional
-	@Commit
+	//@Test
+	//@Transactional
+	//@Commit
 	public void selectTest() {	
-		ntw.inTrans(()->fillTest1());
-		/*
-		 * Tworzenie podłączenia do DB
-		 */
-        try (DSLContext create = getDLSCtx("hibernate05_db1")) {
-        	/*
-        	 * Zapisanie i wysłanie zapytania
-        	 */
-        	Result<Record> result1 = create
-    			.select()
-    			.from(TEST1)
-    			.fetch();
-        	        	
-        	/*
-        	 * Opracowywanie wyników
-        	 */
-        	for (Record r : result1) {
-        	    Long id = r.getValue(TEST1.ID);
-        	    Integer intval1 = r.getValue(TEST1.INT_VAL1);
-        	    System.out.println("ID: " + id + " intval1: " + intval1);
-        	}        	
-        	int t = 0;
-        } 
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+		ntw.inTrans(()->{
+			/*
+			 * Tworzenie podłączenia do DB
+			 */
+			fillTest1();
+			/*
+			 * flush() jest niezbędny, aby opróznić JPAcontext
+			 */
+			em.flush(); 
+			// @formatter:on
+	
+	        //try (DSLContext create = getDLSCtx("hibernate05_db1")) {
+			try(DSLContext create = dsl1) {
+	        	/*
+	        	 * Zapisanie i wysłanie zapytania
+	        	 */
+	        	Result<Record> result1 = create
+	    			.select()
+	    			.from(TEST1)
+	    			.fetch();
+	        	String s2 = create
+		    			.select()
+		    			.from(TEST1)
+		    			.getSQL();
+
+	        	/*
+	        	 * Opracowywanie wyników
+	        	 */
+	        	for (Record r : result1) {
+	        	    Long id = r.getValue(TEST1.ID);
+	        	    Integer intval1 = r.getValue(TEST1.INT_VAL1);
+	        	    System.out.println("ID: " + id + " intval1: " + intval1);
+	        	}        	
+	        	int t = 0;
+	        } 
+	        catch (Exception e) {
+	            e.printStackTrace();
+	        }
+		});
+		int t = 0;
 	}
 	
 	/*
 	 * Pobieranie ustalonego typu
 	 */
-	@Test
+	//@Test
 	@Transactional
 	@Commit
 	public void insertTest() {	
@@ -514,23 +530,24 @@ public class PresentationTest {
 		em.flush();
 		
 		try (
-				//DSLContext create = getDLSCtx("hibernate05_db1")
 				DSLContext create = dsl1;
 				) {
 			/*
 			 * Zapobiega jakiemukolwiek logowaniu
 			 */
-			create.configuration().settings().withExecuteLogging(false);
-			Result<Record> result1 = create
-	    			.select()
-	    			.from(TEST1)
-	    			.fetch();
+			//create.configuration().settings().withExecuteLogging(false);
 			
-			/*for (Record r : result1) {
-				Long id = r.getValue(TEST1.ID);
-				Integer intval1 = r.getValue(TEST1.INT_VAL1);
-				System.out.println("ID: " + id + " intval1: " + intval1);
-			}        	*/
+			Test1Record r = new Test1Record();
+			
+			/*
+			 * Dla prepared string odda ?, dla static  konkretne wartości
+			 */
+			create.configuration().settings().setStatementType(StatementType.STATIC_STATEMENT);
+			
+			String s = create
+	    			.insertInto(TEST1, TEST1.ID, TEST1.INT_VAL1).values((long)99, 98)
+	    			.getSQL();
+
 			int t = 0;
 		} 
 		catch (Exception e) {
@@ -551,7 +568,7 @@ public class PresentationTest {
 					.fetchOne();
 		}
 
-	@Test
+	//@Test
 	//@Transactional
 	@Commit
 	public void selectUpdateWithOptimistocLockingTest() {	
@@ -601,32 +618,34 @@ public class PresentationTest {
 		}
 	}
 	
-	//@Test
+	@Test
 	//@Transactional
 	@Commit
 	public void updatePKTest() {	
-		ntw.inTrans(()->fillTest1());	
-		try (
+		ntw.inTrans(()->{fillTest1();
+		em.flush();
+			try (
 				DSLContext create = dsl1;
-				) {	
-			/*
-			 * Włącza opcję podmiany PK. Bez tej opcji zamiast UPDATE został by wykonany INSERT z nowym PK
-			 */
-			create.settings().withUpdatablePrimaryKeys(true);
-			Test1Record result1 = getTest1Record(create, 1);
-			
-			ntw.inTrans(()->{
-				////result1.setId((long)2);
-				result1.store();
-				////result1.setIntVal1(12);
-				result1.store();
-			});
-			
-			int t = 0;
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+					) {	
+				/*
+				 * Włącza opcję podmiany PK. Bez tej opcji zamiast UPDATE został by wykonany INSERT z nowym PK
+				 */
+				create.settings().withUpdatablePrimaryKeys(true);
+				Test1Record result1 = getTest1Record(create, 1);
+				
+				ntw.inTrans(()->{
+					////result1.setId((long)2);
+					result1.store();
+					////result1.setIntVal1(12);
+					result1.store();
+				});
+				
+				int t = 0;
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	/*
@@ -703,8 +722,9 @@ public class PresentationTest {
 //	}
 	
 	//@Test
+	//@Test
 	//@Transactional
-	@Commit
+	//@Commit
 	public void multipleJoinTheSameTableTest() {	
 		ntw.inTrans(()->fillTest1Test2());	
 		try (
@@ -740,11 +760,14 @@ public class PresentationTest {
 			
 			/*
 			 * proste
+			 * 
+			 * Record2<Long, Integer> oznacza, ze wynikiem są rekory o 2 polach: long,integer
 			 */
-			String s1 = create.select(t1.ID, DSL.count())
+			SelectHavingStep<Record2<Long, Integer>> s1 = create.select(t1.ID, DSL.count())
 					.from(t1)
-					.groupBy(t1.ID)
-					.getSQL();	
+					.groupBy(t1.ID);
+			
+			Result r1 = s1.fetch();
 			
 			/*
 			 * rózne funkce agregujące. Mediana i niżej dostępne od 9.4
@@ -771,7 +794,9 @@ public class PresentationTest {
 				    )
 					.from(t1)
 					.groupBy(t1.ST_VAL2)
-					.getSQL();	
+					.getSQL();
+			
+			Result r2 = create.selectFrom(s2).fetch();
 			
 			/*
 			 * filtrowanie dostępne od 9.4, albo 9.6
@@ -863,6 +888,7 @@ public class PresentationTest {
 				) {	
 			com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
 			
+			create.configuration().settings().setStatementType(StatementType.STATIC_STATEMENT);
 			String s1 = create.select(t1.ID)
 					.from(t1)
 					.orderBy(
@@ -952,15 +978,24 @@ public class PresentationTest {
 			create.settings().setStatementType(StatementType.STATIC_STATEMENT);
 			//Alias
 			com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
+			com.my.pl.jooq.db1.tables.Test2 t2 = TEST2.as("t2");
 			
 			String s1 = create.selectFrom(t1)
 					.union(create.selectFrom(t1))//LIMIT i ORDER BY są implementowane przez J przez odpowiednie obudowywanie podzapytań
 					.except(create.selectFrom(t1).where(t1.ID.gt((long)3)) )
 					.getSQL();	
 			
-			s1 = create.selectFrom(t1)
+			String s2 = create.selectFrom(t1)
 					.where(t1.ID.gt((long)2))
 					.getSQL();	
+			
+			/*
+			 * Poniższe nie skompiluje się, bo liczba kolumn, lub typów jest różna.
+			 */
+//			String s3 = 
+//					create.selectFrom(t1)
+//					.union(create.selectFrom(t2))
+//					.getSQL();	
 			
 			int t = 0;
 		} 
@@ -991,7 +1026,7 @@ public class PresentationTest {
 					.getSQL();
 			
 			/*
-			 * Insert z użyciem SET
+			 * Insert z użyciem SET - kolumny bez podanych wartości będą uzupełniane "null"
 			 */
 			String s2 = create
 					.insertInto(t1)
@@ -1004,6 +1039,7 @@ public class PresentationTest {
 			
 			/*
 			 * Insert z użyciem .onDuplicateKeyUpdate()
+			 * s3 - tylko dla sql, aby wykonać go w bazie
 			 */
 			String s3 = create
 					.insertInto(t1)
@@ -1033,6 +1069,15 @@ public class PresentationTest {
 					.values((long)2, 22, 0)
 					.returning(TEST1.ID, TEST1.INT_VAL1, TEST1.ST_VAL2)
 					.getSQL();
+				/*
+				 * Przykład powyższego
+				 */
+				Result<Test1Record> r5 = create
+						.insertInto(TEST1, TEST1.ID, TEST1.INT_VAL1, TEST1.RV)
+						.values((long)1, 11, 0)
+						.values((long)2, 22, 0)
+						.returning(TEST1.ID, TEST1.INT_VAL1, TEST1.ST_VAL2)
+						.fetch();
 			
 			String s6 = create
 			.insertInto(TEST1, TEST1.ID, TEST1.INT_VAL1, TEST1.RV)
@@ -1043,6 +1088,7 @@ public class PresentationTest {
 			.getSQL();
 			
 			/*
+			 * INSERT FROM SELECT
 			 * Poniższe może dać PK violation w SQL, bo przepisujemy z tej samej tabeli, ale to tyko przykład
 			 */
 			String s7 = create
@@ -1103,7 +1149,7 @@ public class PresentationTest {
 					.getSQL();	
 			
 			/*
-			 * UPDATE FROM SELECT wielu wartości
+			 * UPDATE ROW FROM SELECT wielu wartości
 			 * Zadziała, ale dopiero POSTGRES 9.5 ma to zaimplementowane
 			 */
 			String s4 = create.update(t1)
@@ -1180,6 +1226,12 @@ public class PresentationTest {
 			//Alias
 			com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
 			
+			/*
+			 * POSTGRES nie obsługuje MERGE. Nalezy używać INSERT ... ON CONFLICT, ale to działa tylko od 9.5 wzwyż
+			 */
+			/*
+			 * NIE działają
+			 */
 			String s1 = create
 					.mergeInto(t1)
 					.using(DSL.selectOne())//.usingDual()
@@ -1217,7 +1269,7 @@ public class PresentationTest {
 					.getSQL();			
 			
 			/*
-			 * POSTGRES nie obsługuje MERGE. Nalezy używać INSERT ... ON CONFLICT
+			 * PSQL powyżej 9.5
 			 */
 			String s5 = create
 					.insertInto(TEST1)
@@ -1266,7 +1318,7 @@ public class PresentationTest {
 			/*
 			 * select() pobierze wszystkie kolumny z podzapytania i nada im oryginalne nazwy
 			 * 
-			 * Jeśli nazwy kolumn podamy z palca i pomylimy się, to kolumny zostaną pominięte bez rzycenia błędem
+			 * Jeśli nazwy kolumn podamy z palca i pomylimy się, to kolumny zostaną pominięte bez rzucenia błędem
 			 * 
 			 * JOOQ nie sprawdzi też, czy nazwy podajemy poprawne. Dlatego warto posługiwać się 
 			 * aliasami, zamiast wpisywać z palca - mniejsze prawdopodobieństwo wystąpienia błędu.
@@ -1278,7 +1330,7 @@ public class PresentationTest {
 				.getSQL();
 			
 			/*
-			 * BŁąD - Alias tabeli nadaniy automatycznie, więc jest inny niż alias w SELECT nadany ręcznie
+			 * BŁąD - Alias tabeli nadany automatycznie, więc jest inny niż alias w SELECT nadany ręcznie
 			 */
 			String s23 = create.select(t1.ID)
 				.from(
@@ -1477,7 +1529,7 @@ public class PresentationTest {
 			/*
 			 * Iloczyn karteziański porównijący wszystkie kolumny i tych samych nazwach
 			 */
-			String s3 = create.select()					
+			String s3 = create.select(t1.ID)					
 					.from(t1.naturalJoin(t2))					
 					.getSQL();	
 			
@@ -1536,8 +1588,6 @@ public class PresentationTest {
 		}
 	}
 	
-	//@Test
-	//@Transactional
 	//@Test
 	//@Transactional
 	@Commit
@@ -1771,8 +1821,9 @@ public class PresentationTest {
 			/*
 			 * Przykład restrykcji przy porównywaniu Long i Integer. Konieczne jest castowanie
 			 */
-			String s3 = create.select(/*com.my.pl.jooq.db1.Routines.*/)
+			String s31 = create.select(/*com.my.pl.jooq.db1.Routines.*/)
 					.from(
+							//Poniżej aliasyjemy wynikowa tabelę nazwą funkcji
 							echo3(2).as(e3.getName())
 							.join(t1)
 								/* Poniższe castowanie jest konieczne bo Integer (e2.INTVAL) <> Long (t1.ID)
@@ -1783,6 +1834,27 @@ public class PresentationTest {
 								.on( t1.ID.equal(e3.INTVAL.coerce(Long.class)) )
 					)
 					.getSQL();
+			/*
+			 * Niby to co powyżej, ale nie zadziała !!!
+			 */
+			String s32 = create.select(/*com.my.pl.jooq.db1.Routines.*/)
+					.from(
+							/*
+							 * Do da from "public"."e3"(2).
+							 * Jest to zdecudowanie wada J
+							 */
+							e3.call(2)
+							.join(t1)
+							/* Poniższe castowanie jest konieczne bo Integer (e2.INTVAL) <> Long (t1.ID)
+							 * To jest restrykcja J, bo SQL nie miał by problemu z taką konstrukcją
+							 * Minus dla J ???
+							 */
+//								.on( t1.ID.equal(e3.INTVAL.cast(SQLDataType.BIGINT)) )
+							.on( t1.ID.equal(e3.INTVAL.coerce(Long.class)) )
+							)
+					.getSQL();
+			
+			
 					
 			/*
 			 * Poniższe nie zadziała w J, bo Integer (e2.INTVAL) <> Long (t1.ID)
@@ -1804,6 +1876,7 @@ public class PresentationTest {
 			e.printStackTrace();
 		}
 	}
+
 	
 	//@Test
 	//@Transactional
@@ -1967,7 +2040,8 @@ public class PresentationTest {
 			Select<?> sel13 = create.select().from(TEST1.leftJoin(TEST2).on(TEST1.ID.eq(TEST2.ID)));
 			Select<?> sel2 = create.select().from(TEST1).limit(1);
 			/*
-			 * selectFrom pozwala na oddanie obiekty konkretnej klasy zamiast ?
+			 * selectFrom pozwala na oddanie obiektu konkretnej klasy (TableRecord) zamiast ? (Record)
+			 * selectFrom jest wykorzystywane przy uzywaniu CRUD
 			 */
 			Select<Test1Record> sel3 = create.selectFrom(TEST1).limit(1);
 			
@@ -1975,17 +2049,19 @@ public class PresentationTest {
 			Result<?> r11 = sel1.fetch();
 			//Odda listę typu z kolumny
 			List<Long> r12 = sel1.fetch(TEST1.ID);
-			//Odda listę nieznanego typu
+			//Odda listę nieznanego typu - pobiera wszystko, ale do result wrzuci tylko pierwszą kolumnę
 			List<?> r13 = sel1.fetch(0);
-			//Odda listę wybranego typu
+			//Pomimo, że znamy typ zwracanej wartości, to wymaga rzutowani 
+			//List<Long> r13 = sel1.fetch(0);			
+			//JW, ale z rzutowaniem
 			List<Long> r131 = sel1.fetch(0, Long.class);
-			//Zadziała konwersja, ale ODRADZAM
+			//Test rzutowania na inny typ - Zadziała konwersja, ale ODRADZAM, bo wprowadza zamieszanie
 			List<Double> r132 = sel1.fetch(0, Double.class);
-			//Odda BŁąD konwercji
+			//JW, ale Odda BŁąD konwercji
 			//List<HashMap> r133 = sel1.fetch(0, HashMap.class);
 			//Odda listę nieznanego typu
 			List<?> r14 = sel1.fetch("id");
-			//Odda listę wybranego typu
+			//JW, ale dodatkowo rzutuje - Odda listę wybranego typu
 			List<Long> r141 = sel1.fetch("id", Long.class);
 			
 			//Jw., ale odda Array zamiast list  
@@ -2033,6 +2109,10 @@ public class PresentationTest {
 		try (
 				DSLContext create = dsl1;
 				) {	
+			/*
+			 * Wynikiem bedzie lista, gdzie każdy element listy to jeden wiersz
+			 * Każdy wiersz jest przedsawiony jako mapa string/objest gdzie kluczem jest nazwa pola a obiektem jego wartość
+			 */
 			Select<?> sel1 = create.select().from(TEST1);
 			Select<?> sel11 = create.select(TEST1.asterisk()).from(TEST1);
 			Select<?> sel12 = create.select(TEST1.asterisk(), DSL.val(12.5).as("cst")).from(TEST1);
@@ -2041,12 +2121,15 @@ public class PresentationTest {
 					
 			/* 
 			 * key - kolumna TEST1.ID, typ znany.
-			 * val - wartość kolumny TEST1.ST_VAL2, typ znany.
+			 * val - wartość kolumny TEST1.ST_VAL2.
 			 */
 			List<Map<String, Object>> r1 = sel1.fetchMaps();
 			List<Map<String, Object>> r11 = sel11.fetchMaps();
 			List<Map<String, Object>> r12 = sel12.fetchMaps();
-			List<Map<String, Object>> r13 = sel13.fetchMaps();
+			/*
+			 * Będzie BŁąD, bo pole "id" nie jest unikalne - jestzarówno w Test1 jak i Test2
+			 */
+			//List<Map<String, Object>> r13 = sel13.fetchMaps();
 			
 			int t = 0;
 		} 
@@ -2079,7 +2162,7 @@ public class PresentationTest {
 			Map<Test1, ?> r232 = sel12.fetchMap(Test1.class);
 			Map<Test1, ?> r233 = sel13.fetchMap(Test1.class);
 			/* 
-			 * key - kolumna 1, typ nieznany. Tutaj będzie to Integer
+			 * key - wartość kolumny 1, typ nieznany. Tutaj będzie to Integer
 			 * val - RecordImpl z array "values"
 			 */
 			Map<?, ?> r24 = sel1.fetchMap(1);
@@ -2543,6 +2626,8 @@ public class PresentationTest {
 			//		)
 			//.execute();
 			
+			create.configuration().settings().setStatementType(StatementType.PREPARED_STATEMENT);
+			
 			create.batch(
 				create
 					.insertInto(TEST1, TEST1.ID, TEST1.INT_VAL1, TEST1.ST_VAL2)
@@ -2551,6 +2636,18 @@ public class PresentationTest {
 				.bind((long)8, 1, "g")
 				.bind((long)9, 1, "h")
 				.execute();
+			
+create.configuration().settings().setStatementType(StatementType.STATIC_STATEMENT);
+			
+			create.batch(
+				create
+					.insertInto(TEST1, TEST1.ID, TEST1.INT_VAL1, TEST1.ST_VAL2)
+					.values((Long)null, null, null)
+			)
+				.bind((long)8, 1, "g")
+				.bind((long)9, 1, "h")
+				.execute();
+			
 			
 		} 
 		catch (Exception e) {
@@ -2827,7 +2924,10 @@ public class PresentationTest {
 		}
 		
 		public Table<?> getAliasedTable(Table<?> t, String nr) {
-			return t.as(getTableAlias(t, nr), getPrefixFunction(getTableAlias(t, nr)));
+			return t.as(
+				getTableAlias(t, nr), //opisuje alias tabeli 
+				getPrefixFunction(getTableAlias(t, nr)) //funkcja opisująca sposób budowy aliasu dla pola w tabeli
+			);
 		}
 		
 		public <T> Field<T> getAliasedField(Field<T> f, String nr) {
@@ -2848,8 +2948,10 @@ public class PresentationTest {
 			 * Listenery nie są konieczne do działania aliasowania.
 			 * Pozostałość, która pozwala na debogowanie tworzenia SQL
 			 */
-			create.configuration().set(new DefaultExecuteListenerProvider(new ExecuteListener()));
-			create.configuration().set(new DefaultVisitListenerProvider(new VisitListener()));		
+			//create.configuration().set(new DefaultExecuteListenerProvider(new ExecuteListener()));
+			//create.configuration().set(new DefaultVisitListenerProvider(new VisitListener()));		
+			
+			
 			
 			/*
 			 * Dla uproszczenia definiujemy zmianne
@@ -2860,29 +2962,51 @@ public class PresentationTest {
 			Table<Test1Record> tab2Test1 = (Table<Test1Record>) getAliasedTable(TEST1, "2");
 			Field<Long> tab2Test1_ID = getAliasedField(TEST1.ID, getTableAlias(TEST1, "2"));
 			
+			
+			/*
+			 * Zapytanie
+			 * 
+			 * select 
+				  "test1_1"."test1_1_id", 
+				  "test1_1"."test1_1_int_val1", 
+				  "test1_1"."test1_1_rv", 
+				  "test1_1"."test1_1_st_val2", 
+				  "public"."test2"."id", 
+				  "public"."test2"."int_val1", 
+				  "public"."test2"."rv", 
+				  "public"."test2"."st_val2", 
+				  "test1_2"."test1_2_id", 
+				  "test1_2"."test1_2_int_val1", 
+				  "test1_2"."test1_2_rv", 
+				  "test1_2"."test1_2_st_val2"
+			   from "public"."test1" as "test1_1"("test1_1_id", "test1_1_int_val1", "test1_1_rv", "test1_1_st_val2")
+				  left outer join "public"."test2"
+				     on "test1_1_id" = "public"."test2"."id"
+				  left outer join "public"."test1" as "test1_2"("test1_2_id", "test1_2_int_val1", "test1_2_rv", "test1_2_st_val2")
+				     on "test1_2_id" = "test1_1_id"
+			 */
+			Result<?> r2 = create
+				.select()					
+				.from(
+					tab1Test1 //z aliasem
+					.leftJoin(TEST2) // bez aliasu
+					.on(
+							tab1Test1_ID.eq(TEST2.ID))
+					)
+					.leftJoin(tab2Test1) // z aliasem
+					.on(
+							tab2Test1_ID.eq(tab1Test1_ID)
+					)
+				.fetch(); 
+			
+			
+			
 			/*
 			 * Dla uproszczenia definiujemy aliasy także dla subQuery
 			 */
 			Table<?> subTab4 = create.select().from(TEST4).asTable("Z");
 			Table<?> subTab4Aliased = getAliasedTable(subTab4, "1");
 			Field<?> subTab4Aliased_ID = getAliasedField(subTab4.field("id"), getTableAlias(subTab4, "1"));
-			
-			/*
-			 * Zapytanie
-			 */
-			Result<?> r2 = create
-				.select()					
-				.from(
-					tab1Test1
-					.leftJoin(TEST2)
-					.on(
-							tab1Test1_ID.eq(TEST2.ID))
-					)
-					.leftJoin(tab2Test1)
-					.on(
-							tab2Test1_ID.eq(tab1Test1_ID)
-					)
-				.fetch(); 
 			
 			Result<?> r3 = create
 				.select()					
@@ -3189,7 +3313,7 @@ public class PresentationTest {
 		}
 	}	
 
-	@Test
+	//@Test
 	//@Transactional
 	@Commit
 	public void defaultTest() {	
