@@ -103,7 +103,7 @@ jooq {
 
   version = "${jooq.version}"
   edition = 'OSS'
-  db1(sourceSets.main) {//nazwa funkcji jest dowolna
+  db3(sourceSets.main) {//nazwa funkcji jest dowolna
     jdbc {
       driver = 'org.postgresql.Driver'
       url = 'jdbc:postgresql://Avis/Analit187'
@@ -151,8 +151,8 @@ jooq {
         records = true
         immutablePojos = true
         fluentSetters = true
-        daos = true
-        pojos = true
+        //daos = true
+        //pojos = true
         // ...
       }
       target {

@@ -95,6 +95,7 @@ import org.assertj.core.util.Arrays;
 import org.jooq.CommonTableExpression;
 import org.jooq.Cursor;
 import org.jooq.DSLContext;
+import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.FieldLike;
 import org.jooq.Loader;
@@ -160,6 +161,8 @@ import com.my.pl.db1.domain.Test5;
 import com.my.pl.db1.domain.Test51;
 import com.my.pl.jooq.db3.routines.Lastlpope5;
 import com.my.pl.jooq.db3.routines.Lastlpopefnc1;
+import com.my.pl.jooq.db3.routines.Lastlpopefnc5;
+import com.my.pl.jooq.db3.tables.DbMetadane;
 import com.my.pl.jooq.db3.udt.Tlastlpopebigint;
 import com.my.pl.jooq.db3.udt.records.TlastlpopebigintRecord;
 import com.my.pl.utils.ExtModelMapper;
@@ -399,6 +402,29 @@ public class JooqBasicTest {
 		t2d.save(t2);
 	}
 	
+		private static final String separator = "_";
+		
+		public String getTableAlias(Table<?> table, String nr) {
+			return table.getName() + separator +nr;
+		}
+		
+		public Function<Field<?>, String> getPrefixFunction(String p){
+			Function<Field<?>, String> pr = f -> {
+				return p + separator + f.getName();
+			};
+			return pr;
+		}
+		
+		public Table<?> getAliasedTable(Table<?> t, String nr) {
+			return t.as(getTableAlias(t, nr), getPrefixFunction(getTableAlias(t, nr)));
+		}
+		
+		public <T> Field<T> getAliasedField(Field<T> f, String nr) {
+			return f.as(getPrefixFunction(nr));
+		}
+	
+	
+	
 	private DSLContext getDLSCtx(String dbName) {
 		String userName = "system";
         String password = "system";
@@ -414,7 +440,15 @@ public class JooqBasicTest {
         return result;
 	}
 	
-	//@Test
+		public <R> Field<R> getTlastlpopeRecord(Field<?> fld1, Field<?> fld2, Class<R> clazz){
+			return DSL.cast(DSL.rowField(DSL.row(fld1,fld2)), clazz);
+		}
+		
+		public Field<TlastlpopebigintRecord> getTlastlpopebigintRecord(Field<?> fld1, Field<?> fld2){
+			return DSL.cast(DSL.rowField(DSL.row(fld1,fld2)), TlastlpopebigintRecord.class);
+		}
+	
+	@Test
 	//@Transactional
 	@Commit
 	public void functionTest() {	
@@ -425,94 +459,75 @@ public class JooqBasicTest {
 			// Pozwala na sworzenie SQL z wpisanymi na stałe wartościami - użyte TYLKO w celu debugowania
 			create.settings().setStatementType(StatementType.STATIC_STATEMENT);
 			
-			//Alias
-			//LastLpOpe5 l = Lastlpope5.RETURN_VALUE
-			//com.my.pl.jooq.db1.tables.Test1 t1 = TEST1.as("t1");
-			
-			
-			
-			/*
-			 * Proste wywołanie funkcji
-			 */
-			
-			Table<Record2<Integer, Integer>> tmp = create
-				.select(DSL.val(1).as("a"),DSL.val(1).as("b"))
+			Table<Record2<Long, Integer>> tmpA = create
+				.select(DSL.val(1).cast(Long.class).as("a"),DSL.val(1).cast(Integer.class).as("b"))
 				.union(
-						create.select(DSL.val(2).as("a"),DSL.val(1).as("b"))
+						create.select(DSL.val(2).cast(Long.class).as("a"),DSL.val(1).cast(Integer.class).as("b"))
 						)
 				.union(
-						create.select(DSL.val(1).as("a"),DSL.val(2).as("b"))
+						create.select(DSL.val(1).cast(Long.class).as("a"),DSL.val(2).cast(Integer.class).as("b"))
 						)
 				.union(
-						create.select(DSL.val(2).as("a"),DSL.val(3).as("b"))
+						create.select(DSL.val(2).cast(Long.class).as("a"),DSL.val(3).cast(Integer.class).as("b"))
 						)
 				.union(
-						create.select(DSL.val(2).as("a"),DSL.val(2).as("b"))
-						).asTable();
+						create.select(DSL.val(2).cast(Long.class).as("a"),DSL.val(2).cast(Integer.class).as("b"))
+						).asTable("tmp","aa","bb")
+				;
+			Table<Record2<Long, Integer>> tmpB = create
+					.select(DSL.val(1).cast(Long.class).as("a"),DSL.val(1).cast(Integer.class).as("b"))
+					.union(
+							create.select(DSL.val(2).cast(Long.class).as("a"),DSL.val(1).cast(Integer.class).as("b"))
+							)
+					.union(
+							create.select(DSL.val(1).cast(Long.class).as("a"),DSL.val(2).cast(Integer.class).as("b"))
+							)
+					.union(
+							create.select(DSL.val(2).cast(Long.class).as("a"),DSL.val(3).cast(Integer.class).as("b"))
+							)
+					.union(
+							create.select(DSL.val(2).cast(Long.class).as("a"),DSL.val(2).cast(Integer.class).as("b"))
+							).asTable("tmp","aa","bb")
+					;
 			
+			create.select().
 			
-			
-			Field<Long> fa = tmp.field(0, Long.class).as("a");
-			Field<Integer> fb = tmp.field(1, Integer.class).as("b");
-			
-			com.my.pl.jooq.db3.udt.Tlastlpopebigint r0= com.my.pl.jooq.db3.udt.Tlastlpopebigint.TLASTLPOPEBIGINT;
-		
-			TlastlpopebigintRecord r1 = new TlastlpopebigintRecord();
+			Field<Long> fa1 = tmpA.field(0, Long.class);//.as("aaa");
+			Field<Integer> fb1 = tmpA.field(1, Integer.class);//.as("bbb");		
+			Table<?> tmp2 = getAliasedTable(tmpA, "");
+			Field<Long> fa21 = tmp2.field(0, Long.class);//.as("aaa");
+			Field<Integer> fb21 = tmp2.field(1, Integer.class);//.as("bbb");
 
+			DbMetadane d = DbMetadane.DB_METADANE;
 			
-			
-			String s01 = create.select(lastlpope5( 
-					create.newRecord(r0).
-				)).from(tmp).getSQL();
-
-			
-
-			
-			/*
-			 * Proste pobranie wyniku funkcji w klauzuli SELECT
-			 */
-//			String s1 = create.select(/*com.my.pl.jooq.db1.Routines.*/echo(7)).getSQL();
-			
-			/*
-			 * Join funkcji zwracającej tabeleę z czymś innym
-			 */
-//			String s2 = create.select(/*com.my.pl.jooq.db1.Routines.*/)
-//					.from(
-//							echo2(2).as(e2.getName())
-//							.join(t1).on( t1.ID.eq(e2.LONGVAL) )
-//					)
-//					.getSQL();	
-					
-			/*
-			 * Przykład restrykcji przy porównywaniu Long i Integer. Konieczne jest castowanie
-			 */
-//			String s3 = create.select(/*com.my.pl.jooq.db1.Routines.*/)
-//					.from(
-//							echo3(2).as(e3.getName())
-//							.join(t1)
-//								/* Poniższe castowanie jest konieczne bo Integer (e2.INTVAL) <> Long (t1.ID)
-//								 * To jest restrykcja J, bo SQL nie miał by problemu z taką konstrukcją
-//								 * Minus dla J ???
-//								 */
-////								.on( t1.ID.equal(e3.INTVAL.cast(SQLDataType.BIGINT)) )
-//								.on( t1.ID.equal(e3.INTVAL.coerce(Long.class)) )
-//					)
-//					.getSQL();
-					
-			/*
-			 * Poniższe nie zadziała w J, bo Integer (e2.INTVAL) <> Long (t1.ID)
-			 * To jest restrykcja J, bo SQL nie ma z taką konstrukcją problemu
-			 */
-			/*
-			String s4 = create.select()
-					.from( 
-							echo2(2).as(e2.getName())
-							.join(t1)
-								.on( e2.INTVAL.eq(t1.ID) ) 
+			String s03 = create.select(
+					lastlpope5( DSL.cast(DSL.rowField(DSL.row(fa1,fb1)), TlastlpopebigintRecord.class) )
 					)
+					.from(tmpA)
 					.getSQL();
-			*/
 			
+			String s04 = create.select(
+					lastlpope5( getTlastlpopebigintRecord(fa21, fb21) )					
+					)
+					.from(tmp2)
+					.getSQL();
+			
+			String s08 = create.select(
+					d.IDKLUCZ, 
+					d.STWARTOSC,
+					lastlpope5( DSL.cast(DSL.rowField(DSL.row(fa1,fb1)), TlastlpopebigintRecord.class) ))
+				.from(tmpA.crossJoin(d))
+				.groupBy(d.IDKLUCZ, d.STWARTOSC)
+				.getSQL();
+								
+			String s09 = create.select(
+						d.IDKLUCZ, 
+						d.STWARTOSC, 
+						lastlpope5( DSL.cast(DSL.rowField(DSL.row(fa21,fb21)), TlastlpopebigintRecord.class) ))
+					.from(tmp2.crossJoin(d))
+					.groupBy(d.IDKLUCZ, d.STWARTOSC)
+					.getSQL();
+
 			int t = 0;
 		} 
 		catch (Exception e) {
