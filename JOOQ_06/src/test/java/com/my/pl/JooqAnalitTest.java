@@ -56,18 +56,18 @@ package com.my.pl;
 
 
 import static com.my.pl.jooq.db3.Routines.lastlpope1;
-import static com.my.pl.jooq.db3.Routines.lastlpope2;
 import static com.my.pl.jooq.db3.Routines.lastlpope3;
 import static com.my.pl.jooq.db3.Routines.lastlpope4;
 import static com.my.pl.jooq.db3.Routines.lastlpope5;
+
+import com.my.pl.jooq.db3.routines.Dajminkurs;
+import static com.my.pl.jooq.db3.Routines.*;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -76,18 +76,20 @@ import javax.persistence.EntityManager;
 
 import org.jooq.AggregateFunction;
 import org.jooq.DSLContext;
-import org.jooq.DataType;
 import org.jooq.Field;
+import org.jooq.Name;
 import org.jooq.Param;
+import org.jooq.Record;
 import org.jooq.Record17;
 import org.jooq.Record2;
-import org.jooq.ResultQuery;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
+import org.jooq.TableField;
 import org.jooq.conf.StatementType;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDSLContext;
 import org.jooq.impl.SQLDataType;
+import org.jooq.impl.TableImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,26 +117,27 @@ import com.my.pl.db1.domain.Test4;
 import com.my.pl.db1.domain.Test41;
 import com.my.pl.db1.domain.Test5;
 import com.my.pl.db1.domain.Test51;
+import com.my.pl.jooq.db3.routines.Dajminkurs;
 import com.my.pl.jooq.db3.tables.AkwPodzial;
 import com.my.pl.jooq.db3.tables.DbMetadane;
 import com.my.pl.jooq.db3.tables.UmubezpPolisaoper;
 import com.my.pl.jooq.db3.tables.UmubezpProduktoper;
 import com.my.pl.jooq.db3.tables.UmubezpSkladowaoper;
 import com.my.pl.jooq.db3.tables.UmubezpSkladowaoperanul;
+import com.my.pl.jooq.db3.tables.records.UmubezpPolisaoperRecord;
+import com.my.pl.jooq.db3.tables.records.UmubezpProduktoperRecord;
 import com.my.pl.jooq.db3.udt.records.TlastlpopebigintRecord;
 import com.my.pl.jooq.db3.udt.records.TlastlpopedateRecord;
 import com.my.pl.jooq.db3.udt.records.TlastlpopedblRecord;
-import com.my.pl.jooq.db3.udt.records.TlastlpopedtstatdateRecord;
-import com.my.pl.jooq.db3.udt.records.TlastlpopedtstatintegerRecord;
-import com.my.pl.jooq.db3.udt.records.TlastlpopedtstattextRecord;
-import com.my.pl.jooq.db3.udt.records.TlastlpopedtstattunitRecord;
 import com.my.pl.jooq.db3.udt.records.TlastlpopesmallintRecord;
 import com.my.pl.jooq.db3.udt.records.TlastlpopetextRecord;
 import com.my.pl.utils.MapperUtils;
 import com.my.pl.utils.NewTransactionWrapper;
 
+import ch.qos.logback.classic.db.names.TableName;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.TreeMap;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -540,7 +543,7 @@ public class JooqAnalitTest {
 			e.printStackTrace();
 		}
 	}
-	
+
 	//@Test
 	//@Transactional
 	@Commit
@@ -655,34 +658,62 @@ public class JooqAnalitTest {
 		ntw.inTrans(()->fillTest1_5());	
 		try (
 				DSLContext create = dsl1;
-				) {	
+				) {			
 			
-			create.configuration().settings().setStatementType(StatementType.STATIC_STATEMENT);
+			create.configuration().settings().setStatementType(StatementType.STATIC_STATEMENT);					
 			
 			UmubezpSkladowaoper skl = UmubezpSkladowaoper.UMUBEZP_SKLADOWAOPER.as("skl");
 			UmubezpSkladowaoperanul skla = UmubezpSkladowaoperanul.UMUBEZP_SKLADOWAOPERANUL.as("skla");
 			UmubezpProduktoper x = UmubezpProduktoper.UMUBEZP_PRODUKTOPER.as("x");
+			
 			Param<Date> fdtStat = DSL.param("fdtStat", Date.class);
 			Param<Date> fdtWDniu = DSL.param("fdtWDniu", Date.class);
+			Param<String> AktIdBank = DSL.param("AktIdBank", String.class);
+			Param<String> AktkdWaluta = DSL.param("AktkdWaluta", String.class);
+			
 			List<String> kdFirmaIn = Arrays.asList(new String[] {"kdPZM()","kdIR()"});
+			
 			AggregateFunction<BigDecimal> sum1 = DSL.sum(skl.DPDCENA);
 			AggregateFunction<Double> sum2 = DSL.max(skl.DPDSUMA);
+			
 			Field<BigDecimal> sum1as = sum1.as("dpSkladka");
 			Field<Double> sum2as = sum2.as("dpDSuma");
+
+			
+			
+			
+			final String C_IDSYMBOL = "IDSYMBOL"; 
+			final String C_UNPRODUKT = "UNPRODUKT"; 
+			final String C_KDWALUTA = "KDWALUTA"; 
+			final String C_UNPOLISA = "UNPOLISA"; 
+			final String C_LPPOZYCJA = "LPPOZYCJA"; 
+			final String C_IDTARPOZ = "IDTARPOZ"; 
+			final String C_dtOd = "dtOd"; 
+			final String C_dtDo = "dtDo";  
+			final String C_dpSkladka = "dpSkladka"; 
+			final String C_dpDSuma = "dpDSuma"; 
+			final String C_dpDSumaMax = "dpDSumaMax"; 
+			final String C_lpLiczba = "lpLiczba"; 
+			final String C_idKluczStat = "idKluczStat"; 
+			final String C_unUbnySpr = "unUbnySpr"; 
+			final String C_unUbnyOpe = "unUbnyOpe"; 
+			final String C_dpFran = "dpFran"; 
+			final String C_kdFranWal = "kdFranWal"; 
+						
 			
 			Table<Record17<String, Double, Short, Double, Long, String, Date, Date, BigDecimal, Double, Double, Long, String, Double, Double, Double, Short>> t1 = 
 			create
 				.select(x.IDSYMBOL, x.UNPRODUKT, x.KDWALUTA, skl.UNPOLISA, x.LPPOZYCJA, x.IDTARPOZ
-						,DSL.min(x.DTOD).as("dtOd"), DSL.max(x.DTDO).as("dtDo")
-						,sum1as//.as("dpSkladka")
-						,sum2as//.as("dpDSuma")
-						,DSL.max(skl.DPDSUMAMAX).as("dpDSumaMax")
-						,DSL.max(skl.LPDLICZBA).as("lpLiczba")
-						,lastlpope1(getTlastlpopetextRecord(x.IDKLUCZSTAT, x.LPOPERACJA))
-						,lastlpope4(getTlastlpopedblRecord(x.UNUBNYSPR, x.LPOPERACJA))
-						,lastlpope4(getTlastlpopedblRecord(x.UNUBNYOPE, x.LPOPERACJA))
-						,lastlpope4(getTlastlpopedblRecord(x.DPFRAN, x.LPOPERACJA))
-						,lastlpope3(getTlastlpopesmallintRecord(x.KDFRANWAL, x.LPOPERACJA))
+						,DSL.min(x.DTOD).as(C_dtOd), DSL.max(x.DTDO).as(C_dtDo)
+						,sum1.as("dpSkladka")
+						,sum2.as("dpDSuma")
+						,DSL.max(skl.DPDSUMAMAX).as(C_dpDSumaMax)
+						,DSL.max(skl.LPDLICZBA).as(C_lpLiczba)
+						,lastlpope1(getTlastlpopetextRecord(x.IDKLUCZSTAT, x.LPOPERACJA)).as(C_idKluczStat)
+						,lastlpope4(getTlastlpopedblRecord(x.UNUBNYSPR, x.LPOPERACJA)).as(C_unUbnySpr)
+						,lastlpope4(getTlastlpopedblRecord(x.UNUBNYOPE, x.LPOPERACJA)).as(C_unUbnyOpe)
+						,lastlpope4(getTlastlpopedblRecord(x.DPFRAN, x.LPOPERACJA)).as(C_dpFran)
+						,lastlpope3(getTlastlpopesmallintRecord(x.KDFRANWAL, x.LPOPERACJA)).as(C_kdFranWal)
 						)
 				.from(skl
 					.leftJoin(skla).on(skla.UNSKLADOWA.eq(skl.UNSKLADOWA).and(skla.DTSTAT.le(fdtStat)))
@@ -700,42 +731,93 @@ public class JooqAnalitTest {
 					)
 				.groupBy(DSL.inline(1),DSL.inline(2),DSL.inline(3),DSL.inline(4),DSL.inline(5),DSL.inline(6))
 				.having(sum1.ne(BigDecimal.ZERO).and(sum2.ne((double)0)))
-				.asTable().as("x","IDSYMBOL")				
+				.asTable("x")				
 				;
 			
-			UmubezpPolisaoper pol = UmubezpPolisaoper.UMUBEZP_POLISAOPER;
-			//dajminuskurs(t1.field(x.KDFRANWAL.getName() ))
 			
-			create
+			UmubezpPolisaoper pol = UmubezpPolisaoper.UMUBEZP_POLISAOPER;
+			Field<?> f_idPolisa = DSL.cast( lastlpope1(getTlastlpopetextRecord(pol.IDNUMER, pol.LPOPERACJA)), SQLDataType.VARCHAR.length(40) ).as("idPolisa");
+			Field<?> f_KDWALUTA = t1.field(C_KDWALUTA);
+			Field<?> f_IDSYMBOL = t1.field(C_IDSYMBOL);
+			Field<?> f_UNPRODUKT = t1.field(C_UNPRODUKT);					    
+			Field<?> f_dpSkladka = t1.field(C_dpSkladka);
+			Field<?> f_dtOd = t1.field(C_dtOd);
+			Field<?> f_dtDo = t1.field(C_dtDo);
+			Field<?> f_LPPOZYCJA = t1.field(C_LPPOZYCJA);
+		    Field<?> f_IDTARPOZ = t1.field(C_IDTARPOZ);    
+		    Field<?> f_idKluczStat = t1.field(C_idKluczStat);    
+		    Field<?> f_unUbnySpr = t1.field(C_unUbnySpr);
+		    Field<?> f_unUbnyOpe = t1.field(C_unUbnyOpe);
+			Field<?> f_kdFranWal = t1.field(C_kdFranWal);
+			Field<?> f_dpFranWal = t1.field(C_dpFran);
+			
+			Table<Record17<Double, Short, String, Short, String, Double, Double, Date, Date, Long, String, String, Double, Double, Long, Long, Double>> t2 = create
 				.select(
 						pol.UNPOLISA
 						,pol.KDFIRMA
-						,DSL.cast( lastlpope1(getTlastlpopetextRecord(pol.IDNUMER, pol.LPOPERACJA)), SQLDataType.VARCHAR.length(40) )
-						,x.KDWALUTA
-					    ,x.IDSYMBOL
-					    ,x.UNPRODUKT
-					    ,x.field(sum1as.getName())
-					    ,t1.field("dtOd")
-					    ,t1.field("dtDo")
-					    ,t1.field("lpPozycja")
-					    ,t1.field("idTarPoz")    
-					    ,t1.field("idKluczStat")    
-					    ,t1.field("unUbnySpr")
-					    ,t1.field("unUbnyOpe")
-					    ,t1.field("kdFranWal")
-					    ,t1.field("lpLiczba")
-					    //,DSL.round(x.DPFRAN.mul(dajminuskurs( DSL )))
-					    		
+						,f_idPolisa
+						,f_KDWALUTA
+					    ,f_IDSYMBOL
+					    ,f_UNPRODUKT			    
+					    ,f_dpSkladka
+					    ,f_dtOd
+					    ,f_dtDo
+					    ,f_LPPOZYCJA
+					    ,f_IDTARPOZ 
+					    ,f_idKluczStat  
+					    ,f_unUbnySpr
+					    ,f_unUbnyOpe
+					    ,kdFranWalField
+					    ,t1.field(C_lpLiczba, Long.class)
+					    ,DSL.round(x.DPFRAN.mul(
+					    		dajminkurs( 
+						    		DSL.decode()
+						    			.when( kdFranWalField.lt((long)1), DSL.val((long)1) )
+						    			.otherwise(kdFranWalField)
+						    			.cast(Short.class),
+						    		AktIdBank,
+						    		DSL.castNull(Date.class),
+						    		fdtWDniu,
+						    		AktkdWaluta.cast(Short.class)
+						    	)
+						    )).coerce(Double.class).as(C_dpFran)					    	
 					    )
-				.from(t1);
+				.from(t1)
+				.join(pol).on(
+						pol.UNPOLISA.eq(t1.field(C_UNPOLISA).coerce(Double.class))
+						.and(pol.DTSTAT.le(fdtStat))
+						)
+				.groupBy(
+						pol.UNPOLISA
+						,pol.KDFIRMA
+						,f_KDWALUTA
+					    ,f_IDSYMBOL
+					    ,f_UNPRODUKT			    
+					    ,f_dpSkladka
+					    ,f_dtOd
+					    ,f_dtDo
+					    ,f_LPPOZYCJA
+					    ,f_IDTARPOZ 
+					    ,f_idKluczStat  
+					    ,f_unUbnySpr
+					    ,f_unUbnyOpe
+					    ,f_dpFranWal
+					    ,f_kdFranWal
+					      sql.Add('         x.dpSuma,');
+					      sql.Add('         x.lpLiczba,');
+					      sql.Add('         x.dpSumaMax');
+						)
+				.asTable("x");
+			
+			
 			
 			String s1 = create
 				.select()
 				.from(t1)
+				
 				.bind("fdtStat", Date.valueOf(LocalDate.now()))
 				.bind("fdtWDniu", Date.valueOf(LocalDate.now()))
 				.getSQL();
-				
 			int t = 0;
 			;
 		} 
@@ -752,10 +834,16 @@ public class JooqAnalitTest {
 		try (
 				DSLContext create = dsl1;
 				) {	
+			
+			
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	private interface I1<R extends Record17<String, Double, Short, Double, Long, String, Date, Date, BigDecimal, Double, Double, Long, String, Double, Double, Double, Short>> extends Table<R>{
+
+		TableField<UmubezpProduktoperRecord, Short> KDWALUTA = null;
+	}
 }
