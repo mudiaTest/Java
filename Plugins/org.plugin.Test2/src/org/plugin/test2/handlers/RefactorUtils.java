@@ -21,7 +21,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-public class TextSelectionListener implements ISelectionChangedListener {
+public class RefactorUtils {
 
 	private IEditorInput editorInput;
 	private IDocumentProvider documentProvider;
@@ -64,63 +64,66 @@ public class TextSelectionListener implements ISelectionChangedListener {
 			return null;
 	}
 	
+	private String getDefinition(ITextSelection selection) {
+		//String selected = textSel.getText();
+		return null;
+	}
 	
-	@Override
-	public void selectionChanged(SelectionChangedEvent arg0) {
-		// TODO Auto-generated method stub
-		
-		 /*ISelection sel = editor.getSelectionProvider().getSelection();
-	        if ( sel instanceof TextSelection ) {
-
-	            // Here is your String
-	            final TextSelection textSel = (TextSelection)sel;
-
-	        }*/
-		System.out.println("Text selection chanded.");
-		
-		//ISelection sel = editor.getSelectionProvider().getSelection();		
+	public ICompilationUnit getCompilationUnit()
+	{
 		ITextSelection sel = (ITextSelection) selectionProvider.getSelection();
-		
-		
-		
-        if ( sel instanceof TextSelection ) {
-
-            // Here is your String
-            final TextSelection textSel = (TextSelection)sel;
-            System.out.println("----"+textSel.getText());
-                
-            if (!textSel.getText().equalsIgnoreCase("")) {
-	            IDocument document = documentProvider.getDocument(editorInput);            
-	            
-	            IJavaElement elem = JavaUI.getEditorInputJavaElement(editorInput);
-	            if (elem instanceof ICompilationUnit) {
-	                ICompilationUnit unit = (ICompilationUnit) elem;
-	                IJavaElement selected;
-					try {
-						selected = unit.getElementAt(textSel.getOffset()); // odda metodê
-	//					System.out.println("selected=" + selected);
-	//					System.out.println("selected.class=" + selected.getClass());
-						
-						IType titleClazz = getTitleClass(unit);
-						IType parentClass = getParentClass(selected);
-						IMethod parentMethod = getParentMethod(selected);
-						
-						
-						IType code = unit.createType("private class Test{}", null, true, null);
-						
-						int t = 0;
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-	            }
+        System.out.println("---> Selected text:"+sel.getText());
+        if (!sel.getText().equalsIgnoreCase("")) {
+            IDocument document = documentProvider.getDocument(editorInput);            
+            IJavaElement elem = JavaUI.getEditorInputJavaElement(editorInput);
+            if (elem instanceof ICompilationUnit) {
+                return (ICompilationUnit) elem;
             }
-            
-            int t = 0;
+        }
+        return null;
+	}
+	
+	public ITextSelection getSelection() {
+		return (ITextSelection) selectionProvider.getSelection();
+	}
+	
+	public IMethod getEnclosingMethod(ICompilationUnit unit) {
+        IJavaElement selected;
+		try {
+			selected = unit.getElementAt(getSelection().getOffset());
+			return getParentMethod(selected);				
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+        return null;
+	}
+	
+	public void doCreateClass() {
+		ITextSelection sel = (ITextSelection) selectionProvider.getSelection();
+        if (!sel.getText().equalsIgnoreCase("")) {
+            ICompilationUnit unit = getCompilationUnit();
+            if (unit == null) {
+            	System.out.println(" ---> No ICompilationUnit found.");
+            	return;
+            }
+            IJavaElement selected;
+			try {
+				selected = unit.getElementAt(sel.getOffset()); // odda metodê
+				IType titleClazz = getTitleClass(unit);
+				IType parentClass = getParentClass(selected);
+				IMethod parentMethod = getParentMethod(selected);
+				String definition = getDefinition(sel);
+				IType code = unit.createType("private class Test{}", null, true, null);
+				//getCompilationUnit - naglowki z unitu
+				int t = 0;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+        int t = 0;
         }
 	}
 
-	public TextSelectionListener(IEditorInput editorInput, IDocumentProvider documentProvider, ISelectionProvider selectionProvider) {
+	public RefactorUtils(IEditorInput editorInput, IDocumentProvider documentProvider, ISelectionProvider selectionProvider) {
 		System.out.println("TextSelectionListener created");
 		this.editorInput = editorInput;
 		this.documentProvider = documentProvider;

@@ -655,6 +655,7 @@ public class JooqAnalitTest {
 	//@Transactional
 	@Commit
 	public void situQueryTest() {	
+		String d = "";
 		ntw.inTrans(()->fillTest1_5());	
 		try (
 				DSLContext create = dsl1;
@@ -802,7 +803,7 @@ public class JooqAnalitTest {
 					    ,f_unUbnySpr
 					    ,f_unUbnyOpe
 					    ,f_dpFranWal
-					    ,f_kdFranWal
+					    ,f_kdFranWal,
 					      sql.Add('         x.dpSuma,');
 					      sql.Add('         x.lpLiczba,');
 					      sql.Add('         x.dpSumaMax');
