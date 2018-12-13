@@ -19,7 +19,7 @@ public class MethodVisitor extends ASTVisitor {
     Map<ASTNode, VariableDeclaration> variables = new HashMap<>(); 
     Map<ASTNode, VariableDeclarationExpression> variableExpressions = new HashMap<>(); 
     Map<ASTNode, VariableDeclarationStatement> variableStatements = new HashMap<>(); 
-    Map<ASTNode, VariableDeclarationFragment> variableFragments = new HashMap<>(); 
+    Map<String, List<VariableDeclarationFragment>> variableFragments = new HashMap<>(); 
 
     @Override
     public boolean visit(MethodDeclaration node) {
@@ -47,7 +47,11 @@ public class MethodVisitor extends ASTVisitor {
     
     @Override
     public boolean visit(VariableDeclarationFragment node) {
-    	variableFragments.put(node.getParent(), node);
+    	String key = node.getName().getIdentifier();
+    	if (!variableFragments.containsKey(key))
+    		variableFragments.put(key, new ArrayList<VariableDeclarationFragment>());
+    	List<VariableDeclarationFragment> frags = variableFragments.get(key);
+    	frags.add(node);
     	return super.visit(node);
     }
     
@@ -69,7 +73,7 @@ public class MethodVisitor extends ASTVisitor {
     	return variableStatements;
     }
     
-    public Map<ASTNode, VariableDeclarationFragment> getVariablesFragments() {
+    public Map<String, List<VariableDeclarationFragment>> getVariablesFragments() {
     	return variableFragments;
     }
 

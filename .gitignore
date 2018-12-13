@@ -89,3 +89,6 @@ Hibernate_03/bin/test/my/com/pl/Hibernate_03/PageTest.class
 Hibernate_03/bin/test/my/com/pl/Hibernate_03/ProcedureTest.class
 Hibernate_03/bin/test/my/com/pl/Hibernate_03/ProjekcjeTest.class
 Hibernate_03/bin/test/my/com/pl/Hibernate_03/SortTest.class
+/JOOQ_06/bin/*
+/Plugins/org.plugin.Test2/bin/*
+/Plugins/org.plugin.Test2/jar*
