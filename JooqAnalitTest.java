@@ -1,3 +1,5 @@
+package org.plugin.test2.handlers;
+
 /*
  *  CREATE SEQUENCE public."TESTSEQUENCE"
     INCREMENT 1
@@ -51,8 +53,6 @@
 	END;
 	$function$
  */
-
-package com.my.pl;
 
 
 import static com.my.pl.jooq.db3.Routines.lastlpope1;

@@ -25,11 +25,14 @@ public class SampleHandler extends AbstractHandler {
 		IViewPart viewPart = page.findView(id);
 		ISelectionProvider selProvider = viewPart.getSite().getSelectionProvider();
 		//event na wybieranie 
-		selProvider.addSelectionChangedListener(new SelectionListener());
+		selProvider.addSelectionChangedListener(new MySelectionListener());
 		
 		/**/
 		
-		try {               
+		try { 
+			/*
+			 * Uzyskanie dostêpu do edytora 
+			 */
 		    IEditorPart part = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		    if ( part instanceof ITextEditor ) {
 		        final ITextEditor editor = (ITextEditor)part;

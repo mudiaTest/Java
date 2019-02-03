@@ -3,9 +3,9 @@ package org.plugin.test2.handlers;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 
-public class SelectionListener implements ISelectionChangedListener {
+public class MySelectionListener implements ISelectionChangedListener {
 
-	public SelectionListener() {
+	public MySelectionListener() {
 		System.out.println("SelectionListener created");
 	}
 	

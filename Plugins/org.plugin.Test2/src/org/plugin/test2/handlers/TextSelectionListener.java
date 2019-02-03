@@ -60,7 +60,6 @@ public class TextSelectionListener implements ISelectionChangedListener {
 		else if (elem.getParent().getElementType() == IJavaElement.METHOD)
 			return (IMethod)elem.getParent();
 		else 
-//			return getParentMethod(elem.getParent());
 			return null;
 	}
 	
@@ -115,7 +114,6 @@ public class TextSelectionListener implements ISelectionChangedListener {
 					}
 	            }
             }
-            
             int t = 0;
         }
 	}
