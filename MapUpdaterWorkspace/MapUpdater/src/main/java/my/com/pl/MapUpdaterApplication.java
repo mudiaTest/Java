@@ -16,22 +16,22 @@ public class MapUpdaterApplication {
 		SpringApplication.run(MapUpdaterApplication.class, args);
 	}	
 	
-	@Autowired
-	MainService ms;	
-	@Autowired
-	private ApplicationContext ac;
-	
-	@Bean
-    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
-        return args -> {
-        	try {
-	        	System.out.println("-----------------------------------\n\n\n");
-	        	ms.run();
-	        	System.out.println("\n\n\n-----------------------------------");
-        	}
-    		finally {	
-    			SpringApplication.exit(ac, () -> 0);
-    		}
-        };
-    }
+//	@Autowired
+//	MainService ms;	
+//	@Autowired
+//	private ApplicationContext ac;
+//	
+//	@Bean
+//    public CommandLineRunner commandLineRunner(ApplicationContext ctx) {
+//        return args -> {
+//        	try {
+//	        	System.out.println("-----------------------------------\n\n\n");
+//	        	ms.run();
+//	        	System.out.println("\n\n\n-----------------------------------");
+//        	}
+//    		finally {	
+//    			SpringApplication.exit(ac, () -> 0);
+//    		}
+//        };
+//    }
 }

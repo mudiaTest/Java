@@ -11,7 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UnzipSrv {
+public class UnzipService {
 	private int setUnzipedSize(String fileNamePath) throws Exception {
 		Runtime rt = Runtime.getRuntime();
 		String command = "7z.exe l -slt " + fileNamePath;

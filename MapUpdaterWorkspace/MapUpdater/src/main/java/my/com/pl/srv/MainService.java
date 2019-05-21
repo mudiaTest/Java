@@ -15,9 +15,9 @@ import my.com.pl.config.FilesEnv;
 @Service
 public class MainService {
 	@Autowired
-	UnzipSrv us;
+	UnzipService us;
 	@Autowired
-	GMTSrv gs;	
+	GMTService gs;	
 	@Autowired
 	FilesEnv fenv;
 	

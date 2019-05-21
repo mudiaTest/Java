@@ -12,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GMTSrv {
+public class GMTService {
 	
 //	private String testCommand = "gmt -S -f 6324,1 -o C:\\Garmin\\t -m \"test\" C:\\Garmin\\t\\src\\6*.img";
 	private String stReg = "HKLM\\SOFTWARE\\Wow6432Node\\Garmin\\MapSource\\Families\\FAMILY_";
