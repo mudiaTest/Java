@@ -7,7 +7,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 
 import org.apache.http.client.ClientProtocolException;
 import org.jsoup.nodes.Document;
@@ -21,7 +26,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import my.com.pl.config.FilesEnv;
 import my.com.pl.srv.HttpReaderService;
+import my.com.pl.srv.TrailXMLObject;
+import my.com.pl.srv.TrailsXMLObject;
 import my.com.pl.srv.GMTService;
+import my.com.pl.srv.HttpParserHelper;
 import my.com.pl.srv.UnzipService;
 
 @RunWith(SpringRunner.class)
@@ -94,45 +102,82 @@ public class MapUpdaterApplicationTests {
 		}
 	}
 	
-	private void checkOne(Collection col) throws Exception
+	private void CheckIfOne(Collection col) throws Exception
 	{
 		if (col.size() != 1)
 			throw new Exception("Znaleziono " + col.size());
 	}
 	
-	private List<String> getTrails(Document doc) throws Exception{
-		List<String> result = new ArrayList<String>();
-		Element table = doc.getElementById("trails_table");
-		Elements tbody = table.getElementsByTag("tbody");
-		checkOne(tbody);
-		Elements rows = tbody.get(0).getElementsByTag("tr");
-		for (int i = 0; i < rows.size(); i++)
-		{
-			Element row = rows.get(i);
-			Element col = row.children().get(1);
-			Elements as = col.getElementsByTag("a");
-			checkOne(as);
-			String trailMainUrl = as.get(0).attr("href");
-			result.add(trailMainUrl);
-		}
+	private Map<String, TrailXMLObject> getTrails(Document doc) throws Exception{
+		Map<String, TrailXMLObject> result = new HashMap<String, TrailXMLObject>();
+		
+		Elements trs = new HttpParserHelper().id("trails_table").tag("tbody").tags("tr").parse(doc);
+		if (trs.size() > 1)
+			for (Element tr : trs) {
+				
+		//		Elements rows = trs.getElementsByTag("tr");
+		//		Element table = doc.getElementById("trails_table");
+		//		Elements tbody = table.getElementsByTag("tbody");
+		//		CheckIfOne(tbody);
+		//		Elements rows = tbody.get(0).getElementsByTag("tr");		
+				
+				//for (int i = 0; i < tr.size(); i++)
+				//{
+					//Element row = rows.get(i);
+					Element td = tr.children().get(1);
+					
+					
+					Element a = new HttpParserHelper().tag("a").parseOne(td);
+	//				Elements a = col.getElementsByTag("a");
+	//				CheckIfOne(a);
+					if (a != null) {						
+						String trailMainUrl = a.attr("href");					
+						TrailXMLObject trailObj = new TrailXMLObject();
+						trailObj.setHtml(trailMainUrl+"download/");
+						trailObj.setName(a.text());
+						result.put(trailMainUrl, trailObj);
+					}
+				//}
+			}
 		return result;
 	}
+	
+	
 	
 	@Test
 	public void trailForks1() throws Exception {
 		try {
-			List<String> trailPagesUrl = new ArrayList<String>();
+			Map<String, TrailXMLObject> trailPagesUrl = new HashMap<String, TrailXMLObject>();
+			//Pobieranie informacji o ilości podstron
 			Document doc1 = hs.getPageDom("https://www.trailforks.com/region/poland/trails/?difficulty=2,3,4,5,6,8,1,7");
 			Elements numbersList = doc1.getElementsByClass("paging-middle centertext");
-			checkOne(numbersList);
+			//Może istnieć tylko jeden element z którego czytamy ilość stron
+			CheckIfOne(numbersList);
 			Element numbers = numbersList.get(0);
-			String liFirstPage = numbers.child(0).text();
-			String liLastPage = numbers.child(numbers.childNodeSize()-1).text();
-			for (int i = 1; i <= 26; i++)
+			Integer firstPage = Integer.parseInt(numbers.child(0).text());
+			Integer lastPage = Integer.parseInt(numbers.child(numbers.childNodeSize()-1).text());
+			
+			
+			//Przeglądamy każdą podstronę
+			for (int i = firstPage; i <= lastPage; i++)
 			{
 				Document doc2 = hs.getPageDom("https://www.trailforks.com/region/poland/trails/?difficulty=2,3,4,5,6,8,1,7&page=" + i);
-				trailPagesUrl.addAll(getTrails(doc2));
+				trailPagesUrl.putAll(getTrails(doc2));											
 			}
+			
+			TrailsXMLObject trailsObj = new TrailsXMLObject();
+			for (int i = 0; i < trailPagesUrl.size(); i++) {
+				TrailXMLObject trailObj = trailPagesUrl.get(i);
+				Document doc3 = hs.getPageDom(trailObj.getHtml());	
+				
+				Element a = new HttpParserHelper().id("file").clazz("inline padded10").tag("li").tag("a").parseOne(doc3);			
+			}
+			File file = new File("E:\\trails.xml");
+			JAXBContext jaxbContext = JAXBContext.newInstance(TrailsXMLObject.class);
+			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+//			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			jaxbMarshaller.marshal(trailsObj, file);
+			
 			int t = 0;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
