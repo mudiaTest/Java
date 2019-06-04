@@ -3,7 +3,7 @@
  * http://alternativaslibres.org/en/download.php?file=OpenStreetMap_Poland.exe
  */
 
-package my.com.pl.srv;
+package my.com.pl.srv.common;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,20 +21,26 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import my.com.pl.config.ConnectionEnv;
 
 @Service
-public class HttpReaderService {
+public class HttpReaderSrv {
 	@Autowired
 	ConnectionEnv cenv;
 	@Autowired
-	CommonService comms; 
+	StringSrv comms; 
 	
+	/**
+	 * Pobieranie pliku
+	 * @param url
+	 * @param fileName
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
 	public boolean fileDownload(String url, String fileName) throws MalformedURLException, IOException {
 		FileUtils.copyURLToFile(
 				  new URL(url), 
@@ -45,6 +51,9 @@ public class HttpReaderService {
 		return true;
 	}
 	
+	/**
+	 * Próba wyspecjalizowanej metody do pobierania url pliku 
+	 */
 //	public String getFileUrl(String phpUrl) throws IOException {
 //		String location = phpUrl;
 //		HttpURLConnection connection = null;
@@ -60,18 +69,8 @@ public class HttpReaderService {
 //		return fileName;
 //	}
 	
-	/** 
-	 * Zczytuje kolejne linie z bufora i zapisuje je na wynikową listę.
-	 * @param br
-	 * @return Lista linii z bufora	 
-	 */
-	private List<String> bufferedReader2List(BufferedReader br)
-	{
-		List<String> lines = new ArrayList<>();
-	    br.lines().forEach(s->lines.add(s));
-	    //br.lines().limit(30).forEach(s->lines.add(s));
-	    return lines;
-	}
+	@Autowired
+	StringSrv ss;
 	
 	/**
 	 * Oddaje kod strony w postaci listy linii (stringów); 	 
@@ -91,38 +90,8 @@ public class HttpReaderService {
 		//String bodyAsString = EntityUtils.toString(response.getEntity(), "UTF-8");	
 		
 		BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-	    return bufferedReader2List(rd);
+	    return ss.bufferedReader2List(rd);
 	}	
-	
-	public List<String> getLines(List<String> lines, String pattern)
-	{
-		return comms.filterLines(lines, pattern);	
-	}
-	
-	/**
-	 * W wersji "get" parametry podajemy w adresie url
-	 * 
-	 * @param url
-	 * "https://www.youtube.com/watch?v=6f88Fp_r88A&feature=youtu.be&t=321" :
-	 * https://www.youtube.com/watch
-	 * ?
-	 * v=6f88Fp_r88A
-	 * &
-	 * feature=youtu.be
-	 * &
-	 * t=321
-	 * @return
-	 * @throws IOException
-	 */
-	public Document getPageDom(String url) throws IOException
-	{
-		return Jsoup.connect(url).get();
-	}
-	
-	public Document postPageDom(String url) throws IOException
-	{
-		return Jsoup.connect(url).post();
-	}
 	
 	/*
 	 * Poza prostym Get i Post można wywołać stronę z róznymi parametrami
@@ -148,24 +117,15 @@ public class HttpReaderService {
 	 *     <option value="Option3">Option 3</option>
 	 *   </select>
      */
-	
+	/**
+	 * Pobieranie 
+	 * @param url = np: 'www.rp.pl', 'http://192.168.1.1/'
+	 * @param pattern Wzór zgodny z zasadami RegExp
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public List<String> getLines(String url, String pattern) throws ClientProtocolException, IOException
 	{
 		return comms.filterLines(getPage(url), pattern);	
 	}
-	
-//	public void unzipZip4J(String fileNamePath, String dstDirPath) {
-//		String password = "password";
-//
-//		try {
-//		    ZipFile zipFile = new ZipFile(fileNamePath);
-//		    //if (zipFile.isEncrypted()) {
-//		    //    zipFile.setPassword(password);
-//		   // }
-//		    zipFile.extractAll(dstDirPath);
-//		    int t = 0;
-//		} catch (ZipException e) {
-//		    e.printStackTrace();
-//		}
-//	}
 }

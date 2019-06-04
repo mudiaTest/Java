@@ -18,4 +18,8 @@ public class TrailsXMLObject {
 	public void setTrails(List<TrailXMLObject> trails) {
 		this.trails = trails;
 	}
+	
+	public void addTrail(TrailXMLObject trail) {
+		trails.add(trail);
+	}
 }

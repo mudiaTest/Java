@@ -6,8 +6,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class TrailXMLObject {
+	/**
+	 * Nazwa traila
+	 */
 	String name;
+	/**
+	 * Nazwa pliku ".gpx" z trailem
+	 */
 	String fileName;
+	/**
+	 * Adres strony danego traila
+	 */
 	String html;
 	
 	public String getName() {

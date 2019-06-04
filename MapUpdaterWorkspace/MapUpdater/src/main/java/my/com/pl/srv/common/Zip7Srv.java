@@ -1,4 +1,9 @@
-package my.com.pl.srv;
+/*
+ * Wymaga pliku 7z.exe dostępnego w ścieżce.
+ * Poniżej kod wywołuje 7z.exe umieszczony w głównym katalogu 
+ */
+
+package my.com.pl.srv.common;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,7 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UnzipService {
+public class Zip7Srv {
 	private int setUnzipedSize(String fileNamePath) throws Exception {
 		Runtime rt = Runtime.getRuntime();
 		String command = "7z.exe l -slt " + fileNamePath;

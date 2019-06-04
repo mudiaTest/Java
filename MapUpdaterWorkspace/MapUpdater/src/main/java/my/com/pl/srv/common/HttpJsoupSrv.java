@@ -1,60 +1,83 @@
-package my.com.pl.srv;
+package my.com.pl.srv.common;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.javatuples.Pair;
+//import org.javatuples.Pair;
+//import org.javatuples.Triplet;
 import org.javatuples.Quartet;
-import org.javatuples.Triplet;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.stereotype.Service;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
-public class HttpParserHelper {
+@Service
+public class HttpJsoupSrv {
 	//type, name, position, multiple
 	// position = -1 <=> multiple = true
 	// position >= 0 <=> multiple = false
 	private List<Quartet<String, String, Integer, Boolean>> params = new ArrayList(); 
 	
+	/**
+	 * W wersji "get" parametry podajemy w adresie url
+	 * 
+	 * @param url
+	 * "https://www.youtube.com/watch?v=6f88Fp_r88A&feature=youtu.be&t=321" :
+	 * https://www.youtube.com/watch
+	 * ?
+	 * v=6f88Fp_r88A
+	 * &
+	 * feature=youtu.be
+	 * &
+	 * t=321
+	 * @return
+	 * @throws IOException
+	 */
+	public Document getPageDom(String url) throws IOException
+	{
+		return Jsoup.connect(url).get();
+	}
+	
+	public Document postPageDom(String url) throws IOException
+	{
+		return Jsoup.connect(url).post();
+	}
+	
 	// Jeśli w dokumencie znajduje się więcej elementów o takim samym "id" to zostanie 
 	// zwrócony pierwszy znaleziony. Tak budowa jednak jest błędna i należy to rozpatrywać jako przypadek szczególny
-	public HttpParserHelper id(String id) {
+	public HttpJsoupSrv id(String id) {
 		params.add(new Quartet<String, String, Integer, Boolean>("id", id, 0, false));
 		return this;
 	}
 	
-//	public HttpParserHelper id(String id, int poz) {
-//		params.add(new Triplet<String, String, Integer>("id", id, poz));
-//		return this;
-//	}	
-	
-	public HttpParserHelper clazz(String clazz) {
+	public HttpJsoupSrv clazz(String clazz) {
 		params.add(new Quartet<String, String, Integer, Boolean>("clazz", clazz, 0, false));
 		return this;
 	}
 	
-	public HttpParserHelper clazz(String clazz, int poz) {
+	public HttpJsoupSrv clazz(String clazz, int poz) {
 		params.add(new Quartet<String, String, Integer, Boolean>("clazz", clazz, poz, false));
 		return this;
 	}
 	
-	public HttpParserHelper clazzes(String clazz) {
+	public HttpJsoupSrv clazzes(String clazz) {
 		params.add(new Quartet<String, String, Integer, Boolean>("clazz", clazz, -1, true));
 		return this;
 	}
 	
-	public HttpParserHelper tag(String tag) {
+	public HttpJsoupSrv tag(String tag) {
 		params.add(new Quartet<String, String, Integer, Boolean>("tag", tag, 0, false));
 		return this;
 	}
 	
-	public HttpParserHelper tag(String tag, int poz) {
+	public HttpJsoupSrv tag(String tag, int poz) {
 		params.add(new Quartet<String, String, Integer, Boolean>("tag", tag, poz, false));
 		return this;
 	}
 	
-	public HttpParserHelper tags(String tag) {
+	public HttpJsoupSrv tags(String tag) {
 		params.add(new Quartet<String, String, Integer, Boolean>("tag", tag, -1, true));
 		return this;
 	}	
@@ -113,9 +136,11 @@ public class HttpParserHelper {
 		return result;
 	}
 	
+	/**
+	 * 
+	 */
 	public Elements parse(Element root) {
 		Elements localRoots = new Elements() {{ if (root != null) add(root);}};
-//		Element localRoot = null;
 		Elements result = null;
 		for (int i = 0; i < params.size(); i++) {
 			Quartet<String, String, Integer, Boolean> step = params.get(i);
@@ -132,38 +157,6 @@ public class HttpParserHelper {
 						}
 						continue;
 					}
-//					case "clazz" : {			
-//						Elements prvLocalRoots = localRoots;
-//						localRoots = new Elements();
-//						//Dla każdego elementu oddanego w poprzednim kroku
-//						for(Element localRoot: prvLocalRoots) {
-//							//Jeśli oddajemy wiele
-//							if (step.getValue3())
-//								localRoots.addAll(localRoot.getElementsByClass(step.getValue1()));
-//							//Jeśli oddajemy pojedynczy
-//							else {
-//								//Pobieramy listę znalezionych
-//								Elements localResults = localRoot.getElementsByClass(step.getValue1());
-//								//Wyłuskujemy odpowiedni, a w przypadku braku odajemy null
-//								Element localResult = localResults.size() >= step.getValue2() ? localResults.get(step.getValue2()) : null;
-//								//Jeśli znaleismy odpowiedni, to dodajemy do do lokalnej listy, na podstawie której będzie wykoanan kolejna iteracja
-//								if (localResult != null)
-//									localRoots.add(localResult);
-//							}
-//								
-//						}
-//						continue;
-//						Elements prvLocalRoots = localRoots;
-//						localRoots = new Elements();
-//						getStepResult(prvLocalRoots, step);
-//						continue;
-//					}
-//					case "tag" : {
-//						Elements prvLocalRoots = localRoots;
-//						localRoots = new Elements();
-//						getStepResult(prvLocalRoots, step);
-//						continue;
-//					}
 					default: {
 						Elements prvLocalRoots = localRoots;
 						localRoots = getStepResult(prvLocalRoots, step);

@@ -11,11 +11,12 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
 import my.com.pl.config.FilesEnv;
+import my.com.pl.srv.common.Zip7Srv;
 
 @Service
-public class MainService {
+public class MapUpdaterSrv {
 	@Autowired
-	UnzipService us;
+	Zip7Srv us;
 	@Autowired
 	GMTService gs;	
 	@Autowired
