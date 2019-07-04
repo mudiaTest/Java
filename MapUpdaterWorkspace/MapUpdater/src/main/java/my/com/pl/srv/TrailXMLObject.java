@@ -10,14 +10,21 @@ public class TrailXMLObject {
 	 * Nazwa traila
 	 */
 	String name;
+	
 	/**
 	 * Nazwa pliku ".gpx" z trailem
 	 */
 	String fileName;
+	
 	/**
 	 * Adres strony danego traila
 	 */
 	String html;
+	
+	/**
+	 * Id trasy
+	 */
+	String id;
 	
 	public String getName() {
 		return this.name;
@@ -39,6 +46,14 @@ public class TrailXMLObject {
 	
 	public String getHtml() {
 		return this.html;
+	}
+	
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	public String getId() {
+		return id;
 	}
 	
 	@XmlElement

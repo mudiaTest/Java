@@ -1,7 +1,13 @@
 package my.com.pl.srv;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +19,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 import org.apache.commons.io.FileUtils;
+import org.assertj.core.util.Arrays;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,8 +32,10 @@ import org.springframework.stereotype.Service;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import my.com.pl.srv.common.HttpJsoupSrv;
+import my.com.pl.srv.common.ParameterStringBuilder;
 import my.com.pl.srv.common.StringSrv;
 
+import static my.com.pl.srv.common.AssertionSrv.Assert;
 import static my.com.pl.srv.common.StringSrv.StrToFile;
 
 @Service
@@ -54,108 +63,23 @@ public class TrailsSrv {
 		Map<String, TrailXMLObject> result = new HashMap<String, TrailXMLObject>();
 		
 		//Pobieramy informacje o stronach z trailami
-		Elements trs = new HttpJsoupSrv().id("trails_table").tag("tbody").tags("tr").parse(doc);
+		Elements trs = hjs.clear().id("trails_table").tag("tbody").tags("tr").parse(doc);
 		if (trs.size() > 1)
 			//Pobieramy informacje o każdym trailu
 			for (Element tr : trs) {
-				Element td = tr.children().get(1);
-				Element a = new HttpJsoupSrv().tag("a").parseOne(td);
-				if (a != null) {						
-					String trailMainUrl = a.attr("href");					
-					TrailXMLObject trailObj = new TrailXMLObject();
-					//Adres strony trailem do ściągnięcia, ale to jeszcze nie jest adres samego pliku
-					trailObj.setHtml(trailMainUrl+"download/");
-					//Nazwa traila
-					trailObj.setName(a.text());
-					result.put(trailMainUrl, trailObj);
-				}
+				Element ulId = hjs.clear().clazz("star-rating allowvoting").tag("ul").parseOne(tr);
+				Element aName = hjs.clear().tag("td", null, 1).tag("a").parseOne(tr);
+				Assert(ulId != null, "Brak komórki tdId");
+				Assert(aName != null, "Brak komórki aName'");				
+				TrailXMLObject trailObj = new TrailXMLObject();
+				String trailUrl = aName.attr("href");
+				trailObj.setHtml(trailUrl);
+				trailObj.setName(aName.text());
+				String id = Arrays.asList(ulId.attr("id").split("_")).stream().reduce((first, second) -> second).orElse(null).toString();
+				trailObj.setId(id);
+				result.put(id, trailObj);
 			}
 		return result;
-	}
-	
-	private Element getLoginForm() throws IOException {
-		
-		String html= "<form class=\"formCustom \" name=\"loginform\" action=\"/wosFormCheck.php\" method=\"post\"> \r\n" + 
-				"         <div>\r\n" + 
-				"          <input type=\"hidden\" name=\"ripformname\" value=\"loginform\">\r\n" + 
-				"         </div>\r\n" + 
-				"         <input type=\"hidden\" name=\"formpage\" value=\"/login/#loginform\"> \r\n" + 
-				"         <input type=\"hidden\" name=\"fieldstack[0]\" value=\"source\">\r\n" + 
-				"         <input type=\"hidden\" name=\"source-alpha\" value=\"trailforks\"> \r\n" + 
-				"         <div class=\"center grey margin-top-10\"> \r\n" + 
-				"          <img src=\"https://es.pinkbike.org/246/sprt/i/trailforks/pb_menu_logo.png\" width=\"100\" height=\"24\" alt=\"Pinkbike logo\" title=\"\"> \r\n" + 
-				"          <p class=\"margin-top-10\"> You can login to Trailforks with your <a href=\"https://www.pinkbike.com/\" title=\"\">Pinkbike</a> account. <br> Don't have a login? <a href=\"https://www.trailforks.com/signup/\" class=\"bold\" rel=\"nofollow\" title=\"\">Join now!</a> </p> \r\n" + 
-				"         </div> \r\n" + 
-				"         <div class=\"center block\"> \r\n" + 
-				"          <table class=\"block padded5\" style=\"width: auto; margin: 0 auto;\"> \r\n" + 
-				"           <tbody>\r\n" + 
-				"            <tr> \r\n" + 
-				"             <td colspan=\"2\"> <label for=\"username\" class=\"grey\">Email or Username</label> <br> <input type=\"hidden\" name=\"fieldstack[1]\" value=\"username\"><input type=\"text\" name=\"username-login-loginlen\" size=\"30\" id=\"username\" autofocus=\"\" placeholder=\"username\" value=\"\"> </td> \r\n" + 
-				"            </tr> \r\n" + 
-				"            <tr> \r\n" + 
-				"             <td colspan=\"2\"> <label for=\"password\" class=\"grey\">Password:</label> <br> <input type=\"hidden\" name=\"fieldstack[2]\" value=\"password\"><input type=\"password\" name=\"password-password-lt200\" size=\"30\" value=\"\" id=\"password\" placeholder=\"password\"> </td> \r\n" + 
-				"            </tr> \r\n" + 
-				"            <tr> \r\n" + 
-				"             <td colspan=\"2\"></td> \r\n" + 
-				"            </tr> \r\n" + 
-				"            <tr> \r\n" + 
-				"             <td><label for=\"rememberme\">Remember me:</label></td> \r\n" + 
-				"             <td><input type=\"hidden\" name=\"fieldstack[3]\" value=\"rememberme\"><input type=\"checkbox\" name=\"rememberme\" checked=\"\" id=\"rememberme\" class=\"remembermeCheckbox\" value=\"\"></td> \r\n" + 
-				"            </tr> \r\n" + 
-				"            <tr> \r\n" + 
-				"             <td><label for=\"logoutother\">Logout all other devices:</label></td> \r\n" + 
-				"             <td><input type=\"hidden\" name=\"fieldstack[4]\" value=\"logoutother\"><input type=\"checkbox\" name=\"logoutother\" id=\"logoutother\" value=\"\"></td> \r\n" + 
-				"            </tr> \r\n" + 
-				"            <tr> \r\n" + 
-				"             <td colspan=\"2\"></td> \r\n" + 
-				"            </tr> \r\n" + 
-				"            <tr> \r\n" + 
-				"             <td colspan=\"2\"> <input type=\"submit\" name=\"submitbutton['Login']\" style=\"width:100%;\" value=\"Login\" onclick=\"if(typeof(wO) !== 'undefined') { return false; } else { wO=1;return true;}\"><input type=\"hidden\" name=\"buttondest['Login']\" value=\"https://www.trailforks.com/x_login_form/\"> </td> \r\n" + 
-				"            </tr> \r\n" + 
-				"           </tbody>\r\n" + 
-				"          </table> \r\n" + 
-				"         </div> \r\n" + 
-				"         <div class=\"center block grey\"> \r\n" + 
-				"          <a href=\"https://www.pinkbike.com/user/forgotpassword/\" class=\"underline\" rel=\"nofollow\">Forgot login/password info?</a> \r\n" + 
-				"         </div> \r\n" + 
-				"         <input type=\"text\" name=\"iebug\" value=\"1\" style=\"display:none\">\r\n" + 
-				"         <input type=\"hidden\" name=\"formhash\" value=\"+t9UzozSkiKVu3yg/RbklxuY+ZxOu/O06IA7qGsfV8DFGMCS/+voEzp3aKc0wpcFcHJsbJZrdzkZFVh9v2KiyZoyuVQkg6uwS0PixYW69sH71n6+FfE90vsTv1N7qJOTs3RahKdC7W0KDL+CVvwZdMDc3QQ1An/VzWfdTaimlUgck2BeHPxDEGoD93c2s6oTf9QEucSQqtW2sh69uvRz4S9b2zRsUNMXUzsABzBUhzFqH6g=\" autocomplete=\"off\">\r\n" + 
-				"        </form>";
-		
-		Document form = Jsoup.parse(html);
-		Elements inputs = hjs.clear().tags("input").parse(form);
-		boolean jestSubmit = false;
-		for(Element input : inputs) {
-			if (input.attr("type").equals("submit")) {
-				jestSubmit = true;
-				break;
-			}
-		}
-		if (jestSubmit) {
-			log.info("Jest SUBMIT w testowym.");
-		}
-		else {
-			log.info("Brak SUBMITu w testowym.");
-		}
-		Document loginForm = hjs.getPageDom("https://www.trailforks.com/login/");
-		String tmpFilePathBefore = "e:\\loginFormBefore.html";
-		String tmpFilePathAfter = "e:\\loginFormAfter.html";
-		StrToFile(loginForm.toString(), tmpFilePathBefore);
-//
-//		System.setProperty("phantomjs.binary.path", "libs/phantomjs") ;
-//		WebDriver ghostDriver = new PhantomJSDriver();
-//        try {
-//            ghostDriver.get(tmpFilePathBefore);
-//            Document after = Jsoup.parse(ghostDriver.getPageSource());
-//
-//            Elements inputs = hjs.clear().clazz("formCustom ").tags("input").parse(after);
-//            int t = 8;
-//        } finally {
-//            ghostDriver.quit();
-//        }
-		Element el = hjs.clear().tag("form").tag("input", new HashMap<String, String>(){{put("name", "formhash");}}).parseOne(loginForm);
-		int t = 8;
-		return el;
 	}
 	
 	/*
@@ -337,7 +261,37 @@ public class TrailsSrv {
     }
   }
 }
+
+https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie można sortowac wybranych pól bo przestaje zwracAĆ TRACK
 	 */
+	
+	private void GetTrack(String id) throws Exception {
+		URL url = new URL("https://www.trailforks.com/api/1/trail");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("id", id);
+        parameters.put("scope", "track");
+        parameters.put("api_key", "docs");
+        con.setDoOutput(true);
+        DataOutputStream out = new DataOutputStream(con.getOutputStream());
+        out.writeBytes(ParameterStringBuilder.getParamsString(parameters));
+        out.flush();
+        out.close();
+
+        con.setConnectTimeout(5000);
+        con.setReadTimeout(5000);
+
+        int status = con.getResponseCode();
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuilder content = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+	}
 	
 	public void trailsUpdate() throws Exception{
 		try {
@@ -353,55 +307,22 @@ public class TrailsSrv {
 			Integer firstPage = Integer.parseInt(numbers.child(0).text());
 			Integer lastPage = Integer.parseInt(numbers.child(numbers.childNodeSize()-1).text());
 			
-			//Przeglądamy każdą podstronę 
+			//Przeglądamy każdą podstronę zbierając z niej informacje o trailach
 			for (int i = firstPage; i <= lastPage; i++)
 			{
+				System.out.println("Zbieranie danych ze strony " + i + "/" + lastPage);
 				Document doc2 = hjs.getPageDom("https://www.trailforks.com/region/poland/trails/?difficulty=2,3,4,5,6,8,1,7&page=" + i);
-				trailPagesUrl.putAll(getTrails(doc2));											
+				trailPagesUrl.putAll(getTrails(doc2));		
+				System.out.println("Lącznie zebrano " + trailPagesUrl.size() + " traili.");
 			}
 			
-			int i = 0;
 			TrailsXMLObject trailsObj = new TrailsXMLObject();			
-			for(Map.Entry<String, TrailXMLObject> pair : trailPagesUrl.entrySet()) {	
-				//i++;
-				//Co 10 stronę przelogowujemy
-				if (i % 10 == 0) {
-					Element hashEl = getLoginForm();
-					
-					Document loginResult = hjs.postPageDom("https://www.trailforks.com/login/", new HashMap() {{
-						put("formpage", "/login/#loginform");
-						put("fieldstack[0]", "source");
-						put("source-alpha", "trailforks");
-						
-						put("fieldstack[1]", "username");					
-						put("username-login-loginlen", "mudia80@gmail.com");
-						
-						put("fieldstack[2]", "password");
-						put("password-password-lt200", "pbshinji#");
-						
-						put("fieldstack[3]", "rememberme");
-						put("rememberme", "true");
-						
-						put("fieldstack[4]", "logoutother");
-						put("logoutother", "logoutother");
-						
-						//put("", "");
-						put("buttondest['Login']", "https://www.trailforks.com/x_login_form/");
-						
-						put("iebug", "1");
-						put("formhash", hashEl.val());
-						
-						}});
-					StrToFile(loginResult.toString(), "e:\\loginResult.html");
-					Pattern compiledPattern = Pattern.compile("There are ERRORS on this form. Detail in each field");
-					Matcher matcher = compiledPattern.matcher(loginResult.getElementById("loginform").html());
-					matcher.find();
-					//List<String> lines = rege ss.filterLines(loginResult.getElementById("loginform").html(), "There are ERRORS on this form. Detail in each field");
-					int t = 0;
-				}
-				Document doc3 = hjs.getPageDom(pair.getValue().getHtml());					
-				Element a = new HttpJsoupSrv().id("file").clazz("inline padded10").tag("li").tag("a").parseOne(doc3);	
-				trailsObj.addTrail(pair.getValue());				
+			for(Map.Entry<String, TrailXMLObject> pair : trailPagesUrl.entrySet()) {
+				GetTrack(pair.getValue().getId());
+//				Document doc3 = hjs.getPageDom(pair.getValue().getHtml());					
+//				Element a = new HttpJsoupSrv().id("file").clazz("inline padded10").tag("li").tag("a").parseOne(doc3);	
+//				trailsObj.addTrail(pair.getValue());	
+				
 			}
 			
 			File file = new File("E:\\trails.xml");
