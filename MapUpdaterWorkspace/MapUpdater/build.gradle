@@ -55,5 +55,12 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.javatuples/javatuples
 	compile group: 'org.javatuples', name: 'javatuples', version: '1.2'
 	
+	//phantomjsdriver
+	// https://mvnrepository.com/artifact/com.jongsoft.utils/highchart-phantomjs
+	compile group: 'com.jongsoft.utils', name: 'highchart-phantomjs', version: '2.1.1'
+
+	//logowanie
+	compile group: 'log4j', name: 'log4j', version: '1.2.17' 
+	
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }

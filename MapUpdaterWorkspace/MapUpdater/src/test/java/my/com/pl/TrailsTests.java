@@ -46,8 +46,7 @@ public class TrailsTests {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
+	}	
 	
 	@Test
 	public void trailForks1() throws Exception {
