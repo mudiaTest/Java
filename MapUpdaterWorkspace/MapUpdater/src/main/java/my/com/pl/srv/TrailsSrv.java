@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
+import java.net.MalformedURLException;	
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,7 +20,6 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.util.Arrays;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -34,6 +33,9 @@ import lombok.extern.slf4j.Slf4j;
 import my.com.pl.srv.common.HttpJsoupSrv;
 import my.com.pl.srv.common.ParameterStringBuilder;
 import my.com.pl.srv.common.StringSrv;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static my.com.pl.srv.common.AssertionSrv.Assert;
 import static my.com.pl.srv.common.StringSrv.StrToFile;
@@ -265,32 +267,71 @@ public class TrailsSrv {
 https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie można sortowac wybranych pól bo przestaje zwracAĆ TRACK
 	 */
 	
-	private void GetTrack(String id) throws Exception {
-		URL url = new URL("https://www.trailforks.com/api/1/trail");
+	/*private void GetTrack(String id) throws Exception {
+		//Przygotowywanie zapytania API
+		URL url = new URL("https://www.trailforks.com/api/1/trail?id=178177&scope=track&api_key=docs");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
-
         Map<String, String> parameters = new HashMap<>();
         parameters.put("id", id);
         parameters.put("scope", "track");
         parameters.put("api_key", "docs");
         con.setDoOutput(true);
+        con.setConnectTimeout(5000);
+        con.setReadTimeout(5000);
+        //Przygotowywanie obiektu przechowującego odpowiedz
         DataOutputStream out = new DataOutputStream(con.getOutputStream());
         out.writeBytes(ParameterStringBuilder.getParamsString(parameters));
         out.flush();
         out.close();
-
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-
+        //Odpalenie zapytania
         int status = con.getResponseCode();
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        //Zbieranie wyników  
         String inputLine;
         StringBuilder content = new StringBuilder();
         while ((inputLine = in.readLine()) != null) {
             content.append(inputLine);
         }
         in.close();
+	}*/
+	
+	private String GetTrack(String id) throws Exception {
+		//Przygotowywanie zapytania API
+		
+		URL url = new URL("https://www.trailforks.com/api/1/trail?id="+id+"&scope=track&api_key=docs");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        con.setDoOutput(true);
+        con.setConnectTimeout(5000);
+        con.setReadTimeout(5000);             
+        //Wykomentowany kod nie działa - problemy z pabijaniem parametrów
+        /*URL url = new URL("https://www.trailforks.com/api/1/trail");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("POST");
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put("id", id);
+        parameters.put("scope", "track");
+        parameters.put("api_key", "docs");
+        con.setDoOutput(true);
+        con.setConnectTimeout(5000);
+        con.setReadTimeout(5000);
+        //Przygotowywanie obiektu przechowującego odpowiedz
+        DataOutputStream out = new DataOutputStream(con.getOutputStream());
+        out.writeBytes(ParameterStringBuilder.getParamsString(parameters));
+        out.flush();
+        out.close();*/               
+        //Odpalenie zapytania
+        int status = con.getResponseCode();
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        //Zbieranie wyników  
+        String inputLine;
+        StringBuilder content = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }        
+        in.close();
+        return content.toString();
 	}
 	
 	public void trailsUpdate() throws Exception{
@@ -308,7 +349,7 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 			Integer lastPage = Integer.parseInt(numbers.child(numbers.childNodeSize()-1).text());
 			
 			//Przeglądamy każdą podstronę zbierając z niej informacje o trailach
-			for (int i = firstPage; i <= lastPage; i++)
+			for (int i = firstPage; i <= /*lastPage*/firstPage; i++)
 			{
 				System.out.println("Zbieranie danych ze strony " + i + "/" + lastPage);
 				Document doc2 = hjs.getPageDom("https://www.trailforks.com/region/poland/trails/?difficulty=2,3,4,5,6,8,1,7&page=" + i);
@@ -318,7 +359,19 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 			
 			TrailsXMLObject trailsObj = new TrailsXMLObject();			
 			for(Map.Entry<String, TrailXMLObject> pair : trailPagesUrl.entrySet()) {
-				GetTrack(pair.getValue().getId());
+				String trailStr = GetTrack(pair.getValue().getId());
+				
+				ObjectMapper mapper = new ObjectMapper();
+				
+				JsonNode root = mapper.readTree(trailStr); 
+				JsonNode dataNode =root.get("data");  
+				//double height = root.add("/dimensions/1").asDoubleValue();// assuming it's the second number in there
+				TrailDataObject trailData = mapper.treeToValue(dataNode, TrailDataObject.class);
+				//TrailDataObject trailData = mapper.readValue(trailStr, TrailDataObject.class);
+				int t = 0;
+				
+				
+				
 //				Document doc3 = hjs.getPageDom(pair.getValue().getHtml());					
 //				Element a = new HttpJsoupSrv().id("file").clazz("inline padded10").tag("li").tag("a").parseOne(doc3);	
 //				trailsObj.addTrail(pair.getValue());	
@@ -331,7 +384,6 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 //			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			jaxbMarshaller.marshal(trailsObj, file);
 			
-			int t = 0;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
