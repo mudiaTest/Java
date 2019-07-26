@@ -1,4 +1,4 @@
-package my.com.pl.srv;
+package my.com.pl.component;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 */
 
 @JsonIgnoreProperties({"encodedPath", "encodedLevels"})
-public class TrackDataObject {
+public class RawTrackData {
 	public String latitude;
 	public String longitude;
 	public String altitude;

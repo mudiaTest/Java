@@ -57,4 +57,12 @@ public class StringSrv {
 			e.printStackTrace();
 		}
 	}
+	
+	static public String Concat(String prefix, String dst, String text) {
+		if (!dst.equals(""))
+			return dst + prefix + text;
+		else
+			return text;
+		
+	}
 }

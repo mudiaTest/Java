@@ -1,6 +1,10 @@
-package my.com.pl.srv;
+package my.com.pl.component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+
+//https://www.trailforks.com/about/metadata/
 
 /*
 {
@@ -274,7 +278,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 //, "track"
 })
 
-public class TrailDataObject {
+public class TrailData {
 	public String trailid;//": "48667",
 	public Integer vid;//": "3",
 	public String title;//": "OldSchoolowy",
@@ -284,7 +288,13 @@ public class TrailDataObject {
 	public Integer direction;// "2",
 	public Integer climb_difficulty;// "0",
 	public Integer act_mtb;// "1",
-	public Float latitude;// "54.396069",
-	public Float longitude;// "18.528847",
-	public TrackDataObject track;
+	public Float latitude;// "54.396069", - pierwsza wartość w geopunkcie
+	public Float longitude;// "18.528847", - druga wartość w geopunkcie
+	public RawTrackData track;
+	@JsonIgnore
+	public TrackData trackData = new TrackData();
+	
+	public void TrackFromRaw() {
+		trackData.FillFromRaw(track);
+	}
 }

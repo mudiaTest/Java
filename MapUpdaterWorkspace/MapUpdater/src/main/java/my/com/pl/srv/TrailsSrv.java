@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;	
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.commons.io.FileUtils;
 import org.assertj.core.util.Arrays;
+import org.assertj.core.util.Files;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -28,8 +30,14 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
+import my.com.pl.component.RawTrackData;
+import my.com.pl.component.TrailData;
+import my.com.pl.component.TrailXML;
+import my.com.pl.component.TrailsXML;
+import my.com.pl.config.TrailForksEnv;
 import my.com.pl.srv.common.HttpJsoupSrv;
 import my.com.pl.srv.common.ParameterStringBuilder;
 import my.com.pl.srv.common.StringSrv;
@@ -37,8 +45,10 @@ import my.com.pl.srv.common.StringSrv;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static my.com.pl.srv.common.AssertionSrv.Assert;
-import static my.com.pl.srv.common.StringSrv.StrToFile;
+import ch.qos.logback.classic.Logger;
+
+import static my.com.pl.srv.common.AssertionSrv.*;
+import static my.com.pl.srv.common.StringSrv.*;
 
 @Service
 @Slf4j
@@ -47,7 +57,9 @@ public class TrailsSrv {
 	@Autowired
 	HttpJsoupSrv hjs;
 	@Autowired
-	StringSrv ss;
+	MPSrv mps;
+	@Autowired
+	TrailForksEnv tfv;
 	
 	private void CheckIfOne(Collection col) throws Exception
 	{
@@ -57,12 +69,12 @@ public class TrailsSrv {
 	
 	/**
 	 * Pobieramy informacje o dostępnych trailach
-	 * @param doc
+	 * @param doc Kod całej strony z listą ścieżek. 
 	 * @return Mapa: klucz - url strony traila, val - TrailXMLObject
 	 * @throws Exception
 	 */
-	private Map<String, TrailXMLObject> getTrails(Document doc) throws Exception{
-		Map<String, TrailXMLObject> result = new HashMap<String, TrailXMLObject>();
+	private Map<String, TrailXML> getTrails(Document doc) throws Exception{
+		Map<String, TrailXML> result = new HashMap<String, TrailXML>();
 		
 		//Pobieramy informacje o stronach z trailami
 		Elements trs = hjs.clear().id("trails_table").tag("tbody").tags("tr").parse(doc);
@@ -73,7 +85,7 @@ public class TrailsSrv {
 				Element aName = hjs.clear().tag("td", null, 1).tag("a").parseOne(tr);
 				Assert(ulId != null, "Brak komórki tdId");
 				Assert(aName != null, "Brak komórki aName'");				
-				TrailXMLObject trailObj = new TrailXMLObject();
+				TrailXML trailObj = new TrailXML();
 				String trailUrl = aName.attr("href");
 				trailObj.setHtml(trailUrl);
 				trailObj.setName(aName.text());
@@ -296,34 +308,42 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
         in.close();
 	}*/
 	
-	private String GetTrack(String id) throws Exception {
-		//Przygotowywanie zapytania API
+	/**
+	 * Pobiera dane dla traila za pomocą API serwisu
+	 * @param id - cyfrowy indentyfikator traila
+	 * @return 
+	 * @throws Exception
+	 */
+	private TrailData GetRawTrailData(String id) throws Exception {
 		
+		//Przygotowywanie zapytania API		
 		URL url = new URL("https://www.trailforks.com/api/1/trail?id="+id+"&scope=track&api_key=docs");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         con.setDoOutput(true);
         con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);             
+        con.setReadTimeout(5000);        
         //Wykomentowany kod nie działa - problemy z pabijaniem parametrów
-        /*URL url = new URL("https://www.trailforks.com/api/1/trail");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.setRequestMethod("POST");
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put("id", id);
-        parameters.put("scope", "track");
-        parameters.put("api_key", "docs");
-        con.setDoOutput(true);
-        con.setConnectTimeout(5000);
-        con.setReadTimeout(5000);
-        //Przygotowywanie obiektu przechowującego odpowiedz
-        DataOutputStream out = new DataOutputStream(con.getOutputStream());
-        out.writeBytes(ParameterStringBuilder.getParamsString(parameters));
-        out.flush();
-        out.close();*/               
+	        /*URL url = new URL("https://www.trailforks.com/api/1/trail");
+	        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+	        con.setRequestMethod("POST");
+	        Map<String, String> parameters = new HashMap<>();
+	        parameters.put("id", id);
+	        parameters.put("scope", "track");
+	        parameters.put("api_key", "docs");
+	        con.setDoOutput(true);
+	        con.setConnectTimeout(5000);
+	        con.setReadTimeout(5000);
+	        //Przygotowywanie obiektu przechowującego odpowiedz
+	        DataOutputStream out = new DataOutputStream(con.getOutputStream());
+	        out.writeBytes(ParameterStringBuilder.getParamsString(parameters));
+	        out.flush();
+	        out.close();*/ 
+        
         //Odpalenie zapytania
         int status = con.getResponseCode();
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        
         //Zbieranie wyników  
         String inputLine;
         StringBuilder content = new StringBuilder();
@@ -331,15 +351,25 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
             content.append(inputLine);
         }        
         in.close();
-        return content.toString();
+        
+        //Parsowanie pobranego JSona
+        ObjectMapper mapper = new ObjectMapper();		
+		JsonNode root = mapper.readTree(content.toString()); 
+		JsonNode dataNode =root.get("data");  
+		TrailData result = mapper.treeToValue(dataNode, TrailData.class);
+        return result;
 	}
 	
-	public void trailsUpdate() throws Exception{
+	/**
+	 * Tworzy od nowa pliki zródłowe mapy: img i mp 
+	 * @throws Exception
+	 */
+	public void recreateMapFiles() throws Exception{
 		try {
-			Map<String, TrailXMLObject> trailPagesUrl = new HashMap<String, TrailXMLObject>();
+			Map<String, TrailXML> trailPagesUrl = new HashMap<String, TrailXML>();
 			
 			//Pobieranie informacji o ilości podstron
-			Document doc1 = hjs.getPageDom("https://www.trailforks.com/region/poland/trails/?difficulty=2,3,4,5,6,8,1,7");
+			Document doc1 = hjs.getPageDom("https://www.trailforks.com/region/" + tfv.getRegion() + "/trails/?difficulty=" + tfv.getDifficulty());
 			Elements numbersList = doc1.getElementsByClass("paging-middle centertext");
 			
 			//Może istnieć tylko jeden element z którego czytamy ilość stron
@@ -351,39 +381,54 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 			//Przeglądamy każdą podstronę zbierając z niej informacje o trailach
 			for (int i = firstPage; i <= /*lastPage*/firstPage; i++)
 			{
-				System.out.println("Zbieranie danych ze strony " + i + "/" + lastPage);
-				Document doc2 = hjs.getPageDom("https://www.trailforks.com/region/poland/trails/?difficulty=2,3,4,5,6,8,1,7&page=" + i);
+				System.out.println("Zbieranie listy traili ze strony " + i + "/" + lastPage);
+				Document doc2 = hjs.getPageDom("https://www.trailforks.com/region/" + tfv.getRegion() + "/trails/?difficulty=" + tfv.getDifficulty() + "&page=" + i);
 				trailPagesUrl.putAll(getTrails(doc2));		
 				System.out.println("Lącznie zebrano " + trailPagesUrl.size() + " traili.");
 			}
 			
-			TrailsXMLObject trailsObj = new TrailsXMLObject();			
-			for(Map.Entry<String, TrailXMLObject> pair : trailPagesUrl.entrySet()) {
-				String trailStr = GetTrack(pair.getValue().getId());
-				
-				ObjectMapper mapper = new ObjectMapper();
-				
-				JsonNode root = mapper.readTree(trailStr); 
-				JsonNode dataNode =root.get("data");  
-				//double height = root.add("/dimensions/1").asDoubleValue();// assuming it's the second number in there
-				TrailDataObject trailData = mapper.treeToValue(dataNode, TrailDataObject.class);
-				//TrailDataObject trailData = mapper.readValue(trailStr, TrailDataObject.class);
-				int t = 0;
-				
-				
-				
-//				Document doc3 = hjs.getPageDom(pair.getValue().getHtml());					
-//				Element a = new HttpJsoupSrv().id("file").clazz("inline padded10").tag("li").tag("a").parseOne(doc3);	
-//				trailsObj.addTrail(pair.getValue());	
-				
+			//Pobieranie do trails danych o trailach (za pośrednictwem API) 
+			List<TrailData> trails = new ArrayList<TrailData>();		
+			int loop = 0;
+			for(Map.Entry<String, TrailXML> pair : trailPagesUrl.entrySet()) {							
+				TrailData trailData = GetRawTrailData(pair.getValue().getId());
+				if (trailData == null) { 
+					System.out.println("Trail nie został pobrany - może być hidden; " + pair.getValue().getInfo());
+					continue;
+				}
+				trailData.TrackFromRaw();
+				trails.add(trailData);	
+				loop++;
+				if (loop > 0 && loop % tfv.getLoopstep() == 0)
+					System.out.println("Zbierano " + loop + "/" + trailPagesUrl.size() + " traili");
 			}
 			
+			//Utworzenie linii pliku MP z traili
+			List<String> lines = mps.getMpLines(trails);
+			
+			System.out.println("Tworzenie pliku: '" + tfv.getMpFile() + "'");
+			//Zapis do pliku mp
+			StrLstToFile(lines, tfv.getMpFile());
+			try {
+				//tu dodać tworzenie img files.scrImg z mp
+			}
+			finally {
+				if (tfv.isDeleteMpFile()) {
+					System.out.println("Usuwanie pliku: '" + tfv.getMpFile() + "'");
+					log.info("Usuwanie pliku: '" + tfv.getMpFile() + "'");
+					Files.delete(new File(tfv.getMpFile()));
+				}
+			}
+			
+			/*
 			File file = new File("E:\\trails.xml");
-			JAXBContext jaxbContext = JAXBContext.newInstance(TrailsXMLObject.class);
+			JAXBContext jaxbContext = JAXBContext.newInstance(TrailsXML.class);
 			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 //			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 			jaxbMarshaller.marshal(trailsObj, file);
+			*/
 			
+			int i = 0;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

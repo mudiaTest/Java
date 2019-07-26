@@ -1,11 +1,11 @@
-package my.com.pl.srv;
+package my.com.pl.component;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class TrailXMLObject {
+public class TrailXML {
 	/**
 	 * Nazwa traila
 	 */
@@ -59,5 +59,9 @@ public class TrailXMLObject {
 	@XmlElement
 	public void setHtml(String html) {
 		this.html = html;
+	}
+	
+	public String getInfo() {
+		return "name:'" + name + "', id:'" + id + "'"; 
 	}
 }

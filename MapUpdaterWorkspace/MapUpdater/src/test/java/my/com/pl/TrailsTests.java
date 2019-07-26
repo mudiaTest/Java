@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import my.com.pl.srv.MapUpdaterSrv;
 import my.com.pl.srv.TrailsSrv;
 import my.com.pl.srv.common.HttpJsoupSrv;
 
@@ -23,6 +24,8 @@ public class TrailsTests {
 	
 	@Autowired
 	TrailsSrv ts;
+	@Autowired
+	MapUpdaterSrv mus;
 	
 	/*
 	 * Elemnts = List<Element>
@@ -31,25 +34,26 @@ public class TrailsTests {
 	 *   - nie pokazuje nodów, które zostały doczytane potem
 	 */
 	//@Test
-	public void httpGetDocument() {
-		try {
-			Document doc = hjs.getPageDom("http://namzalezy.pl/");
-			Elements body = doc.select("body");
-			Elements divs = doc.select("div");
-			Element div = doc.selectFirst("div");
-			Elements el1 = doc.getElementsByAttribute("cookies-message");
-			Elements el2 = doc.getElementsByAttribute("id");
-			Elements el3 = doc.getElementsByAttributeValue("id", "cookies-message-container");
-			Elements el4 = doc.getElementsByAttributeValueContaining("id", "cookies-mes");
-			int i = 0;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}	
+//	public void httpGetDocument() {
+//		try {
+//			Document doc = hjs.getPageDom("http://namzalezy.pl/");
+//			Elements body = doc.select("body");
+//			Elements divs = doc.select("div");
+//			Element div = doc.selectFirst("div");
+//			Elements el1 = doc.getElementsByAttribute("cookies-message");
+//			Elements el2 = doc.getElementsByAttribute("id");
+//			Elements el3 = doc.getElementsByAttributeValue("id", "cookies-message-container");
+//			Elements el4 = doc.getElementsByAttributeValueContaining("id", "cookies-mes");
+//			int i = 0;
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}	
 	
 	@Test
 	public void trailForks1() throws Exception {
-		ts.trailsUpdate();
+		ts.recreateMapFiles();
+		mus.run();
 	}
 }
