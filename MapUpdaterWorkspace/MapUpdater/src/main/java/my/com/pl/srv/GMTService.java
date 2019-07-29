@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class GMTService {
 	
 //	private String testCommand = "gmt -S -f 6324,1 -o C:\\Garmin\\t -m \"test\" C:\\Garmin\\t\\src\\6*.img";
-	private String stReg = "HKLM\\SOFTWARE\\Wow6432Node\\Garmin\\MapSource\\Families\\FAMILY_";
+	private String stReg = "HKLM\\SOFTWARE\\Wow6432Node\\Garmin\\mapSource\\Families\\FAMILY_";
 	private String reg = "C:\\Windows\\system32\\reg.exe";
 	
 	private String getRegPath(String dstMapFid, String outputName) {
@@ -78,12 +78,12 @@ public class GMTService {
 		return new BufferedReader(isr).lines().collect(Collectors.joining("\n"));
 	}
 	
-	private void createMapsetImg(String inOutDir) throws Exception {
-		String mpFilePath = inOutDir + "\\mapset.mp";
+	public void createMapsetImg(String inOutDir, String mpFileName, String imgFileName) throws Exception {
+		String mpFilePath = inOutDir + "\\" + mpFileName;
 		if (!(new File(mpFilePath)).exists())
 			throw new Exception("" + mpFilePath + " does not exist.");
 		Runtime rt = Runtime.getRuntime();
-		String command = "cgpsmapper " + mpFilePath + " -o " + inOutDir + "\\mapset.img";
+		String command = "cgpsmapper " + mpFilePath + " -o " + inOutDir + "\\" + imgFileName;
 		System.out.println("-> " + command);
 		Process pr1 = rt.exec(command);
 		BufferedReader stdInput = new BufferedReader(new InputStreamReader(pr1.getInputStream()));
@@ -104,7 +104,7 @@ public class GMTService {
 			Thread.sleep(1000);		
 		}
 		System.out.println("");
-		String imgFilePath = inOutDir + "\\mapset.img";
+		String imgFilePath = inOutDir + "\\" + imgFileName;
 		if (!(new File(imgFilePath)).exists())
 			throw new Exception("" + imgFilePath + " does not exist.");
 	}
@@ -134,7 +134,8 @@ public class GMTService {
 			System.out.println("Directory error:"+"\n"+e.getMessage());
 		}
 		
-		String dstTypFilePath = outputDir+"\\mapset.img";
+		String mapsetFileName = "mapset";
+		String dstTypFilePath = outputDir+"\\"+mapsetFileName+".img";
 		Runtime rt = Runtime.getRuntime();
 		String command = conacatMapSourceCommand(dstMapFid, outputDir, outputName, sourceImgs, srcMapSetTypPath);
 		System.out.println("-> " + command);
@@ -164,7 +165,7 @@ public class GMTService {
 		/*
 		 * Tworzenie mapset.img
 		 */
-		createMapsetImg(outputDir);
+		createMapsetImg(outputDir, mapsetFileName+".mp", mapsetFileName+".img");
 		System.out.println("File 'mapset.img created using cgpsmapper.");
 		
 		/*

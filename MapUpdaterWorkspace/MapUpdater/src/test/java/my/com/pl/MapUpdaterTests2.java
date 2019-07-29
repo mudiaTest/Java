@@ -1,58 +1,42 @@
 package my.com.pl;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-
-import org.apache.http.client.ClientProtocolException;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import my.com.pl.component.TrailXML;
-import my.com.pl.component.TrailsXML;
-import my.com.pl.config.FilesEnv;
-import my.com.pl.srv.TrailsSrv;
-import my.com.pl.srv.GMTService;
-import my.com.pl.srv.common.HttpJsoupSrv;
-import my.com.pl.srv.common.HttpReaderSrv;
-import my.com.pl.srv.common.Zip7Srv;
+import lombok.extern.log4j.Log4j;
+import my.com.pl.config.TrailForksEnv;
+import my.com.pl.srv.MapUpdaterSrv;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class MapUpdaterApplicationTests {
+@Log4j
+public class MapUpdaterTests2 {
+
+	
+//	@Autowired
+//	HttpReaderSrv ds;
+//	@Autowired
+//	Zip7Srv us;
+//	@Autowired
+//	GMTService gs;	
+//	@Autowired
+//	HttpReaderSrv hrs;	
+	@Autowired
+	MapUpdaterSrv mus;
+	@Autowired
+	TrailForksEnv tfv;
+	
+	@Test
+	public void fullTest() {
+		mus.run();
+	}
 
 	//@Test
-	public void contextLoads() {
-	}
-	
-	@Autowired
-	HttpReaderSrv ds;
-	@Autowired
-	Zip7Srv us;
-	@Autowired
-	GMTService gs;	
-	@Autowired
-	FilesEnv fenv;
-	
-	@Autowired
-	HttpReaderSrv hrs;	
+//	public void contextLoads() {
+//	}
 	
 	//@Test
 //	public void httpGetLines() {
@@ -68,9 +52,7 @@ public class MapUpdaterApplicationTests {
 //		}
 //	}	
 	
-	@Autowired
-	TrailsSrv ts;
-	
+
 	//Nieużywane
 //	private boolean download(Path tmpFilePath) {
 //		boolean exists;

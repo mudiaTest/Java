@@ -10,10 +10,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import my.com.pl.config.FilesEnv;
+import my.com.pl.config.TrailForksEnv;
 import my.com.pl.srv.common.Zip7Srv;
 
 @Service
+@Slf4j
 public class MapUpdaterSrv {
 	@Autowired
 	Zip7Srv us;
@@ -21,9 +24,24 @@ public class MapUpdaterSrv {
 	GMTService gs;	
 	@Autowired
 	FilesEnv fenv;
+	@Autowired
+	TrailForksEnv tfv;
 	
 	public void run() {
 		boolean goNext = true;
+		
+		//Badanie poprawnosci 
+		if (fenv.getKdDst() < 1 || fenv.getKdDst() > 4) {
+			System.out.println("Niezdefiniowana akcja o kodzie '" + fenv.getKdDst() + "'");
+			return;
+		}	
+		//Pomijanie tworzenia mapy
+		if (fenv.getKdDst() == 4) {
+			System.out.println("Nie zdefiniowano żadnej akcji (kopiowania mapy na kartę lub instalacji w mapSource).");
+			return;
+		}
+		
+		
 		if(!fenv.getTmpLocation().equals("")){
 			/*
 			 * Sprawdzanie istnienia pliku ze zródłową mapą
@@ -47,10 +65,6 @@ public class MapUpdaterSrv {
 		/*
 		 * Tworzenie mapy
 		 */
-		if (fenv.getKdDst() > 3) {
-			System.out.println("Niezdefiniowana akcja o kodzie '" + fenv.getKdDst() + "'");
-			return;
-		}		
 		if (fenv.getKdDst() == 1 || fenv.getKdDst() == 3) {
 			goNext = addMapToMapSource();
 			if (!goNext){

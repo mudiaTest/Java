@@ -360,11 +360,13 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
         return result;
 	}
 	
+	@Autowired
+	GMTService gs;
 	/**
 	 * Tworzy od nowa pliki zródłowe mapy: img i mp 
 	 * @throws Exception
 	 */
-	public void recreateMapFiles() throws Exception{
+	public void recreateImg() throws Exception{
 		try {
 			Map<String, TrailXML> trailPagesUrl = new HashMap<String, TrailXML>();
 			
@@ -384,7 +386,7 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 				System.out.println("Zbieranie listy traili ze strony " + i + "/" + lastPage);
 				Document doc2 = hjs.getPageDom("https://www.trailforks.com/region/" + tfv.getRegion() + "/trails/?difficulty=" + tfv.getDifficulty() + "&page=" + i);
 				trailPagesUrl.putAll(getTrails(doc2));		
-				System.out.println("Lącznie zebrano " + trailPagesUrl.size() + " traili.");
+				System.out.println("Lącznie znaleziono " + trailPagesUrl.size() + " traili.");
 			}
 			
 			//Pobieranie do trails danych o trailach (za pośrednictwem API) 
@@ -402,6 +404,7 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 				if (loop > 0 && loop % tfv.getLoopstep() == 0)
 					System.out.println("Zbierano " + loop + "/" + trailPagesUrl.size() + " traili");
 			}
+			System.out.println("Zbierano " + loop + "/" + trailPagesUrl.size() + " traili");
 			
 			//Utworzenie linii pliku MP z traili
 			List<String> lines = mps.getMpLines(trails);
@@ -409,16 +412,19 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 			System.out.println("Tworzenie pliku: '" + tfv.getMpFile() + "'");
 			//Zapis do pliku mp
 			StrLstToFile(lines, tfv.getMpFile());
-			try {
-				//tu dodać tworzenie img files.scrImg z mp
-			}
-			finally {
-				if (tfv.isDeleteMpFile()) {
-					System.out.println("Usuwanie pliku: '" + tfv.getMpFile() + "'");
-					log.info("Usuwanie pliku: '" + tfv.getMpFile() + "'");
-					Files.delete(new File(tfv.getMpFile()));
-				}
-			}
+			
+//			try {
+//				//tu dodać tworzenie img files.scrImg z mp
+//				//gs.createMapsetImg(outputDir, "mapset.mp", "mapset.img");
+//				//System.out.println("File 'mapset.img created using cgpsmapper.");
+//			}
+//			finally {
+//				if (tfv.isDeleteMpFile()) {
+//					System.out.println("Usuwanie pliku: '" + tfv.getMpFile() + "'");
+//					log.info("Usuwanie pliku: '" + tfv.getMpFile() + "'");
+//					Files.delete(new File(tfv.getMpFile()));
+//				}
+//			}
 			
 			/*
 			File file = new File("E:\\trails.xml");
@@ -432,6 +438,22 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	@Autowired
+	MapUpdaterSrv mus;
+	public void recreateAndInstall() throws Exception {
+		recreateImg();
+		try {
+			mus.run();
+		}
+		finally {
+			if (tfv.isDeleteMpFile()) {
+				System.out.println("Usuwanie pliku: '" + tfv.getMpFile() + "'");
+				log.info("Usuwanie pliku: '" + tfv.getMpFile() + "'");
+				Files.delete(new File(tfv.getMpFile()));
+			}
 		}
 	}
 }

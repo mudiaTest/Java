@@ -18,7 +18,7 @@ public class FilesEnv {
 	
 	String dstCardPath;
 	String dstMapSourceDir;
-	String dstMapNumber;
+	//String dstMapFid;
 	String dstMapName;
 	Integer priority;
 	Boolean transparency;
