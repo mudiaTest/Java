@@ -381,7 +381,8 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 			Integer lastPage = Integer.parseInt(numbers.child(numbers.childNodeSize()-1).text());
 			
 			//Przeglądamy każdą podstronę zbierając z niej informacje o trailach
-			for (int i = firstPage; i <= /*lastPage*/firstPage; i++)
+			//for (int i = firstPage; i <= firstPage; i++)//kod do testów
+			for (int i = firstPage; i <= lastPage; i++)
 			{
 				System.out.println("Zbieranie listy traili ze strony " + i + "/" + lastPage);
 				Document doc2 = hjs.getPageDom("https://www.trailforks.com/region/" + tfv.getRegion() + "/trails/?difficulty=" + tfv.getDifficulty() + "&page=" + i);

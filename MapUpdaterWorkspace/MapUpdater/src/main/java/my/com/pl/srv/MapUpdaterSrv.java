@@ -75,7 +75,7 @@ public class MapUpdaterSrv {
 		if (fenv.getKdDst() == 2 || fenv.getKdDst() == 3) {
 			goNext = addMapToCard();
 			if (!goNext){
-				System.out.println("Nie powiodła się akcja utworzenia mapy");
+				System.out.println("Nie powiodła się akcja zapisu mapy na nośniku");
 				return;	
 			}
 		}

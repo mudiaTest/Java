@@ -134,39 +134,45 @@ public class GMTService {
 			System.out.println("Directory error:"+"\n"+e.getMessage());
 		}
 		
-		String mapsetFileName = "mapset";
-		String dstTypFilePath = outputDir+"\\"+mapsetFileName+".img";
-		Runtime rt = Runtime.getRuntime();
-		String command = conacatMapSourceCommand(dstMapFid, outputDir, outputName, sourceImgs, srcMapSetTypPath);
-		System.out.println("-> " + command);
-		Process pr1 = rt.exec(command);
-		//pr1.waitFor();
-		BufferedReader stdInput = new BufferedReader(new InputStreamReader(pr1.getInputStream()));
-		
-		BufferedReader stdError = new BufferedReader(new InputStreamReader(pr1.getErrorStream()));
-		String line;
-		System.out.print("Creating map files ");
-		while(pr1.isAlive())
-		{
-			System.out.print(".");
-			//Opróżnianie input, aby nie zablokować działania procesu
-			while ((line = stdInput.readLine()) != null) {
-//				System.out.println(" input -> " + line);
-			}
-			while ((line = stdError.readLine()) != null) {
-				System.out.println(" error -> " + line);
-			}
-			Thread.sleep(1000);		
-		}
-		System.out.println("");
-		InputStreamReader isr1 = new InputStreamReader(pr1.getInputStream());
-		System.out.println("Map files created.");					
-		
+		String command;
+		Runtime rt = Runtime.getRuntime();;
 		/*
-		 * Tworzenie mapset.img
+		 * Tworzenie pliku mapset.img - istotne na pewno dla OSM, ale czy dla innych
 		 */
-		createMapsetImg(outputDir, mapsetFileName+".mp", mapsetFileName+".img");
-		System.out.println("File 'mapset.img created using cgpsmapper.");
+		if (!"".equals(sourceImgs)){
+			String mapsetFileName = "mapset";
+			String dstTypFilePath = outputDir+"\\"+mapsetFileName+".img";			
+			command = conacatMapSourceCommand(dstMapFid, outputDir, outputName, sourceImgs, srcMapSetTypPath);
+			System.out.println("-> " + command);
+			Process pr1 = rt.exec(command);
+			//pr1.waitFor();
+			BufferedReader stdInput = new BufferedReader(new InputStreamReader(pr1.getInputStream()));
+			
+			BufferedReader stdError = new BufferedReader(new InputStreamReader(pr1.getErrorStream()));
+			String line;
+			System.out.print("Creating map files ");
+			while(pr1.isAlive())
+			{
+				System.out.print(".");
+				//Opróżnianie input, aby nie zablokować działania procesu
+				while ((line = stdInput.readLine()) != null) {
+	//				System.out.println(" input -> " + line);
+				}
+				while ((line = stdError.readLine()) != null) {
+					System.out.println(" error -> " + line);
+				}
+				Thread.sleep(1000);		
+			}
+			System.out.println("");
+			InputStreamReader isr1 = new InputStreamReader(pr1.getInputStream());
+			System.out.println("Map files created.");							
+		
+			/*
+			 * Tworzenie mapset.img
+			 */
+			createMapsetImg(outputDir, mapsetFileName+".mp", mapsetFileName+".img");
+			System.out.println("File 'mapset.img created using cgpsmapper.");
+		}
 		
 		/*
 		 * Deinstalacja starej mapy - nie da błędu jeśli stara mapa nie istnieje

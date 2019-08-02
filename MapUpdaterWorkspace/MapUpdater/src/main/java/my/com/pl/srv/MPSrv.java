@@ -93,7 +93,7 @@ public class MPSrv {
 	
 	//Geopunkt ma budowę (latitude, longitude)
 	private String GetPoint(TrackData track, int idx) {
-		return "(" + track.latitude.get(0).toString() +"," + track.longitude.get(0).toString() + ")";
+		return "(" + track.latitude.get(idx).toString() +"," + track.longitude.get(idx).toString() + ")";
 	}
 	
 	private String GetPoi(TrailData trail) {
