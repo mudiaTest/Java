@@ -14,6 +14,7 @@ public class TrailForksEnv {
 	String region;
 	String difficulty;
 	String mpFile;
+	String imgFile;
 	boolean deleteMpFile;
 	
 	String[] difficultyLvl;

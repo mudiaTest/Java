@@ -288,8 +288,8 @@ public class TrailData {
 	public Integer direction;// "2",
 	public Integer climb_difficulty;// "0",
 	public Integer act_mtb;// "1",
-	public Float latitude;// "54.396069", - pierwsza wartość w geopunkcie
-	public Float longitude;// "18.528847", - druga wartość w geopunkcie
+	public String latitude;// "54.396069", - pierwsza wartość w geopunkcie
+	public String longitude;// "18.528847", - druga wartość w geopunkcie
 	public RawTrackData track;
 	@JsonIgnore
 	public TrackData trackData = new TrackData();

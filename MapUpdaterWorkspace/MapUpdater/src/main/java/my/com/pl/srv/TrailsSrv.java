@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;	
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -355,13 +356,27 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
         //Parsowanie pobranego JSona
         ObjectMapper mapper = new ObjectMapper();		
 		JsonNode root = mapper.readTree(content.toString()); 
-		JsonNode dataNode =root.get("data");  
-		TrailData result = mapper.treeToValue(dataNode, TrailData.class);
+		JsonNode dataNode = root.get("data").get("track");
+		TrailData result = null;
+		try {
+			if (root.get("data").get("track").toString().equals("false"))
+			{
+				System.out.println("Brak tracka dla '" + root.get("data").get("title") + "'");
+				return null;
+			}
+			result = mapper.treeToValue(dataNode, TrailData.class);
+		}
+		catch (IOException e) {
+			System.out.println("Bład parsowania Json'a: " + content.toString());
+		}				
         return result;
 	}
 	
 	@Autowired
 	GMTService gs;
+	@Autowired
+	ExternalSev es;
+	
 	/**
 	 * Tworzy od nowa pliki zródłowe mapy: img i mp 
 	 * @throws Exception
@@ -396,7 +411,7 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 			for(Map.Entry<String, TrailXML> pair : trailPagesUrl.entrySet()) {							
 				TrailData trailData = GetRawTrailData(pair.getValue().getId());
 				if (trailData == null) { 
-					System.out.println("Trail nie został pobrany - może być hidden; " + pair.getValue().getInfo());
+					System.out.println("Trail nie został pobrany - może być hidden lub nie mieć tracka; " + pair.getValue().getInfo());
 					continue;
 				}
 				trailData.TrackFromRaw();
@@ -414,18 +429,17 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 			//Zapis do pliku mp
 			StrLstToFile(lines, tfv.getMpFile());
 			
-//			try {
-//				//tu dodać tworzenie img files.scrImg z mp
-//				//gs.createMapsetImg(outputDir, "mapset.mp", "mapset.img");
-//				//System.out.println("File 'mapset.img created using cgpsmapper.");
-//			}
-//			finally {
-//				if (tfv.isDeleteMpFile()) {
-//					System.out.println("Usuwanie pliku: '" + tfv.getMpFile() + "'");
-//					log.info("Usuwanie pliku: '" + tfv.getMpFile() + "'");
-//					Files.delete(new File(tfv.getMpFile()));
-//				}
-//			}
+			try {
+				es.createMapsetImg(tfv.getMpFile(), tfv.getImgFile());
+				System.out.println("File 'mapset.img created using cgpsmapper.");
+			}
+			finally {
+				if (tfv.isDeleteMpFile()) {
+					System.out.println("Usuwanie pliku: '" + tfv.getMpFile() + "'");
+					log.info("Usuwanie pliku: '" + tfv.getMpFile() + "'");
+					Files.delete(new File(tfv.getMpFile()));
+				}
+			}
 			
 			/*
 			File file = new File("E:\\trails.xml");
