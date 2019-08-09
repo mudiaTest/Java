@@ -37,7 +37,7 @@ public class Converter {
 		if (difficultyToPoiTypeMap == null) {
 			difficultyToPoiTypeMap = new HashMap<>();
 			for(int i = 0; i < tfv.getDifficultyLvl().length; i++)
-				difficultyToPoiTypeMap.put(tfv.getDifficultyLvl()[i], tfv.getLineType()[i]);
+				difficultyToPoiTypeMap.put(tfv.getDifficultyLvl()[i], tfv.getPoiType()[i]);
 		}
 		return difficultyToPoiTypeMap;
 	}	

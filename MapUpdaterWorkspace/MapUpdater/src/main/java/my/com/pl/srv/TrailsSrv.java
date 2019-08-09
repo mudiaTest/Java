@@ -356,7 +356,7 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
         //Parsowanie pobranego JSona
         ObjectMapper mapper = new ObjectMapper();		
 		JsonNode root = mapper.readTree(content.toString()); 
-		JsonNode dataNode = root.get("data").get("track");
+		JsonNode dataNode = root.get("data");
 		TrailData result = null;
 		try {
 			if (root.get("data").get("track").toString().equals("false"))
@@ -366,8 +366,8 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 			}
 			result = mapper.treeToValue(dataNode, TrailData.class);
 		}
-		catch (IOException e) {
-			System.out.println("Bład parsowania Json'a: " + content.toString());
+		catch (Exception e) {
+			System.out.println("Bład parsowania Json'a dla " + id + ": " + content.toString());
 		}				
         return result;
 	}
@@ -396,7 +396,7 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 			Integer lastPage = Integer.parseInt(numbers.child(numbers.childNodeSize()-1).text());
 			
 			//Przeglądamy każdą podstronę zbierając z niej informacje o trailach
-			//for (int i = firstPage; i <= firstPage; i++)//kod do testów
+//			for (int i = firstPage; i <= firstPage; i++)//kod do testów
 			for (int i = firstPage; i <= lastPage; i++)
 			{
 				System.out.println("Zbieranie listy traili ze strony " + i + "/" + lastPage);
@@ -427,7 +427,7 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 			
 			System.out.println("Tworzenie pliku: '" + tfv.getMpFile() + "'");
 			//Zapis do pliku mp
-			StrLstToFile(lines, tfv.getMpFile());
+			StrLstToFile(lines, tfv.getMpFile(), "Cp1250");
 			
 			try {
 				es.createMapsetImg(tfv.getMpFile(), tfv.getImgFile());

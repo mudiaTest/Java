@@ -101,7 +101,7 @@ public class MapUpdaterSrv {
 					fenv.getTypFid(), 
 					fenv.getDstMapSourceDir(), 
 					fenv.getDstMapName(), 
-					fenv.getScrImgs(), 
+					fenv.getSrcImgs(), 
 					fenv.getSrcTypFilePath(),
 					fenv.getPriority(),
 					fenv.getTransparency()
@@ -120,7 +120,7 @@ public class MapUpdaterSrv {
 					fenv.getTypFid(), 
 					fenv.getDstCardPath(), 
 					fenv.getDstMapName(), 
-					fenv.getScrImgs(), 
+					fenv.getSrcImgs(), 
 					fenv.getSrcTypFilePath(),
 					fenv.getPriority(),
 					fenv.getTransparency()

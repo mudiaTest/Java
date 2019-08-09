@@ -92,3 +92,5 @@ Hibernate_03/bin/test/my/com/pl/Hibernate_03/SortTest.class
 /JOOQ_06/bin/*
 /Plugins/org.plugin.Test2/bin/*
 /Plugins/org.plugin.Test2/jar*
+
+MapUpdaterWorkspace/MapUpdater/bin/*

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,16 +43,27 @@ public class StringSrv {
 		return comms.filterLines(lines, pattern);	
 	}
 	
-	static public void StrLstToFile(List<String> lst, String filePath) {
-		try (PrintWriter outPut = new PrintWriter(filePath)) {
+	/*
+	 * Zapisywanie w różnym kodowaniu
+	 * Dla polski używać UTF-8 lub CP1250 
+	 * https://stackoverflow.com/questions/18258355/how-to-encode-to-windows-1252-in-java-while-writing-to-the-file
+	 */
+	static public void StrLstToFile(List<String> lst, String filePath) throws UnsupportedEncodingException {
+		StrLstToFile(lst, filePath, "UTF-8");
+	}
+	static public void StrLstToFile(List<String> lst, String filePath, String coding) throws UnsupportedEncodingException {		
+		try (PrintWriter outPut = new PrintWriter(filePath, coding)) {
 			lst.stream().forEach(line -> outPut.println(line));			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	static public void StrToFile(String text, String filePath) {
-		try (PrintWriter outPut = new PrintWriter(filePath)) {
+	static public void StrToFile(String txt, String filePath) throws UnsupportedEncodingException {
+		StrToFile(txt, filePath, "UTF-8");
+	}
+	static public void StrToFile(String text, String filePath, String coding) throws UnsupportedEncodingException {
+		try (PrintWriter outPut = new PrintWriter(filePath, coding)) {
 			outPut.println(text);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

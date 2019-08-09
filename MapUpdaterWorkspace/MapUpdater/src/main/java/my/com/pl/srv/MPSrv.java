@@ -17,7 +17,7 @@ import static my.com.pl.srv.common.StringSrv.*;
 public class MPSrv {
 	private void AddHeader(List<String> lines, String id) {
 		lines.add("[IMG ID]");
-		lines.add("CodePage=1252");
+		lines.add("CodePage=1250");
 		lines.add("LblCoding=9");
 		lines.add("ID="+id);
 		lines.add("Name=Trails");

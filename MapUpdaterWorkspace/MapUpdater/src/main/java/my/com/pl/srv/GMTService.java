@@ -200,7 +200,7 @@ public class GMTService {
 		/*
 		 * Tworzenie mapset.img z mapset.mp (utworzonego powyżej)
 		 */
-		es.createMapsetImg(Paths.get(outputDir, mapsetFileName, ".mp").toString(), Paths.get(outputDir, mapsetFileName, ".img").toString());
+		es.createMapsetImg(Paths.get(outputDir, mapsetFileName + ".mp").toString(), Paths.get(outputDir, mapsetFileName + ".img").toString());
 		System.out.println("File 'mapset.img created using cgpsmapper.");
 		
 		
@@ -256,7 +256,7 @@ public class GMTService {
 		/*
 		 * Zmiana priorytetu mapy
 		 */
-		setMapProperties(Paths.get(outputDir, "*").toString(), priority, transparency);
+		setMapProperties(outputDir+"\\*", priority, transparency);
 	}
 	
 	public void addToCard(
@@ -292,7 +292,7 @@ public class GMTService {
 		/*
 		 * Zmiana priorytetu mapy
 		 */
-		setMapProperties(Paths.get(outputDir, outputName).toString(), priority, transparency);
+		setMapProperties(Paths.get(outputDir, outputName+".img").toString(), priority, transparency);
 	}
 	
 	public void setMapProperties(String sourceImgs, int priority, boolean transparency) throws IOException, InterruptedException {

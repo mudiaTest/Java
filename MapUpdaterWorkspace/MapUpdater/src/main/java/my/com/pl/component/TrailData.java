@@ -276,6 +276,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 , "activitytypes"
 //, "track"
+,"altitude"
+,"distance"
 })
 
 public class TrailData {
@@ -291,6 +293,10 @@ public class TrailData {
 	public String latitude;// "54.396069", - pierwsza wartość w geopunkcie
 	public String longitude;// "18.528847", - druga wartość w geopunkcie
 	public RawTrackData track;
+//	public String altitude;
+//	public String distance;
+//	public String encodedPath;
+//	public String encodedLevels;
 	@JsonIgnore
 	public TrackData trackData = new TrackData();
 	

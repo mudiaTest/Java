@@ -11,8 +11,8 @@ import lombok.Data;
 public class FilesEnv {
 	String tmpLocation;
 	String downloadedFile;
-	String scrMapSetImgFile;
-	String scrImgs;
+	String srcMapSetImgFile;
+	String srcImgs;
 	Boolean usePreparedTmpLocation;
 	String srcTypFilePath;
 	
