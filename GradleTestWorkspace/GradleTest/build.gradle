@@ -1,0 +1,275 @@
+/*
+Cykl ¿ycia podczas kazego build
+	Projekt (GP) - pojedynczy projekt prowadzi do wybudowania jednego artefaktu (np plik jar lub zbiór wielu plików klas)
+	Task - reprezentacja akcji (potencjalnie jednej z wielu) prowadz¹cych do wybudowania projektu
+S¹ 3 fazy budowania projektu
+	initialization - identyfikujemy wszystkie GP potrzebnne do wykonania pojedynczego ca³ego build.
+		W multu-propjektach  mo¿e byc tego wiele (np frontend, backend i jakieœ biblioteki).
+		Tutaj wykonywany jest kod umieszczony w pliku settings.gradle
+	configuration - gradle buduje graf (acykliczny - bez pêtli) tasków do wykonania
+		Tutaj wykonywany jest kod (poza kodem akcji tasków - patrz dalej) z pliku build.gradle
+	execution  - wywo³anie kolejnych tasków na podstawie grafu. 
+		Tutaj wykonywany jest kod akcji tasków, czyli doFirst i doLast
+		
+println 'phase 2'
+task doIt{
+	println 'phase 2'
+	doFirst{
+		println 'phase 3'
+	}
+	doLast{
+		println 'phase 3'
+	}
+	println 'phase 2'
+}	
+println 'phase 2'	
+		 	
+*/
+
+/*
+	Pluginy mogê byæ skryptowe lub binarne
+	
+	S - tylko z lokanego systemu plików lub zdalnie za pomoc¹ HTTP URL:
+		- apply from: 'other.gradle'
+	B - klasa zdefiniowana w skrypcie build
+	  - plik. java w buildSrc
+	  - klasa w .jar, który jest umieszczeony w dependency
+	  - na portalu https://plugins.gradle.org lub innych repo:
+		- apply plugin: 'java'
+		- apply plugin: JavaPlugin
+		- plugins {
+ 		    id 'java'
+		  }
+		  Dzia³a tylko dla pluginów z https://plugins.gradle.org
+		- buildscript {
+			repositories {
+			  jcenter()
+			}
+			dependencies {
+			  classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:0.4.1"
+			}
+		  }
+		  apply plugin: "com.jfrog.bintray"
+		  Dodawanie pluginu z innego repo ni¿ https://plugins.gradle.org
+		  
+		  
+    Przyk³ad takiego plugina z jego opisem: https://github.com/nilsmagnus/wsdl2java 
+    
+    wsdl2java {
+      wsdlsToGenerate = [
+              ['-p','com.acme.mypackage', '-autoNameResolution',"$projectDir/src/main/resources/wsdl/stockqoute.wsdl"]
+      ]
+      generatedWsdlDir = file("$projectDir/generatedsources")
+      wsdlDir = file("$projectDir/src/main/resources/wsdl")
+      locale = Locale.FRANCE
+    }
+    To jakby rozszerzenie taska dodanego z tym pluginem (bo nowy task to "task wsdl2java{...}")		  		
+*/
+
+plugins {
+	id 'org.springframework.boot' version '2.1.7.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id 'java'
+	/*
+	Ogólnie ca³y plugin opisany jest tutaj: https://docs.gradle.org/2.4/userguide/java_plugin.html
+	Poni¿ej zamieszczam tylko jego fragmenty
+	
+	java dodaje nowe taski
+		- clean: usuwa katalog build. Mo¿e siê zdarzyæ, ze coœ "trzyma" plik, wtedy nale¿y uzyæ programu LockHunter
+		- compileJava - kompiluje kod  
+		- assemble - buduje wszystkie archiwa (jar)
+			:compileJava
+			:processResources 
+			:classes
+			:jar
+			:assemble
+		- check - wykonuje wsystkiw taki weryfikacyjne, w szczególnoœci test
+		- build - wykonuje check i assemble
+			:compileJava
+			:processResources 
+			:classes
+			:jar
+			:assemble
+			:compileTestJava 
+			:processTestResources 
+			:testClasses 
+			:test 
+			:check 
+			:build		
+		- test - uruchamia unt testy tesy. Log z bledami mozna znalezc w build/reports/reports/tests/test/index.html 
+	*/
+}
+
+/*
+Logowanie: https://docs.gradle.org/current/userguide/logging.html
+Domyœlnie wyœwietla 1-4. Aby pokazywaæ
+	3 -w 
+	5 -i - duuu¿o informacji o tym, co siê dzieje
+	6 -d - ku...sko du¿o informacji
+		
+logger.quiet(    '1 An info log message which is always logged.')
+logger.error(    '2 An error log message.')
+logger.warn(     '3 A warning log message.')
+logger.lifecycle('4 A lifecycle info log message.')
+logger.info(     '5 An info log message.')
+logger.debug(    '6 A debug log message.')
+logger.trace(    '7 A trace log message.')
+
+-s /-S poka¿e standardowy(zalecany) stacktrace / pe³en stacktrace
+*/
+
+logger.quiet(    '1 An info log message which is always logged.')
+logger.error(    '2 An error log message.')
+logger.warn(     '3 A warning log message.')
+logger.lifecycle('4 A lifecycle info log message.')
+logger.info(     '5 An info log message.')
+logger.debug(    '6 A debug log message.')
+logger.trace(    '7 A trace log message.')
+
+group = 'com.gradle.test'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+/*
+	! Dodatkowe i raczej zadko uzywane !
+Domyœlne polozenie katalogów w java to np 
+	src/main/java
+	src/test/resources etc...
+Mozna je zmienic poni¿szym
+sourceSets {
+    main {
+        java {
+            srcDir 'src/java'
+        }
+        resources {
+            srcDir 'src/resources'
+        }
+    }
+}
+*/
+
+/*
+Konfigurowanie zrodel dla dependencies
+*/
+repositories {
+	/*
+	//*Dodawanie repozytorium IVY
+	ivy {
+		//z sieci
+        url 'http://ivy.petrikainulainen.net/repo'
+        //z lokalnego katalogu
+        url '../ivy-repo'
+    }
+    
+    //*Dodawanie z rezo maven
+    //Aby dodawaæ dependency z http://repo1.maven.org/maven2/ nalezy dodac
+    mavenCentral()
+    //Aby dodawac dependency z http://jcenter.bintray.com/
+    jcenter()
+    //Aby dodawac dependency z lokalnego repo maven nalezy dodac
+    mavenLocal()
+    maven {
+        url 'http://maven.petrikainulainen.net/repo'
+        url '../maven-repo'
+    }    
+    
+    //*Dodawanie z lokalnego katalogu deopendency. Przeszukane zostan¹ katalogi libA i libB
+    flatDir {
+        dirs 'libA', 'libB'
+    }
+    
+	*/
+	mavenCentral()
+}
+
+/*
+Opis zale¿noœci z grafem: https://docs.gradle.org/2.4/userguide/java_plugin.html#sec:java_plugin_and_dependency_management
+Zasadniczo najpoluparniejsze:
+	- compile - u¿ywane przez :compileTestJava 
+	- runtime - rozszerza compile
+	- testCompile - u¿ywa c tylko dl dependency uywanych tylko podczas testów np JUnit
+		testCompile 'junit:junit:4.11'
+	- compileOnly - spowoduje, ze dependency bedzie obencne dla compile, test + runtime, ale nie dla jar!		
+Chodzi o to, ze program app uzywa biblioteki foo, która wewnêtrznie uzywa biblioteki bar, wiêc TYLKO foo jest 
+niezbêdne do skomilowania app, ale zarówno foo jak i bar do uruchomienia app
+*/
+dependencies {
+	/*
+	compile group: 'foo', name: 'foo', version: '0.1'
+		jest równoznaczne
+	compile 'foo:foo:0.1'
+	
+	compile (
+        [group: 'foo', name: 'foo', version: '0.1'],
+        [group: 'bar', name: 'bar', version: '0.1']
+    )
+    	jest równoznaczne
+    compile 'foo:foo:0.1', 'bar:bar:0.1'	
+    
+    Teraz Czym roznia sie ponizsze?
+    	compile - przestarzaly
+    	api - 
+    	implementation
+    Szczegoly z przykladem  w https://stackoverflow.com/a/48388463
+    W skrucie mamy app korzystaj¹ca z libA korzystaj¹c¹ z libB
+    app ma implementation libA
+    Jesli libA ma api lub compile dla LibB, to app bêdzie mog³ korzystaæ z LibB (np LibB.getVal();)
+    Jesli libA ma implementation dla LibB, to app nie bedzie mogl korzystac a LibB (LibB.getVal(); nie skompiluje siê)
+	*/
+	implementation 'org.springframework.boot:spring-boot-starter'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	
+	// https://mvnrepository.com/artifact/org.javatuples/javatuples
+	compileOnly  group: 'org.javatuples', name: 'javatuples', version: '1.2'	
+}
+
+/*
+Dla plugina "java" - ustawianie main class do generowania pliku jar. 
+ - Konieczne tylko jeœli ma byæ to aplikacja (a nie biblioteka) 
+ - Nie jest to konieczne dla Springa (inny plugin)
+ 
+	jar {
+	    manifest {
+	        attributes 'Main-Class': 'com.gradle.test.GradleTest.GradleTestApplication.HelloWorld'
+	    }
+	}
+
+Co wiêcej spring za³atwia te¿ sprawê fat jar, czyli ³adowania dependancy do jar'a
+Bez tego nale¿a³o by zrobic poni¿sze:
+
+	jar {
+	    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+	    manifest {
+	        attributes 'Main-Class': 'com.gradle.test.GradleTest.GradleTestApplication'
+	    }
+	}
+
+Fat jar w innym podejœciu: osobny task
+	task customFatJar(type: Jar) {
+	    manifest {
+	        attributes 'Main-Class': 'com.gradle.test.GradleTest.GradleTestApplication'
+	    }
+	    //nadaje czeœæ nazwy pliku jar "testJar-0.0.1-SNAPSHOT.jar"
+	    //[archiveBaseName]-[archiveAppendix]-[archiveVersion]-[archiveClassifier].[archiveExtension]
+	    //Tutaj szczegoly https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Jar.html
+	    baseName = 'testJar'
+	    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+	    with jar
+	}
+*/	
+
+
+/*
+Reguluje tworzenie plików jar przez plugin od Springa
+bootJar {
+	//Zmiana glownej klasy aplikacji z domyslnej
+	//mainClass = 'com.example.demo.Application'
+	
+	//Powoduje, ze Assemble nie wygeneruje build/libs i pliku jar
+    //enabled = false
+    
+    //nadanie nazwy pliku docelowego
+    //Wiêcej patrz -> customFatJar
+    archiveName = 'testJar!'
+}
+*/

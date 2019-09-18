@@ -94,3 +94,15 @@ Hibernate_03/bin/test/my/com/pl/Hibernate_03/SortTest.class
 /Plugins/org.plugin.Test2/jar*
 
 MapUpdaterWorkspace/MapUpdater/bin/*
+/MapUpdaterWorkspace/.metadata/*
+/MapUpdaterWorkspace/.recommenders/*
+/runtime-EclipseApplication/.metadata/.plugins/*
+/MapUpdaterWorkspace/MapUpdater/bin/*
+/MapUpdaterWorkspace/MapUpdater/bin/*
+/runtime-EclipseApplication/.metadata/*
+/SpringMVC_Gradle_XML_Test/.settings/*
+/Hibernate_05/custom-generator/bin/*
+/MapUpdaterWorkspace/MapUpdater/bin/*
+/GradleTestWorkspace/GradleCommon/bin/*
+/GradleTestWorkspace/GradleTest/bin/main/*
+/GradleTestWorkspace/GradleTest/bin/*
