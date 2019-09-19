@@ -1,0 +1,33 @@
+/*
+		!!!		implementation / api zastêpuje deprecated compile		!!! 
+*/
+
+plugins {
+	id 'java'
+}
+
+
+repositories {
+	mavenCentral()
+	flatDir {
+        dirs 'C:/Praca/MyJava/GradleTestWorkspace/gradleCommon2/build/libs'
+    }
+}
+
+dependencies {
+	//Ta linia jest wymagana gdy do kompilacji projektu wymagany jest inny projekt, czyli gdy inny projekt jest wymieniony w "uses"
+	implementation name: 'gradleCommon2'
+	implementation name: 'gradleCommon22'
+	
+	
+	/*
+	Pod³¹czanie biblioteki (2)
+	Do³¹czenie do projektu dependency pod postaci¹ pliku jar z jakiejœ lokalizacji lokalnej
+		implementation files('C:/Praca/MyJava/GradleTestWorkspace/gradleCommon2/build/libs/gradleCommon2.jar')	
+	Opcjonalnie mozna rozkazaæ dodaæ wszystkie pliki jar w danym katalogu
+		implementation fileTree(dir: '../gradleCommon2/build/libs', include: ['*.jar'])  
+	//Niezbêde jeœli importowana biblioteka nie posiada doczepionych swoich dependencies (np Eksport z Exlipse)
+	//Alternatyw¹ jest zrobienie fatJar
+	//compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+	*/
+}

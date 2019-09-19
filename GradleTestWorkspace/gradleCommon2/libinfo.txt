@@ -1,0 +1,59 @@
+Eksport z Eclipse do jar
+	1) Sam z siebie nie eksportuje potrzebnych depencencies. Trzeba je dodaæ w dependencies projektu, który ich u¿ywa
+	2) Export 
+		a)[v] genarated files
+		b)[v] all output folders...
+		c)[v] source files
+		a pozwala na uzywanie bez podgl¹du
+		b pozwala na uzywanie bez podgl¹du
+		c wewnatrz jar znajduja sie pliki java, ale IDE ich nie widzi
+		a+b
+		a+c pozwala na uzywanie i podgl¹d sources
+		b+c	
+			
+	W programie docelowym mo¿emy odwo³ywaæ siê do plików class umieszczonych w dowolnym podklatalogu, wiêc jeœli np umieœcimy (co jest b³edem!) katalog bin w pliku jar, to do danej klady mo¿emy odwo³ywaæ siê przez L
+		import     com.my.common.StringCommon; //expoty wystawi³ sources bezpoœrednio do root pliku jar
+		import bin.com.my.common.string.StringCommon;
+	Mo¿emy te¿ zaznaczaæ konkretne pliki i katalogi do eksportu.
+
+		
+	
+		Najlepsze jest chyba 
+		a) a+c i tylko katalog src - pozwala na pe³n¹ pracê choc wymaga	dodania depencencies	
+		
+	Rozwa¿yæ: W jaki sposób zbudowac plik jar tylko z plikami class , ale wskazaæ na zrodlo plików java	
+	
+Eksport Gradle
+
+	1) Zaszywanie plików java na 2 sposoby
+		a) zaszyswanie plików java razem z class 
+		jar {
+				from sourceSets.main.allSource
+			}
+	2) Zaszyswanie w osobnym pliku jar. Tak samo mozna dodawac dokumnentacjê
+	W takim przypadku, gdy w docelowym dodamy 
+	
+		flatDir {
+	        dirs 'C:/Praca/MyJava/GradleTestWorkspace/gradleCommon2/build/libs'
+	    }
+	    ...
+		implementation name: 'gradleCommon2'
+		
+	To uzyskamu od razu dost¹p do ¿róde³. z jakiegoœ powodu nie dzia³a to na dokumnetacje - do sprawdzenia 	
+	
+	task sourcesJar(type: Jar, dependsOn: classes) {
+		//dodatkowa czeœc nazwy - lepiej nie ruszaæ, bo inaczej IDE mo¿e nie ropoznac
+	    classifier = 'sources'
+	    //dodaje wszystkie zrodla
+	    from sourceSets.main.allSource
+	}
+	//Ustalamy , ze zanim odpalimy jar musimy odpaliæ sourcesJar
+	jar.dependsOn 'sourcesJar' 
+	task javadocJar(type: Jar, dependsOn: javadoc) {
+		//dodatkowa czeœc nazwy - lepiej nie ruszaæ, bo inaczej IDE mo¿e nie ropoznac
+	    classifier = 'javadoc'
+	    from javadoc.destinationDir
+	}
+	jar.dependsOn 'javadocJar' 	
+	
+	

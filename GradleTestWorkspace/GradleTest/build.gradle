@@ -1,15 +1,36 @@
 /*
-Cykl ¿ycia podczas kazego build
-	Projekt (GP) - pojedynczy projekt prowadzi do wybudowania jednego artefaktu (np plik jar lub zbiór wielu plików klas)
-	Task - reprezentacja akcji (potencjalnie jednej z wielu) prowadz¹cych do wybudowania projektu
-S¹ 3 fazy budowania projektu
-	initialization - identyfikujemy wszystkie GP potrzebnne do wykonania pojedynczego ca³ego build.
-		W multu-propjektach  mo¿e byc tego wiele (np frontend, backend i jakieœ biblioteki).
+Aby utworzyæ projekt graddle w Eclipse nale¿y
+Wykonaæ: 1,2,5
+Jeœli bêdzie siê pluæ o nazwê to sprawdziæ czy nazwa projektu zgadza siê z zawartoœci¹ settings.gradle
+Jeœli dalej bedzie siê pluæ wykonaæ kroki 1-7
+
+1) Utworzuæ projekt java
+2) Dodaæ katalog gradle, pliki: build.gradle, gradlew, gradlew.bat, settings.gradle
+3) Przenieœæ katalog poza workspace
+4) Odœwierzyæ workspace i potwierdziæ usuniêcie projekty
+5) Import Gradle/Existing 
+6) Przenieœæ projekt z powrotem do workspace i odœwierzyæ workspace
+7) Zaimportowac jako zwyk³y projekt
+*/
+
+/*
+Tutoriale: 
+	https://www.tutorialspoint.com/gradle/index.htm
+	https://www.petrikainulainen.net/getting-started-with-gradle/
+*/
+
+/*
+Cykl zycia podczas kazego build
+	Projekt (GP) - pojedynczy projekt prowadzi do wybudowania jednego artefaktu (np plik jar lub zbior wielu plikow klas)
+	Task - reprezentacja akcji (potencjalnie jednej z wielu) prowadzacych do wybudowania projektu
+Sa 3 fazy budowania projektu
+	initialization - identyfikujemy wszystkie GP potrzebnne do wykonania pojedynczego calego build.
+		W multu-propjektach  moze byc tego wiele (np frontend, backend i jakies biblioteki).
 		Tutaj wykonywany jest kod umieszczony w pliku settings.gradle
-	configuration - gradle buduje graf (acykliczny - bez pêtli) tasków do wykonania
-		Tutaj wykonywany jest kod (poza kodem akcji tasków - patrz dalej) z pliku build.gradle
-	execution  - wywo³anie kolejnych tasków na podstawie grafu. 
-		Tutaj wykonywany jest kod akcji tasków, czyli doFirst i doLast
+	configuration - gradle buduje graf (acykliczny - bez petli) taskow do wykonania
+		Tutaj wykonywany jest kod (poza kodem akcji taskow - patrz dalej) z pliku build.gradle
+	execution  - wywolanie kolejnych taskow na podstawie grafu. 
+		Tutaj wykonywany jest kod akcji taskow, czyli doFirst i doLast
 		
 println 'phase 2'
 task doIt{
@@ -27,20 +48,20 @@ println 'phase 2'
 */
 
 /*
-	Pluginy mogê byæ skryptowe lub binarne
+	Pluginy moge byc skryptowe lub binarne
 	
-	S - tylko z lokanego systemu plików lub zdalnie za pomoc¹ HTTP URL:
+	S - tylko z lokanego systemu plikow lub zdalnie za pomoca HTTP URL:
 		- apply from: 'other.gradle'
 	B - klasa zdefiniowana w skrypcie build
 	  - plik. java w buildSrc
-	  - klasa w .jar, który jest umieszczeony w dependency
+	  - klasa w .jar, ktory jest umieszczeony w dependency
 	  - na portalu https://plugins.gradle.org lub innych repo:
 		- apply plugin: 'java'
 		- apply plugin: JavaPlugin
 		- plugins {
  		    id 'java'
 		  }
-		  Dzia³a tylko dla pluginów z https://plugins.gradle.org
+		  Dziala tylko dla pluginow z https://plugins.gradle.org
 		- buildscript {
 			repositories {
 			  jcenter()
@@ -50,10 +71,10 @@ println 'phase 2'
 			}
 		  }
 		  apply plugin: "com.jfrog.bintray"
-		  Dodawanie pluginu z innego repo ni¿ https://plugins.gradle.org
+		  Dodawanie pluginu z innego repo niz https://plugins.gradle.org
 		  
 		  
-    Przyk³ad takiego plugina z jego opisem: https://github.com/nilsmagnus/wsdl2java 
+    Przyklad takiego plugina z jego opisem: https://github.com/nilsmagnus/wsdl2java 
     
     wsdl2java {
       wsdlsToGenerate = [
@@ -71,11 +92,11 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
 	id 'java'
 	/*
-	Ogólnie ca³y plugin opisany jest tutaj: https://docs.gradle.org/2.4/userguide/java_plugin.html
-	Poni¿ej zamieszczam tylko jego fragmenty
+	Ogolnie caly plugin opisany jest tutaj: https://docs.gradle.org/2.4/userguide/java_plugin.html
+	Ponizej zamieszczam tylko jego fragmenty
 	
 	java dodaje nowe taski
-		- clean: usuwa katalog build. Mo¿e siê zdarzyæ, ze coœ "trzyma" plik, wtedy nale¿y uzyæ programu LockHunter
+		- clean: usuwa katalog build. Moze sie zdarzyc, ze cos "trzyma" plik, wtedy nalezy uzyc programu LockHunter
 		- compileJava - kompiluje kod  
 		- assemble - buduje wszystkie archiwa (jar)
 			:compileJava
@@ -83,7 +104,7 @@ plugins {
 			:classes
 			:jar
 			:assemble
-		- check - wykonuje wsystkiw taki weryfikacyjne, w szczególnoœci test
+		- check - wykonuje wsystkiw taki weryfikacyjne, w szczegolnosci test
 		- build - wykonuje check i assemble
 			:compileJava
 			:processResources 
@@ -102,10 +123,10 @@ plugins {
 
 /*
 Logowanie: https://docs.gradle.org/current/userguide/logging.html
-Domyœlnie wyœwietla 1-4. Aby pokazywaæ
+Domyslnie wyswietla 1-4. Aby pokazywac
 	3 -w 
-	5 -i - duuu¿o informacji o tym, co siê dzieje
-	6 -d - ku...sko du¿o informacji
+	5 -i - duuuzo informacji o tym, co sie dzieje
+	6 -d - ku...sko duzo informacji
 		
 logger.quiet(    '1 An info log message which is always logged.')
 logger.error(    '2 An error log message.')
@@ -115,16 +136,8 @@ logger.info(     '5 An info log message.')
 logger.debug(    '6 A debug log message.')
 logger.trace(    '7 A trace log message.')
 
--s /-S poka¿e standardowy(zalecany) stacktrace / pe³en stacktrace
+-s /-S pokaze standardowy(zalecany) stacktrace / pelen stacktrace
 */
-
-logger.quiet(    '1 An info log message which is always logged.')
-logger.error(    '2 An error log message.')
-logger.warn(     '3 A warning log message.')
-logger.lifecycle('4 A lifecycle info log message.')
-logger.info(     '5 An info log message.')
-logger.debug(    '6 A debug log message.')
-logger.trace(    '7 A trace log message.')
 
 group = 'com.gradle.test'
 version = '0.0.1-SNAPSHOT'
@@ -132,10 +145,10 @@ sourceCompatibility = '1.8'
 
 /*
 	! Dodatkowe i raczej zadko uzywane !
-Domyœlne polozenie katalogów w java to np 
+Domyslne polozenie katalogow w java to np 
 	src/main/java
 	src/test/resources etc...
-Mozna je zmienic poni¿szym
+Mozna je zmienic ponizszym
 sourceSets {
     main {
         java {
@@ -162,7 +175,7 @@ repositories {
     }
     
     //*Dodawanie z rezo maven
-    //Aby dodawaæ dependency z http://repo1.maven.org/maven2/ nalezy dodac
+    //Aby dodawac dependency z http://repo1.maven.org/maven2/ nalezy dodac
     mavenCentral()
     //Aby dodawac dependency z http://jcenter.bintray.com/
     jcenter()
@@ -173,7 +186,7 @@ repositories {
         url '../maven-repo'
     }    
     
-    //*Dodawanie z lokalnego katalogu deopendency. Przeszukane zostan¹ katalogi libA i libB
+    //*Dodawanie z lokalnego katalogu dependency. Przeszukane zostana katalogi libA i libB
     flatDir {
         dirs 'libA', 'libB'
     }
@@ -183,27 +196,27 @@ repositories {
 }
 
 /*
-Opis zale¿noœci z grafem: https://docs.gradle.org/2.4/userguide/java_plugin.html#sec:java_plugin_and_dependency_management
+Opis zaleznosci z grafem: https://docs.gradle.org/2.4/userguide/java_plugin.html#sec:java_plugin_and_dependency_management
 Zasadniczo najpoluparniejsze:
-	- compile - u¿ywane przez :compileTestJava 
+	- compile - uzywane przez :compileTestJava 
 	- runtime - rozszerza compile
-	- testCompile - u¿ywa c tylko dl dependency uywanych tylko podczas testów np JUnit
+	- testCompile - uzywa c tylko dl dependency uywanych tylko podczas testow np JUnit
 		testCompile 'junit:junit:4.11'
 	- compileOnly - spowoduje, ze dependency bedzie obencne dla compile, test + runtime, ale nie dla jar!		
-Chodzi o to, ze program app uzywa biblioteki foo, która wewnêtrznie uzywa biblioteki bar, wiêc TYLKO foo jest 
-niezbêdne do skomilowania app, ale zarówno foo jak i bar do uruchomienia app
+Chodzi o to, ze program app uzywa biblioteki foo, ktora wewnetrznie uzywa biblioteki bar, wiec TYLKO foo jest 
+niezbedne do skomilowania app, ale zarowno foo jak i bar do uruchomienia app
 */
 dependencies {
 	/*
 	compile group: 'foo', name: 'foo', version: '0.1'
-		jest równoznaczne
+		jest rownoznaczne
 	compile 'foo:foo:0.1'
 	
 	compile (
         [group: 'foo', name: 'foo', version: '0.1'],
         [group: 'bar', name: 'bar', version: '0.1']
     )
-    	jest równoznaczne
+    	jest rownoznaczne
     compile 'foo:foo:0.1', 'bar:bar:0.1'	
     
     Teraz Czym roznia sie ponizsze?
@@ -211,10 +224,10 @@ dependencies {
     	api - 
     	implementation
     Szczegoly z przykladem  w https://stackoverflow.com/a/48388463
-    W skrucie mamy app korzystaj¹ca z libA korzystaj¹c¹ z libB
+    W skrucie mamy app korzystajaca z libA korzystajaca z libB
     app ma implementation libA
-    Jesli libA ma api lub compile dla LibB, to app bêdzie mog³ korzystaæ z LibB (np LibB.getVal();)
-    Jesli libA ma implementation dla LibB, to app nie bedzie mogl korzystac a LibB (LibB.getVal(); nie skompiluje siê)
+    Jesli libA ma api lub compile dla LibB, to app bedzie mogl korzystac z LibB (np LibB.getVal();)
+    Jesli libA ma implementation dla LibB, to app nie bedzie mogl korzystac a LibB (LibB.getVal(); nie skompiluje sie)
 	*/
 	implementation 'org.springframework.boot:spring-boot-starter'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -225,7 +238,7 @@ dependencies {
 
 /*
 Dla plugina "java" - ustawianie main class do generowania pliku jar. 
- - Konieczne tylko jeœli ma byæ to aplikacja (a nie biblioteka) 
+ - Konieczne tylko jesli ma byc to aplikacja (a nie biblioteka) 
  - Nie jest to konieczne dla Springa (inny plugin)
  
 	jar {
@@ -234,8 +247,8 @@ Dla plugina "java" - ustawianie main class do generowania pliku jar.
 	    }
 	}
 
-Co wiêcej spring za³atwia te¿ sprawê fat jar, czyli ³adowania dependancy do jar'a
-Bez tego nale¿a³o by zrobic poni¿sze:
+Co wiecej spring zalatwia tez sprawe fat jar, czyli ladowania dependancy do jar'a
+Bez tego nalezalo by zrobic ponizsze:
 
 	jar {
 	    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
@@ -244,12 +257,12 @@ Bez tego nale¿a³o by zrobic poni¿sze:
 	    }
 	}
 
-Fat jar w innym podejœciu: osobny task
+Fat jar w innym podejsciu: osobny task
 	task customFatJar(type: Jar) {
 	    manifest {
 	        attributes 'Main-Class': 'com.gradle.test.GradleTest.GradleTestApplication'
 	    }
-	    //nadaje czeœæ nazwy pliku jar "testJar-0.0.1-SNAPSHOT.jar"
+	    //nadaje czesc nazwy pliku jar "testJar-0.0.1-SNAPSHOT.jar"
 	    //[archiveBaseName]-[archiveAppendix]-[archiveVersion]-[archiveClassifier].[archiveExtension]
 	    //Tutaj szczegoly https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.Jar.html
 	    baseName = 'testJar'
@@ -260,7 +273,7 @@ Fat jar w innym podejœciu: osobny task
 
 
 /*
-Reguluje tworzenie plików jar przez plugin od Springa
+Reguluje tworzenie plikow jar przez plugin od Springa
 bootJar {
 	//Zmiana glownej klasy aplikacji z domyslnej
 	//mainClass = 'com.example.demo.Application'
@@ -269,7 +282,115 @@ bootJar {
     //enabled = false
     
     //nadanie nazwy pliku docelowego
-    //Wiêcej patrz -> customFatJar
+    //Wiecej patrz -> customFatJar
     archiveName = 'testJar!'
 }
 */
+
+/*
+Gradle domyœlnie szuka sources w src/main/java wiêc sa 2 opcje:
+	1) Trzymaæ sources w src/main/java
+	2) podaæ kolejne odla jak ponizej
+sourceSets {
+    main {
+        java {
+            srcDirs 'src'
+            //srcDirs 'src1'
+        }
+    }
+}
+*/ 
+
+/* -- Taski -- */
+/*
+task hello {
+	//wykonywane jako 2 podczas execution 
+	doLast {
+		println '-> 1'
+	}
+	//wykonywane podczas configuration   
+	println '-> 2'
+	//wykonywane jako 2 podczas execution 
+	doFirst {
+		println '-> 3'
+	}
+}*/
+
+/*
+to ma dzialac jak doLase, ale w Gradle 5 zostalo wycofane
+task hello << {	
+		println '1'	
+}
+*/
+
+/*
+dependsOn spowoduje, ze wywolanie t2 zostanie poprzedzone wywolaniem t1
+task t1{
+	doFirst{println('t1 1')}
+	doLast{println('t1 2')}
+}
+task t2(dependsOn: 't1'){
+	doFirst{println('t2 1')}
+	doLast{println('t2 2')}
+}
+
+//alternatywnie
+task t1{...}
+task t2{...}
+task2.dependsOn task1
+
+//doda do dependsOn wszystkie taski zaczynajace siê od "ta_"
+task t7(dependsOn:
+		tasks.findAll { 
+			task -> task.name.startsWith('ta_') 
+		}
+	){	
+}
+
+ ----------------------------------------------------------
+ 
+Wywolywanie jednego taska z wewnatrz drugiego jest niewspierane. 
+Zaleca sie uzywanie depends.On
+Ponizej obejscie.
+task t3{
+	doFirst{println('t3 1')}
+	println('t3')
+	doLast{println('t3 2')}
+}
+task t4{
+	doFirst{println('t4 1')}
+	println('t4')	
+	t3//To nie zadziala
+	doLast{println('t4 2')}
+}
+ t4.finalizedBy t3
+/*
+
+/*
+Nie moze byc 2 taskow o tej samej nazwie
+task t5{
+	doFirst{println('t5 1')}
+	doLast{println('t5 2')}
+}
+task t5{
+	doFirst{println('t5 3')}
+	doLast{println('t5 4')}
+}
+*/
+
+/*
+Gradle siedzi na groove/kotlin i jest pelnoprawnym jezykiem programowania. Ponizej przyk³ad mozliwosci
+	tasks - to lista taskow udostepniana przez gradle
+	https://docs.gradle.org/current/javadoc/org/gradle/api/tasks/TaskCollection.html 
+task t8 {
+    doLast {
+        tasks
+        	.findAll { 
+				task -> task.name.startsWith('t') 
+			}
+			.each { task -> println(task.name)
+        	}
+    }
+}
+*/
+

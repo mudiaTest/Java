@@ -1,0 +1,85 @@
+plugins {
+	id 'java'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+}
+
+/*
+Gradle domyœlnie szuka sources w src/main/java wiêc sa 2 opcje:
+	1) Trzymaæ sources w src/main/java
+	2) podaæ kolejne odla jak ponizej
+*/
+sourceSets {
+    main {
+        java {
+            srcDirs 'src'
+            //srcDirs 'src1'
+        }
+    }
+ }
+ 
+jar {
+	archiveName = 'gradleCommon2.jar'
+	//Powoduje dodanie do pliku jar plików java, dziêki czemu mo¿liwe bêdzie podgl¹danie ich kodu w aplikacji uzywaj¹cej 
+	//from sourceSets.main.allSource
+}
+
+
+/*
+type: Jar oznacza ze ten task jakby dziedziczy³ po Jar. 
+Abu uzystaæ to co chemy nalezy coœ dod¹æ lub nadpisaæ inaczej 
+uzyskamy wynik podobny, jak odpalaj¹c task jar
+*/
+task sourcesJar(type: Jar, dependsOn: classes) {
+	//dodatkowa czeœc nazwy - lepiej nie ruszaæ, bo inaczej IDE mo¿e nie ropoznac
+    classifier = 'sources'
+    //dodaje wszystkie zrodla
+    from sourceSets.main.allSource
+}
+//Ustalamy , ze zanim odpalimy jar musimy odpaliæ sourcesJar
+jar.dependsOn 'sourcesJar' 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	//dodatkowa czeœc nazwy - lepiej nie ruszaæ, bo inaczej IDE mo¿e nie ropoznac
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+jar.dependsOn 'javadocJar' 
+
+
+
+/*
+Poni¿sze powoduje zapisanie do osobnego pliku wybran. 
+//Task zapisania do gradleCommon21.jar wszystkiego z podkatalogo src/
+task srcJar(type: Jar) {
+ archiveName = "gradleCommon21.jar"
+ from('src/') {
+    include '**'
+ }}
+//task zostanie automartcznie wykonaniy podczas wytwo³ania assemble 
+assemble.dependsOn 'srcJar' 
+*/ 
+
+/*
+Gradle domyœlnie szuka sources w src/main/java wiêc sa 2 opcje:
+	1) Trzymaæ sources w src/main/java
+	2) podaæ kolejne odla jak ponizej
+*/
+sourceSets {
+    main {
+        java {
+            srcDirs 'src'
+            //srcDirs 'src1'
+        }
+    }
+ }
+ 
+ 
+//compileJava.options.fork = true
+//compileJava.options.forkOptions.executable = 'C:/Program Files/Java/jdk1.8.0_181/bin/javac'
+//compileJava.options.forkOptions.executable = "${System.properties['java.home']}/../bin/javac"
