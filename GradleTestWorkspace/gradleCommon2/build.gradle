@@ -1,32 +1,50 @@
 plugins {
-	id 'java'
+	//(3)
+	//id 'java'
+	id 'java-library'
 }
+
+//(4)
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
 
 repositories {
 	mavenCentral()
 }
 
 dependencies {
-	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+	//(5)
+	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
 }
 
-/*
-Gradle domyœlnie szuka sources w src/main/java wiêc sa 2 opcje:
-	1) Trzymaæ sources w src/main/java
-	2) podaæ kolejne odla jak ponizej
-*/
+//(6)
 sourceSets {
     main {
         java {
-            srcDirs 'src'
-            //srcDirs 'src1'
+            srcDirs 'src'           
         }
     }
  }
  
+//Rozszerzenie taska jar zmieniaj¹ce nazwê docelowego pliku jar 
 jar {
-	archiveName = 'gradleCommon2.jar'
-	//Powoduje dodanie do pliku jar plików java, dziêki czemu mo¿liwe bêdzie podgl¹danie ich kodu w aplikacji uzywaj¹cej 
+	//Powoduje ustalenie nazwy bazowej archiwum
+	archiveName = 'gradleCommon3.jar'	
+	/*
+	Bardziej szczegó³owe ostalenie budowy archiwum: '	1-2-3-4.5'
+	archiveBaseName = '1';
+	archiveAppendix = '2';
+	archiveVersion = '3';
+	archiveClassifier = '4';
+	archiveExtension = '5';
+    */ 
+       
+	/*
+	Powoduje dodanie do pliku jar plików java, dziêki czemu mo¿liwe bêdzie podgl¹danie ich kodu w aplikacji uzywaj¹cej.
+	Najczeœciej stosowanym zabiegiem jedank jest utworzenie osobnego pliku ze zród³ami Nazwa tego pliku to: dla xxx.jar -> xxx-sources.jar
+	Szczegó³y i implementacja patrz sourcesJar i javadocJar
+	*/
 	//from sourceSets.main.allSource
 }
 
@@ -37,14 +55,21 @@ Abu uzystaæ to co chemy nalezy coœ dod¹æ lub nadpisaæ inaczej
 uzyskamy wynik podobny, jak odpalaj¹c task jar
 */
 task sourcesJar(type: Jar, dependsOn: classes) {
+	//Pomimo "dziedziczenia" podanie nazy jest konieczne, wpp uzyje domyslnej nazwy wygenerowanej z nazwy projektu
+	baseName = 'gradleCommon3'
 	//dodatkowa czeœc nazwy - lepiej nie ruszaæ, bo inaczej IDE mo¿e nie ropoznac
     classifier = 'sources'
     //dodaje wszystkie zrodla
     from sourceSets.main.allSource
 }
-//Ustalamy , ze zanim odpalimy jar musimy odpaliæ sourcesJar
+
+//Ustalamy , ¿e zanim odpalimy jar musimy odpaliæ sourcesJar. To oznacza, ze polecenie gradlew jar spowoduje kaskadowe generowanie bibliotek
 jar.dependsOn 'sourcesJar' 
+
+//Jw, ale zamiast sources dodajemy dokumentacjê
 task javadocJar(type: Jar, dependsOn: javadoc) {
+	//Pomimo "dziedziczenia" podanie nazy jest konieczne, wpp uzyje domyslnej nazwy wygenerowanej z nazwy projektu
+	baseName = 'gradleCommon3'
 	//dodatkowa czeœc nazwy - lepiej nie ruszaæ, bo inaczej IDE mo¿e nie ropoznac
     classifier = 'javadoc'
     from javadoc.destinationDir
@@ -64,22 +89,61 @@ task srcJar(type: Jar) {
 //task zostanie automartcznie wykonaniy podczas wytwo³ania assemble 
 assemble.dependsOn 'srcJar' 
 */ 
-
+ 
 /*
-Gradle domyœlnie szuka sources w src/main/java wiêc sa 2 opcje:
-	1) Trzymaæ sources w src/main/java
-	2) podaæ kolejne odla jak ponizej
+//Ustalanie main-Class dla biblioteki jest niepotrzebne
+jar {
+  manifest {
+    attributes(
+      'Main-Class': 'my.project.main',
+    )
+  }
+}
 */
-sourceSets {
-    main {
-        java {
-            srcDirs 'src'
-            //srcDirs 'src1'
-        }
-    }
- }
  
+ /*
+ fatJar -czyli zaszycie w pliku jar u¿ywanych depencencies. Mo¿e znaczaco zwiêkszyæ rozmiar wynikowego jar.
+ */
+//Task dodaj¹cy runtime dependencies do pliku jar. Innym podejœciem jest rozszerzenie taska jar -> patrz poni¿ej
+//Pozwala unikn¹æ NoClassDefFoundError. Alternatyw¹ jest dodanie odpowiednich dependencies w programie korzystaj¹cym z tego jar. 
+task fatJar(type: Jar) {
+  manifest.from jar.manifest
+  classifier = 'all'
+  //zip64 = true
+  from {
+    //https://docs.gradle.org/current/userguide/java_library_plugin.html -. The Java Library plugin configurations
+    //dodaje api, implementation, compile dependencies
+    //configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    //dodaje compile dependencies
+    configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) } 
+  } {
+  	//Wy³¹cza poszczególen rodzaje plików z exportu
+    exclude "META-INF/*.SF"
+    exclude "META-INF/*.DSA"
+    exclude "META-INF/*.RSA"
+  }
+  with jar
+  doLast{ println '--> wykonano fatJar'};
+}
+//W tym wypadku "assemble.dependsOn" jest b³êdem, bo spowoduje wykonanie 2 plików jar z library.
+//assemble.dependsOn 'fatJar' 
+/*
+//Roszerzenie taska jar o nowe linie
+jar {
+  classifier = 'all'  
+  from {
+    configurations.compile.collect  { it.isDirectory() ? it : zipTree(it) } 
+  }
+  doLast{ println '--> wykonano extended Jar'};
+}
+/*
+//dodaje wywo³anie fatJar do configuration archives, czyli podczas np wykonywania build
+artifacts {
+    archives fatJar
+}
  
+ /*
 //compileJava.options.fork = true
 //compileJava.options.forkOptions.executable = 'C:/Program Files/Java/jdk1.8.0_181/bin/javac'
 //compileJava.options.forkOptions.executable = "${System.properties['java.home']}/../bin/javac"
+*/

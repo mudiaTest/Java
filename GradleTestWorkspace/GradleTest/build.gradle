@@ -248,8 +248,7 @@ Dla plugina "java" - ustawianie main class do generowania pliku jar.
 	}
 
 Co wiecej spring zalatwia tez sprawe fat jar, czyli ladowania dependancy do jar'a
-Bez tego nalezalo by zrobic ponizsze:
-
+Bez tego nalezalo by zrobic rzszerzenie taska jar:
 	jar {
 	    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 	    manifest {
@@ -302,6 +301,17 @@ sourceSets {
 */ 
 
 /* -- Taski -- */
+/* Nowy task i rozszerzenie starego
+//Definicja nowego taska. Nnie mo¿e byc 2 tasków o takiej samej nazwie
+tast xxx{...} 
+
+//Rozszerzenie ju¿ istniej¹cego taska - dodaje nowe linie kodu. Po prostu dokleja nowe komenty na koniec ju¿ istniej¹cego kodu
+//Kolejnoœæ wykonywania konu jest zalezna od kolejnoœci w pliku rozszerzeñ.
+//Mo¿e byæ wiele takich rozszerzeñ
+xxx{...}
+
+*/
+
 /*
 task hello {
 	//wykonywane jako 2 podczas execution 
