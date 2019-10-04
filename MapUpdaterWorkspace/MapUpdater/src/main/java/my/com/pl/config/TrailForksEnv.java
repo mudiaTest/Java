@@ -16,6 +16,10 @@ public class TrailForksEnv {
 	String mpFile;
 	String imgFile;
 	boolean deleteMpFile;
+	String bbox_poland;
+	String bbox_czech_republic;
+	String bbox_slovakia;
+	Integer rows;
 	
 	String[] difficultyLvl;
 	String[] poiType;

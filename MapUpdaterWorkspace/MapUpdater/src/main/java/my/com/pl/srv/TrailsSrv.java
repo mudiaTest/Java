@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;	
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,13 +70,14 @@ public class TrailsSrv {
 			throw new RuntimeException("Znaleziono " + col.size());
 	}
 	
+	
 	/**
 	 * Pobieramy informacje o dostępnych trailach
 	 * @param doc Kod całej strony z listą ścieżek. 
 	 * @return Mapa: klucz - url strony traila, val - TrailXMLObject
 	 * @throws Exception
 	 */
-	private Map<String, TrailXML> getTrails(Document doc) throws Exception{
+	/*private Map<String, TrailXML> getTrails(Document doc) throws Exception{
 		Map<String, TrailXML> result = new HashMap<String, TrailXML>();
 		
 		//Pobieramy informacje o stronach z trailami
@@ -95,7 +98,7 @@ public class TrailsSrv {
 				result.put(id, trailObj);
 			}
 		return result;
-	}
+	}*/
 	
 	/*
 	 * olać wybieranie przez api listy i wybierać przez stronę, bo brak klucza powoduje oddanie tylko 3
@@ -310,11 +313,81 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 	}*/
 	
 	/**
+	 * Wywołuje zapytanie podane w parametrze url
+	 * @param url
+	 * @return
+	 * @throws Exception
+	 */
+	private String AskApi(URL url) throws Exception{
+		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        con.setDoOutput(true);
+        con.setConnectTimeout(5000);
+        con.setReadTimeout(5000);   
+        //Odpalenie zapytania
+        int status = con.getResponseCode();
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        
+        //Zbieranie wyników  
+        String inputLine;
+        StringBuilder content = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+        	content.append(inputLine);
+        }        
+        in.close();
+        return content.toString();
+	}
+	
+	/**
+	 * Pobiera dane grupy traili za pomocą API serwisu
+	 * Z niewiadomych przyczym parametr rows nie działa i zawsze pobiera dokładnie 3 traile
+	 * @throws IOException 
+	 */
+	public List<TrailData> ParseTrailsResponse(String response) throws IOException{
+		ObjectMapper mapper = new ObjectMapper();		
+		JsonNode root = mapper.readTree(response); 
+		JsonNode dataNodes = root.get("data");
+		List<TrailData> result = new ArrayList<>();
+		for(JsonNode dataNode: dataNodes)
+		{
+			TrailData trailData = mapper.treeToValue(dataNode, TrailData.class);
+			trailData.TrackFromRaw();
+			result.add(trailData);
+		}		
+		return result;
+	}
+	
+	/**
+	 * Wywołanie api trailsz parametrami: rows, page, bbox
+	 * @param rows
+	 * @param page
+	 * @param bbox
+	 * @return
+	 * @throws Exception
+	 */
+	private List<TrailData> AskTrails(Integer rows, Integer page, String bbox) throws Exception{
+		//Przygotowywanie zapytania API		
+		URL url = new URL(
+			"https://www.trailforks.com/api/1/trails?scope=track&rows="+rows+"&page="+page+"&filter="+
+			//!! Enkodować można tylko WARTOŚĆ parametrów! Enkodowanie całego adresu odda 
+			//kaszanę, której nie rozumie ani przeglądatka, ani HttpURLConnection !!
+			URLEncoder.encode(
+				"bbox::"+bbox, 
+				StandardCharsets.UTF_8.toString()
+			)
+			+"&api_key=docs"
+		);
+		String response = AskApi(url);            
+		return ParseTrailsResponse(response);
+	}
+	
+	/**
 	 * Pobiera dane dla traila za pomocą API serwisu
 	 * @param id - cyfrowy indentyfikator traila
 	 * @return 
 	 * @throws Exception
 	 */
+	/*
 	private TrailData GetRawTrailData(String id) throws Exception {
 		
 		//Przygotowywanie zapytania API		
@@ -325,21 +398,21 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
         con.setConnectTimeout(5000);
         con.setReadTimeout(5000);        
         //Wykomentowany kod nie działa - problemy z pabijaniem parametrów
-	        /*URL url = new URL("https://www.trailforks.com/api/1/trail");
-	        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-	        con.setRequestMethod("POST");
-	        Map<String, String> parameters = new HashMap<>();
-	        parameters.put("id", id);
-	        parameters.put("scope", "track");
-	        parameters.put("api_key", "docs");
-	        con.setDoOutput(true);
-	        con.setConnectTimeout(5000);
-	        con.setReadTimeout(5000);
-	        //Przygotowywanie obiektu przechowującego odpowiedz
-	        DataOutputStream out = new DataOutputStream(con.getOutputStream());
-	        out.writeBytes(ParameterStringBuilder.getParamsString(parameters));
-	        out.flush();
-	        out.close();*/ 
+//	        URL url = new URL("https://www.trailforks.com/api/1/trail");
+//	        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+//	        con.setRequestMethod("POST");
+//	        Map<String, String> parameters = new HashMap<>();
+//	        parameters.put("id", id);
+//	        parameters.put("scope", "track");
+//	        parameters.put("api_key", "docs");
+//	        con.setDoOutput(true);
+//	        con.setConnectTimeout(5000);
+//	        con.setReadTimeout(5000);
+//	        //Przygotowywanie obiektu przechowującego odpowiedz
+//	        DataOutputStream out = new DataOutputStream(con.getOutputStream());
+//	        out.writeBytes(ParameterStringBuilder.getParamsString(parameters));
+//	        out.flush();
+//	        out.close(); 
         
         //Odpalenie zapytania
         int status = con.getResponseCode();
@@ -371,6 +444,7 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 		}				
         return result;
 	}
+	*/
 	
 	@Autowired
 	GMTService gs;
@@ -382,8 +456,10 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 	 * @throws Exception
 	 */
 	public void recreateImg() throws Exception{
-		try {
-			Map<String, TrailXML> trailPagesUrl = new HashMap<String, TrailXML>();
+		try {			
+			//Stare podejście - pobieramy stronę z trailami dla danego regionu i parsujemy ją zbierając numery poszczególnych traili
+			//Każdy taki trail odpytujemy potem przez api
+			/*Map<String, TrailXML> trailPagesUrl = new HashMap<String, TrailXML>();
 			
 			//Pobieranie informacji o ilości podstron
 			Document doc1 = hjs.getPageDom("https://www.trailforks.com/region/" + tfv.getRegion() + "/trails/?difficulty=" + tfv.getDifficulty());
@@ -420,10 +496,22 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 				if (loop > 0 && loop % tfv.getLoopstep() == 0)
 					System.out.println("Zbierano " + loop + "/" + trailPagesUrl.size() + " traili");
 			}
-			System.out.println("Zbierano " + loop + "/" + trailPagesUrl.size() + " traili");
+			System.out.println("Zbierano " + loop + "/" + trailPagesUrl.size() + " traili");*/
+			
+			//Nowe podejście - zbieramy traile grupami przez api trails
+			List<TrailData> allTrails = new ArrayList<TrailData>();
+			List<TrailData> trails = new ArrayList<TrailData>();
+			int loop = 0;
+			do {
+				loop++;
+				trails = AskTrails(tfv.getRows(), loop, tfv.getBbox_poland());
+				allTrails.addAll(trails);
+				System.out.println("Łącznie traili:" + allTrails.size());//aktualnie jest 4348 traili (2019-09-29)
+			}
+			while(trails.size() > 0);
 			
 			//Utworzenie linii pliku MP z traili
-			List<String> lines = mps.getMpLines(trails);
+			List<String> lines = mps.getMpLines(allTrails);
 			
 			System.out.println("Tworzenie pliku: '" + tfv.getMpFile() + "'");
 			//Zapis do pliku mp
@@ -458,6 +546,20 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 	
 	@Autowired
 	MapUpdaterSrv mus;
+	
+	public void install() throws Exception {
+		try {
+			mus.run();
+		}
+		finally {
+			if (tfv.isDeleteMpFile()) {
+				System.out.println("Usuwanie pliku: '" + tfv.getMpFile() + "'");
+				log.info("Usuwanie pliku: '" + tfv.getMpFile() + "'");
+				Files.delete(new File(tfv.getMpFile()));
+			}
+		}
+	}
+	
 	public void recreateAndInstall() throws Exception {
 		recreateImg();
 		try {

@@ -41,13 +41,18 @@ public class TrailsTests {
 	public void recreateImgTest() throws Exception {
 		ts.recreateImg();
 	}
+	
+    @Test
+	public void installTest() throws Exception {
+		ts.install();
+	}
 		
 	//@Test
 	public void recreateAndInstallTest() throws Exception {
 		ts.recreateAndInstall();
 	}
 	
-	@Test
+	//@Test
 	public void mpToImgTest() throws Exception {
 		es.createMapsetImg(tfv.getMpFile(), tfv.getImgFile());
 		System.out.println("File 'mapset.img created using cgpsmapper.");
