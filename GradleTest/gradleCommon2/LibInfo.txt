@@ -1,0 +1,135 @@
+Eksport z Eclipse do jar
+	1) Sam z siebie nie eksportuje potrzebnych depencencies. Trzeba je dodaæ w dependencies projektu, który ich u¿ywa
+	2) Export 
+		a)[v] genarated files
+		b)[v] all output folders...
+		c)[v] source files
+		a pozwala na uzywanie bez mo¿liwoœci podgl¹du sources
+		b pozwala na uzywanie bez mo¿liwoœci podgl¹du sources
+		c wewnatrz jar znajduja sie pliki java, ale IDE ich nie widzi
+		a+b
+		a+c pozwala na uzywanie i podgl¹d sources
+		b+c				
+		Najlepsze wiêc jest chyba a+c (i tylko katalog src) - pozwala na pe³n¹ pracê choc wymaga dodania depencencies	
+	2) W programie docelowym mo¿emy odwo³ywaæ siê do plików class umieszczonych w dowolnym podklatalogu, wiêc jeœli np umieœcimy 
+	(co jest b³edem!) katalog bin w pliku jar, to do danej klasy mo¿emy odwo³ywaæ siê przez L
+		import     com.my.common.StringCommon; //export wstawi³ sources bezpoœrednio do root pliku jar
+		import bin.com.my.common.string.StringCommon;		
+	4) Mo¿emy te¿ zaznaczaæ konkretne pliki i katalogi do eksportu.			
+	5) Rozwa¿yæ: W jaki sposób zbudowac plik jar tylko z plikami class, ale wskazaæ na zrodlo plików java
+	Odp. - w takim uk³adzie jest to najprawdopodobniej nie jst to mo¿liwe. Takie rzeczy tylko 	
+	
+Eksport Gradle
+
+	1) Zaszywanie plików source na 2 sposoby. Za koszerne uwa¿ane jest jednak podejœcie (b)
+		a) zaszyswanie plików java razem z class 
+			jar {
+					from sourceSets.main.allSource
+				}
+				
+		b) Zaszyswanie w osobnym pliku jar (czyli mamy 2 pliki jar, jeden z classes i jeden z sources). 
+		Tak samo mozna dodawac dokumnentacjê
+		W takim przypadku, gdy w projekcie u¿ywaj¹cym biblioteki dodamy 
+		
+			flatDir {
+		        dirs 'C:/Praca/MyJava/GradleTestWorkspace/gradleCommon2/build/libs'
+		    }
+		    ...
+			implementation name: 'gradleCommon2'
+			
+		To uzyskamy od razu dost¹p do zróde³. Z jakiegoœ powodu nie dzia³a to na dokumnetacje - do sprawdzenia 	
+			
+			task sourcesJar(type: Jar, dependsOn: classes) {
+				//dodatkowa czeœc nazwy - lepiej nie ruszaæ, bo inaczej IDE mo¿e nie ropoznac
+			    classifier = 'sources'
+			    //dodaje wszystkie zrodla
+			    from sourceSets.main.allSource
+			}
+			//Ustalamy , ze zanim odpalimy jar musimy odpaliæ sourcesJar
+			jar.dependsOn 'sourcesJar' 
+			task javadocJar(type: Jar, dependsOn: javadoc) {
+				//dodatkowa czeœc nazwy - lepiej nie ruszaæ, bo inaczej IDE mo¿e nie ropoznac
+			    classifier = 'javadoc'
+			    from javadoc.destinationDir
+			}
+			jar.dependsOn 'javadocJar' 
+	
+	2) Nazewnicwo bibliotek
+		Przy implementowanu lokalnych plików jar nie ma znaczenia.
+		
+	3) Przy kompilacji biblioteki powinno uzywaæ siê pligina "java-library", które rozszerza zazwyczaj u¿ywany "java" 
+	   o cechy typowe dla library. W szczególnoœci wprowadza podzia³ na api/implementation - https://stackoverflow.com/a/44419574
+	   https://docs.gradle.org/current/userguide/java_library_plugin.html
+			plugins {
+				//id 'java' - tego nie u¿ywamy
+				id 'java-library'
+			}
+			
+	4) Kompatybilnoœæ skompilowanych klas
+		Nie wiem dok³adnie na co wp³ywa parametr sourceCompatibility, ale jest powi¹zany z targetCompatibility, czyli source 1.8 wymaga target 1.8 (ale nie odwrotnie) 
+			sourceCompatibility = '1.8'
+	
+		targetCompatibility wymusza kompatybilnoœæ klas z wersj¹ java. Domyœlnie gradle bêdzie kompilowa³ z najwy¿sz¹ dostêpn¹ wersj¹ (ale nie wiem sk¹d bierze takie informacje).
+		Jeœli App bêdzie korzysta³ z 1.8 (d³ugotrwa³y maintenence kodu), a lib bêdzie skompilowany w 1.10 to dostaniemy
+		"... java.lang.UnsupportedClassVersionError: com/my/common/StringCommon has been compiled by a more recent version of the Java Runtime (class file version 54.0), this version of the Java Runtime only recognizes class file versions up to 52.0"
+			targetCompatibility = '1.8'
+	
+		Co zastanawiaj¹ce, to zostawienie domyœlnych ustawieñ (kompilacja SE10) nie powoduje zmian w project->properies->"java compiler"
+		Natomiast ustwienie na '1.10' ju¿ spowoduje takie zmiany w project->properies->... - to prawdopodobnier jakiœ b³¹d. 
+		Jednoczeœnie w obu przypadkach jar bêdzie mia³ klasy skompilowane w 1.10
+		Posumowuj¹c:
+		Compatibility = *brak* -> projekt 1.8, jar 1.10
+		Compatibility = '1.8' -> projekt 1.8, jar 1.8
+		Compatibility = '1.10' -> projekt 1.10, jar 1.10
+		Najlepiej wiêc wymuszaæ (gdy potrzebujemy kompatybiloœci wstecznej) niz polegaæ na domyœlnoœciach.
+	
+	5) Rodzaje dependency
+		patrz (3) podzia³ na api/implementation...
+	
+	6) Gradle domyœlnie szuka sources w src/main/java wiêc sa 2 mo¿liwoœci:
+		1) Trzymaæ sources w ./src/main/java/com/... zamiast w ./src/com/...
+		2) podaæ kolejne zrodla jak ponizej
+	
+		sourceSets {
+		    main {
+		        java {
+		            srcDirs 'src','srcx' - dodaje 2 katalogi ./src i ./srcx
+		            srcDir 'src1' - dodaje katalog
+		            srcDir 'src2' - dodaje katalog
+		        }
+		        resources {
+		            srcDirs = 'src/resources' - dodaje katalog resources - zasady jw.
+		        }
+		    }
+		 } 
+	
+	7)  Dodatek opcjonalny. Listuje na konsolê informacje o plikach i katalogach. 
+		 Z jakiegoœ powodu pada na 2 ostatnich liniach (output) 
+			 doLast{
+			    main{
+			    	println "java.srcDirs = ${java.srcDirs}"
+			        println "resources.srcDirs = ${resources.srcDirs}"
+			        println "java.files = ${java.files.name}"
+			        println "allJava.files = ${allJava.files.name}"
+			        println "resources.files = ${resources.files.name}"
+			        println "allSource.files = ${allSource.files.name}"
+			        println "output.classesDir = ${output.classesDir}"
+			        println "output.resourcesDir = ${output.resourcesDir}"
+			        println "output.files = ${output.files}"
+			    }
+	    }
+	
+ToDo	
+
+przetestowaæ compile vs compileonly \ runtime etx
+	
+* Maven - local repository
+	Na razie odpuszczamy
+
+configuration
+	co to jest i jak to siê je
+	
+Gradle multiptojest
+	jak to zrobiæ i rózne pu³apki.	
+
+		

@@ -111,3 +111,10 @@ MapUpdaterWorkspace/MapUpdater/bin/*
 /GradleTestWorkspace/GraddleCommonUser/build/*
 /GradleTestWorkspace/gradleCommon2/bin/*
 /Hibernate_05/custom-generator/build/*
+
+GradleTest/GradleTest/bin/*
+GradleTest/GraddleCommonUser/bin/*
+GradleTest/GraddleCommonUser/build/*
+GradleTest/GradleCommon/bin/*
+GradleTest/gradleCommon2/bin/*
+GradleTest/gradleCommon2/build/*
