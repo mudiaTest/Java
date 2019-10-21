@@ -1,26 +1,29 @@
 /*
-Aby utworzyæ projekt graddle w Eclipse nale¿y
-Wykonaæ: 1,2,5
+Tworzenie projektu gradle:
+
+W Eclipse nale¿y wykonaæ kolejno 1,2,5
 Jeœli bêdzie siê pluæ o nazwê to sprawdziæ czy nazwa projektu zgadza siê z zawartoœci¹ settings.gradle
 Jeœli dalej bedzie siê pluæ wykonaæ kroki 1-7
 
-1) Utworzuæ projekt java
+1) Utworzyæ projekt java (zwyk³y, nie gradle)
 2) Dodaæ katalog gradle, pliki: build.gradle, gradlew, gradlew.bat, settings.gradle
 3) Przenieœæ katalog poza workspace
-4) Odœwierzyæ workspace i potwierdziæ usuniêcie projekty
+4) Odœwierzyæ workspace i potwierdziæ usuniêcie projektu
 5) Import Gradle/Existing 
 6) Przenieœæ projekt z powrotem do workspace i odœwierzyæ workspace
 7) Zaimportowac jako zwyk³y projekt
 */
 
 /*
-Tutoriale: 
+Tutoriale:
+ 
 	https://www.tutorialspoint.com/gradle/index.htm
 	https://www.petrikainulainen.net/getting-started-with-gradle/
 */
 
 /*
-Cykl zycia podczas kazego build
+Cykl zycia podczas kazego build:
+
 	Projekt (GP) - pojedynczy projekt prowadzi do wybudowania jednego artefaktu (np plik jar lub zbior wielu plikow klas)
 	Task - reprezentacja akcji (potencjalnie jednej z wielu) prowadzacych do wybudowania projektu
 Sa 3 fazy budowania projektu
@@ -48,7 +51,10 @@ println 'phase 2'
 */
 
 /*
-	Pluginy moge byc skryptowe lub binarne
+
+Pluginy:
+
+Moga byc skryptowe lub binarne
 	
 	S - tylko z lokanego systemu plikow lub zdalnie za pomoca HTTP URL:
 		- apply from: 'other.gradle'
@@ -76,6 +82,7 @@ println 'phase 2'
 		  
     Przyklad takiego plugina z jego opisem: https://github.com/nilsmagnus/wsdl2java 
     
+    Przyk³ad wykorzystania
     wsdl2java {
       wsdlsToGenerate = [
               ['-p','com.acme.mypackage', '-autoNameResolution',"$projectDir/src/main/resources/wsdl/stockqoute.wsdl"]
@@ -92,7 +99,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
 	id 'java'
 	/*
-	Ogolnie caly plugin opisany jest tutaj: https://docs.gradle.org/2.4/userguide/java_plugin.html
+	Ogolnie caly plugin 'java' opisany jest tutaj: https://docs.gradle.org/2.4/userguide/java_plugin.html
 	Ponizej zamieszczam tylko jego fragmenty
 	
 	java dodaje nowe taski
@@ -139,15 +146,65 @@ logger.trace(    '7 A trace log message.')
 -s /-S pokaze standardowy(zalecany) stacktrace / pelen stacktrace
 */
 
+/*
+Zmienne:
+
+Poni¿ej przyk³ady definiowania zmiennych. Bêd¹ one potem wykorzystane np aby wpisaæ wszêdzie ten sam numer wersji
+*/
 group = 'com.gradle.test'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
+
+/*
+Zmienne:
+
+Groovy jest jêzykiewm skryptowym, st¹d brak typów zmiennych. 
+
+definicja zmiennej o nazwie varDummy
+	ext {
+		varDummy = '11'
+	
+		varInt1 = 11
+		varInt2 = 12
+		varInt3 = varInt1 + varInt2; //wartoœæ == 23
+	}
+
+u¿ycie zmiennej
+	if (varInt3 == 23) { ... }         //true - naturalne
+	if ("${varInt3}" == 23) { ... }    //false - wygl¹da jak traktowane jako String
+	if ("${varInt3}" == '23') { ... }  //true - wygl¹da jak traktowane jako String
+	if ("${varDummy}" == '11') { ... } //true
+	if (varDummyStr == '11') { ... }   //true 
+	println('varDummyInt->'+"${varDummyInt}") // varDummyInt->11
+	println('varDummyInt-->'+varDummyInt)     // varDummyInt-->11
+	
+Properties projektu
+task t5{
+	doLast{
+		println('t5 51 = '+project)		//root project 'GradleTest'
+		println('t5 52 = '+name)		//t5
+		println('t5 53 = '+path)		//:t5
+		println('t5 54 = '+description) //null
+		println('t5 55 = '+projectDir)  //C:\Users\mudia\Documents\Java\MyJava\GradleTest\GradleTest
+		println('t5 56 = '+buildDir)    //C:\Users\mudia\Documents\Java\MyJava\GradleTest\GradleTest\build
+		println('t5 57 = '+group)       //null
+		println('t5 58 = '+version)     //0.0.1-SNAPSHOT //ustalone przez u¿ytkownika
+		println('t5 59 = '+ant)         //org.gradle.api.internal.project.DefaultAntBuilder@2c9237c3
+	}
+}
+	
+*/
+ext {
+	varDummyStr = '11'
+	varDummyInt = 11
+}
 
 /*
 	! Dodatkowe i raczej zadko uzywane !
 Domyslne polozenie katalogow w java to np 
 	src/main/java
 	src/test/resources etc...
+Najlepiej jednak zadbaæ o to, aby projekt mia³ standardow¹ strukturê	
 Mozna je zmienic ponizszym
 sourceSets {
     main {
@@ -174,7 +231,7 @@ repositories {
         url '../ivy-repo'
     }
     
-    //*Dodawanie z rezo maven
+    //*Dodawanie z repo maven
     //Aby dodawac dependency z http://repo1.maven.org/maven2/ nalezy dodac
     mavenCentral()
     //Aby dodawac dependency z http://jcenter.bintray.com/
@@ -206,12 +263,18 @@ Zasadniczo najpoluparniejsze:
 Chodzi o to, ze program app uzywa biblioteki foo, ktora wewnetrznie uzywa biblioteki bar, wiec TYLKO foo jest 
 niezbedne do skomilowania app, ale zarowno foo jak i bar do uruchomienia app
 */
+
+/*
+Wskazanie konkretnych dependencies do zaci¹gniêcia z ww zróde³
+*/
 dependencies {
-	/*
+/*
+Dwa sposoby okreœlania pojedynczego dependency:
 	compile group: 'foo', name: 'foo', version: '0.1'
 		jest rownoznaczne
 	compile 'foo:foo:0.1'
 	
+Wskazanie wielu dependancies:
 	compile (
         [group: 'foo', name: 'foo', version: '0.1'],
         [group: 'bar', name: 'bar', version: '0.1']
@@ -224,7 +287,7 @@ dependencies {
     	api - 
     	implementation
     Szczegoly z przykladem  w https://stackoverflow.com/a/48388463
-    W skrucie mamy app korzystajaca z libA korzystajaca z libB
+    W skrócie mamy app korzystajaca z libA korzystajaca z libB
     app ma implementation libA
     Jesli libA ma api lub compile dla LibB, to app bedzie mogl korzystac z LibB (np LibB.getVal();)
     Jesli libA ma implementation dla LibB, to app nie bedzie mogl korzystac a LibB (LibB.getVal(); nie skompiluje sie)
@@ -237,9 +300,10 @@ dependencies {
 }
 
 /*
-Dla plugina "java" - ustawianie main class do generowania pliku jar. 
+Dla plugina "java" - ustawianie main class do generowania pliku jar:
+ 
  - Konieczne tylko jesli ma byc to aplikacja (a nie biblioteka) 
- - Nie jest to konieczne dla Springa (inny plugin)
+ - Nie jest to konieczne dla Springa (inny plugin, który sam rozwi¹zuje ten problem)
  
 	jar {
 	    manifest {
@@ -302,14 +366,34 @@ sourceSets {
 
 /* -- Taski -- */
 /* Nowy task i rozszerzenie starego
-//Definicja nowego taska. Nnie mo¿e byc 2 tasków o takiej samej nazwie
-tast xxx{...} 
+//Definicja nowego taska. Nie mo¿e byc 2 tasków o takiej samej nazwie
+task xxx{...} 
 
 //Rozszerzenie ju¿ istniej¹cego taska - dodaje nowe linie kodu. Po prostu dokleja nowe komenty na koniec ju¿ istniej¹cego kodu
 //Kolejnoœæ wykonywania konu jest zalezna od kolejnoœci w pliku rozszerzeñ.
 //Mo¿e byæ wiele takich rozszerzeñ
 xxx{...}
 
+Kolejnoœæ wykonywania:
+
+task t6{
+    println('t6 0') //1
+	doFirst{println('t6 1')} //6
+	doLast{println('t6 2')} //7
+}
+
+t6{
+    println('t6 3') //2
+	doFirst{println('t6 4')} //5
+	doLast{println('t6 5')} //8
+}
+
+t6{
+    println('t6 6') //3
+	doFirst{println('t6 7')} //4
+	doLast{println('t6 8')} //9
+}
+Gdzie 0,3,6 w czasie configure, natomiast 7,4,1,2,5,8 podczas wywo³ywania taska
 */
 
 /*
@@ -327,14 +411,15 @@ task hello {
 }*/
 
 /*
-to ma dzialac jak doLase, ale w Gradle 5 zostalo wycofane
+to ma dzialac jak doLast, ale w Gradle 5 zostalo wycofane. Spotkaæ mo¿na jednaj wielokrotnie z przyk³adach.
 task hello << {	
 		println '1'	
 }
 */
 
 /*
-dependsOn spowoduje, ze wywolanie t2 zostanie poprzedzone wywolaniem t1
+dependsOn 
+Spowoduje, ze wywolanie t2 zostanie poprzedzone wywolaniem t1
 task t1{
 	doFirst{println('t1 1')}
 	doLast{println('t1 2')}
@@ -403,4 +488,29 @@ task t8 {
     }
 }
 */
+
+task t5{
+//	onlyIf(varDummy = '11'){println('t5 2')}
+	//onlyIf{project.hasProperty('varDummy') && project.getProperty('varDummy') == '11'}
+	doFirst{
+		if (varDummyStr == '11')
+		  println('t5 0')
+		if ("${varDummyStr}" == '12') {
+		  println('t5 1')
+		}
+		println('varDummyInt->'+"${varDummyInt}")
+		println('varDummyInt-->'+varDummyInt)
+		if (varDummyInt == 11) {
+		  println('t5 2')
+		}
+		//println('varInt3->'+"${varInt3}")
+	println('t5 3')
+	}
+	doLast{
+		println('t5 59 = '+properties)         //org.gradle.api.internal.project.DefaultAntBuilder@2c9237c3
+		println('t5 60 = '+taskDependencies[0])         //org.gradle.api.internal.project.DefaultAntBuilder@2c9237c3
+	}
+}
+
+
 
