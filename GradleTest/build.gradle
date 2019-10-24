@@ -1,0 +1,38 @@
+plugins {
+	id 'java'
+}
+
+//task test0(dependsOn: ':gradleCommon2:build') 
+
+
+task test0 (dependsOn: ':gradleCommon2:build'){
+	doFirst{ println('-> test0') }
+	doLast{ println('--> test0') }
+}
+
+task test00 (dependsOn: ':GraddleCommonUser:build'){
+	doFirst{ println('-> test00') }
+	doLast{ println('--> test00') }
+}
+test0.finalizedBy test00;
+
+task test1{
+	doFirst{ println('-> test1') }
+	doLast{ 
+		project(':gradleCommon2').tasks.build.execute()
+ 	}
+	doLast{ println('--> test1') }
+}
+
+task test2{
+	doFirst{ println('-> test2') }
+	doLast{ println('--> test2') }
+}
+
+task test3{
+	doFirst{ println('-> test3') }
+	doLast{ println('--> test3') }
+}
+
+test1.finalizedBy test2
+test2.finalizedBy test3 

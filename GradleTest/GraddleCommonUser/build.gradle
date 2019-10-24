@@ -33,7 +33,7 @@ repositories {
 }
 
 dependencies {
-
+	compile project(':gradleCommon2')
 	/*
 	Pod³¹czanie biblioteki (1)
 	Do³¹czenie do projektu dependency pod postaci¹ pliku jar z jakiejœ lokalizacji lokalnej z katalogu wskazanego w "Pod³¹czanie biblioteki (0")
@@ -72,4 +72,8 @@ task idd {
             println "$it.group:$it.name:$it.version"
         }
     }
+}
+
+build {
+	doFirst{ println('building User') }
 }

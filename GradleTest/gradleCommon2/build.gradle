@@ -147,3 +147,11 @@ artifacts {
 //compileJava.options.forkOptions.executable = 'C:/Program Files/Java/jdk1.8.0_181/bin/javac'
 //compileJava.options.forkOptions.executable = "${System.properties['java.home']}/../bin/javac"
 */
+/*
+compile {
+	doFirst{ println('compile Common2') }
+}*/
+
+build {
+	doFirst{ println('building Common2') }
+}
