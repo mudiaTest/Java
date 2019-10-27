@@ -1,38 +1,22 @@
-plugins {
-	id 'java'
+ext {
+	next = true;
 }
 
-//task test0(dependsOn: ':gradleCommon2:build') 
-
-
-task test0 (dependsOn: ':gradleCommon2:build'){
-	doFirst{ println('-> test0') }
-	doLast{ println('--> test0') }
+task innerBuildCommon2 (dependsOn: 'gradleCommon2:build'){ //wygl¹da, ¿e 'gradleCommon2:build' jest rownowa¿ne ':gradleCommon2:build'
+	doFirst{ println('-> Rozpoczecie build Common') }
+	doLast{ println('-> Zakonczenie build Common') }
 }
 
-task test00 (dependsOn: ':GraddleCommonUser:build'){
-	doFirst{ println('-> test00') }
-	doLast{ println('--> test00') }
-}
-test0.finalizedBy test00;
-
-task test1{
-	doFirst{ println('-> test1') }
-	doLast{ 
-		project(':gradleCommon2').tasks.build.execute()
- 	}
-	doLast{ println('--> test1') }
+task innerBuildUser (dependsOn: 'GraddleCommonUser:build'){
+	doFirst{ println('-> Rozpoczecie build App') }
+	doLast{ println('-> Zakonczenie build App') }
 }
 
-task test2{
-	doFirst{ println('-> test2') }
-	doLast{ println('--> test2') }
+task buildWholeProject {
+	doFirst{ println('-> Rozpoczecie build calego projektu') }
 }
 
-task test3{
-	doFirst{ println('-> test3') }
-	doLast{ println('--> test3') }
-}
+innerBuildCommon2.finalizedBy innerBuildUser;
+buildWholeProject.finalizedBy innerBuildCommon2
 
-test1.finalizedBy test2
-test2.finalizedBy test3 
+
