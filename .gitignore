@@ -120,3 +120,7 @@ GradleTest/gradleCommon2/bin/*
 GradleTest/gradleCommon2/build/*
 /BasicStruct/bin/*
 /SpringOtherTests/bin/*
+
+JavaTest/bin/*
+Transactions/bin/*
+SpringMVCTest5/bin/*
