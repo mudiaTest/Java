@@ -118,3 +118,5 @@ GradleTest/GraddleCommonUser/build/*
 GradleTest/GradleCommon/bin/*
 GradleTest/gradleCommon2/bin/*
 GradleTest/gradleCommon2/build/*
+/BasicStruct/bin/*
+/SpringOtherTests/bin/*
