@@ -14,16 +14,20 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-  
-  implementation 'commons-lang:commons-lang:2.6'
-  implementation 'org.apache.commons:commons-lang3:3.6'
-  implementation 'junit:junit:4.12'		
-  
-  implementation 'javax.validation:validation-api:2.0.0.Final'
-  implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+	    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+    implementation 'commons-lang:commons-lang:2.6'
+    implementation 'org.apache.commons:commons-lang3:3.6'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    
+    implementation 'javax.validation:validation-api:2.0.0.Final'
+    implementation 'org.hibernate.validator:hibernate-validator:6.0.2.Final'
+    implementation 'org.hibernate.validator:hibernate-validator-annotation-processor:6.0.2.Final'
+   	
+	implementation 'javax.el:javax.el-api:3.0.0'
+    implementation 'org.glassfish.web:javax.el:2.2.6'
 }
 
 test {
