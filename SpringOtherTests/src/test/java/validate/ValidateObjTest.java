@@ -25,7 +25,16 @@ public class ValidateObjTest {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		Validator validator = factory.getValidator();
 		
-		Set<ConstraintViolation<ValidatedObj>> res = validator.validate(vo1);
+		vo1.s = "1";	
+		vo1.i = 5;			
+		Set<ConstraintViolation<ValidatedObj>> res = validator.validate(vo1, ValGroup1.class, ValGroup2.class);
+		
+		if (res.size() > 0) {
+            for (ConstraintViolation<ValidatedObj> violation : res) {
+            	violation.getExecutableParameters();
+            }
+		}
+        
 		
 		int t = 0;
 	}
