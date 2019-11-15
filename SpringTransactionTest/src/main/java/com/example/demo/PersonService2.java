@@ -15,13 +15,13 @@ public class PersonService2 {
 	EntityManager em;
 
 	public void insertNoTransactionalPerson(Person p) {
-		//em.persist(p);
+		// em.persist(p);
 		em.merge(p);
 	}
 
 	@Transactional
 	public void insertPerson(Person p) {
-		//em.persist(p);
+		// em.persist(p);
 		em.merge(p);
 	}
 

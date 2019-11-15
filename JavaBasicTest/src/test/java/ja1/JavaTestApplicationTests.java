@@ -15,9 +15,7 @@ class JavaBasicTestApplicationTests {
 	void contextLoads() {
 	}
 
-
-
-	class ImplPredicateInteger implements Predicate<Integer>{
+	class ImplPredicateInteger implements Predicate<Integer> {
 		@Override
 		public boolean test(Integer t) {
 			// TODO Auto-generated method stub
@@ -25,7 +23,7 @@ class JavaBasicTestApplicationTests {
 		}
 	}
 
-	class ImplPredicateT<T> implements Predicate<T>{
+	class ImplPredicateT<T> implements Predicate<T> {
 		@Override
 		public boolean test(T arg0) {
 			// TODO Auto-generated method stub
@@ -36,9 +34,11 @@ class JavaBasicTestApplicationTests {
 	public <T extends List<Object>> void genericTest1(T t) {
 
 	}
+
 	public void genericTest2(List<? extends Object> t) {
 
 	}
+
 //
 	Function<Integer, Integer> funct = i -> i++;
 

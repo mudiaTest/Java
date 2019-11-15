@@ -10,5 +10,5 @@ package ja1;
  * @author Mudia
  */
 class Views {
-    
+
 }

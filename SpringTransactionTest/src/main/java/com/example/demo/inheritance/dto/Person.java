@@ -12,7 +12,7 @@ import lombok.Data;
 //{ @NamedQuery(name="delAll", query="DELETE FROM Person")
 // ,@NamedQuery(name="getById", query="SELECT p FROM Person w WHERE p.id=:id")
 //})
-public class Person {//extends Person_gen{
+public class Person {// extends Person_gen{
 
 	@Id
 	@GeneratedValue

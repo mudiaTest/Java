@@ -7,6 +7,6 @@ import com.example.demo.inheritance.dto.Person;
 import org.springframework.data.repository.CrudRepository;
 
 @Repository
-public interface Person_01Doa extends CrudRepository<Person, Integer>{
+public interface Person_01Doa extends CrudRepository<Person, Integer> {
 
 }

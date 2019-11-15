@@ -18,25 +18,25 @@ public class SpringTransactionTestApplication {
 	PersonService ps;
 
 	@Transactional
-	//@PostConstruct
+	// @PostConstruct
 	public void post() {
 		System.out.println("START");
 		Person p = new Person(2, "p1");
 
-//		//padnie z braku transakcji
-//		//ps.insertNoTransactionalPerson(new Person(2, "p1"));
+//    //padnie z braku transakcji
+//    //ps.insertNoTransactionalPerson(new Person(2, "p1"));
 //
-//		//Zadziała
-//		ps.insertPerson(new Person(3, "p1"));
+//    //Zadziała
+//    ps.insertPerson(new Person(3, "p1"));
 //
 		ps.insertPerson2();
 
-//		int i = 0;
-//		ps.insert1(new Person(4, "p11"));
-//		i = 0;
-//		ps.insert2(new Person(4, "p12"));
-//		i = 0;
-//		ps.insert1(new Person(4, "p13"));
-//		i = 0;
+//    int i = 0;
+//    ps.insert1(new Person(4, "p11"));
+//    i = 0;
+//    ps.insert2(new Person(4, "p12"));
+//    i = 0;
+//    ps.insert1(new Person(4, "p13"));
+//    i = 0;
 	}
 }

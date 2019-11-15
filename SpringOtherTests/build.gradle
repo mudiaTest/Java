@@ -1,7 +1,7 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.0.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
-	id 'java'
+  id 'org.springframework.boot' version '2.2.0.RELEASE'
+  id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+  id 'java'
 }
 
 group = 'com.example'
@@ -9,15 +9,15 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 repositories {
-	mavenCentral()
+  mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
-	testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
+  implementation 'org.springframework.boot:spring-boot-starter'
+  testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
-	    exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
+      exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+  }
     implementation 'commons-lang:commons-lang:2.6'
     implementation 'org.apache.commons:commons-lang3:3.6'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -25,11 +25,11 @@ dependencies {
     implementation 'javax.validation:validation-api:2.0.0.Final'
     implementation 'org.hibernate.validator:hibernate-validator:6.0.2.Final'
     implementation 'org.hibernate.validator:hibernate-validator-annotation-processor:6.0.2.Final'
-   	
-	implementation 'javax.el:javax.el-api:3.0.0'
+     
+  implementation 'javax.el:javax.el-api:3.0.0'
     implementation 'org.glassfish.web:javax.el:2.2.6'
 }
 
 test {
-	useJUnitPlatform()
+  useJUnitPlatform()
 }
