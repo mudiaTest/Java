@@ -124,3 +124,6 @@ GradleTest/gradleCommon2/build/*
 JavaTest/bin/*
 Transactions/bin/*
 SpringMVCTest5/bin/*
+
+JavaBasicTest/bin/*
+SpringTransactionTest/bin/*
