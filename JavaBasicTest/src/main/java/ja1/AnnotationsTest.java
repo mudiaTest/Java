@@ -1,9 +1,47 @@
 package ja1;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.util.List;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Repeatable;
 
 //import java.lang.@NonNull String; // BĹ‚Ä…d! â€” nie moĹĽna odnotowaÄ‡ import
 import org.junit.Test; // https://mvnrepository.com/artifact/junit/junit
+
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+//Definiuje dla jakich elementów annotacja ma działać i być dostępna
+@Target({ElementType.CONSTRUCTOR, ElementType.METHOD})
+@interface CustomAnnototation {
+}
+
+//------------
+
+@interface Schedules {
+	Schedule[] value();
+	}
+
+@Repeatable(Schedules.class) 
+@interface Schedule {
+	String time() default "09:00";
+	}
+
+class RepeatableTest{
+	@Schedules(
+			{
+				@Schedule(),//default 09:00 
+				@Schedule(time = "23:00")
+			}) 
+	void scheduledAlarm() {			
+	}
+}
+
+//------------
 
 //adnotacje dodawane do klas i parametrĂłw w klasach generycznych
 @SuppressWarnings("unchecked")

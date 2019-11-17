@@ -7,7 +7,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 
 public class DateTest {
@@ -21,11 +23,12 @@ public class DateTest {
 
 	public static void DateTimeFormatterTest() {
 		LocalDate today = LocalDate.now();
+		LocalDate firstDay = LocalDate.of(1990, 1, 1);
 		// Pokaże odpowiednio sfotmatowany czas
 		String stData1 = DateTimeFormatter.ISO_WEEK_DATE.format(today);
 		// Poniższe da bład, bo LocalTime nie będzie mogło obsłużyć Year, month etc
-		// String stData1 = DateTimeFormatter.ISO_DATE_TIME.format(rightNow);
-
+		// String stData1 = DateTimeFormatter.ISO_DATE_TIME.format(rightNow);		
+		LocalDate tomorrow = LocalDate.now().plus(1L, ChronoUnit.DAYS);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("e yyyy-MM-dd HH:mm:ss");
 		// formatter.parse("MON 2016-07-12 12:05:11");
 		LocalDateTime lt1 = LocalDateTime.parse("3 1969-07-16 09:32:11", formatter);
