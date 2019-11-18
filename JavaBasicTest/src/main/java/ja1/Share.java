@@ -175,7 +175,7 @@ class Manager2 extends Employee {
 }
 
 class EmployeeList extends ArrayList<Employee> {
-	// pozwala na dołaczanie do listy wszystkich elementĂłw dziedziczących lub
+	// pozwala na dołaczanie do listy wszystkich elementów dziedziczących lub
 	// Employee
 	public void addFirst(List<? extends Employee> list) {
 		add(list.get(0));

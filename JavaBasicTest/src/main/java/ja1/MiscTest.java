@@ -53,14 +53,14 @@ public class MiscTest {
 		Class<?> cl = array.getClass();
 		if (!cl.isArray())
 			return null;
-		// Pobieramy klasÄ™ obiektĂłw w Array
+		// Pobieramy klasę obiektów w Array
 		Class<?> componentType = cl.getComponentType();
-		// Pobieramy wielkoĹ›Ä‡ tablicy
+		// Pobieramy wielkość tablicy
 		int length = Array.getLength(array);
-		// Tworzymy nowy obiekt tablicy o zadanej dĹ‚ugoĹ›ci i type przechowywantch
-		// obiektĂłw
+		// Tworzymy nowy obiekt tablicy o zadanej długości i type przechowywantch
+		// obiektów
 		Object newArray = Array.newInstance(componentType, newLength);
-		// WypeĹ‚niamy nowÄ… tablicÄ™ referencjami pobranymi ze starej tablicy
+		// Wypełniamy nową tablicę referencjami pobranymi ze starej tablicy
 		for (int i = 0; i < Math.min(length, newLength); i++)
 			Array.set(newArray, i, Array.get(array, i));
 		return newArray;
@@ -107,11 +107,11 @@ public class MiscTest {
 		final int BLOCKSIZE = 1024;
 		byte[] bytes = new byte[BLOCKSIZE];
 		int len;
-		while ((len = in.read(bytes)) != -1)// odczytuje kolejne porcje wielkoĹ›ci BLOCKSIZE
-			out.write(bytes, 0, len); // zapisueje do stream caĹ‚Ä… tablicÄ™ (od 0 do len)
+		while ((len = in.read(bytes)) != -1)// odczytuje kolejne porcje wielkości BLOCKSIZE
+			out.write(bytes, 0, len); // zapisueje do stream całą tablicę (od 0 do len)
 	}
 
-	// I/O - odczytanie wszystkich bajtĂłw z pliku
+	// I/O - odczytanie wszystkich bajtów z pliku
 	public static byte[] readAllBytes(InputStream in) throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		copy(in, out);
@@ -119,25 +119,25 @@ public class MiscTest {
 		return out.toByteArray();
 	}
 
-	// Tworzenie i wyĹ›wietlanie list
-	// System.out.pront uĹĽywa metody toString()
+	// Tworzenie i wyświetlanie list
+	// System.out.pront używa metody toString()
 	public static void CreateList() {
 		ArrayList<String> arr1 = new ArrayList<>(Arrays.asList("Ala, Igor"));
 		ArrayList<Object> arr2 = new ArrayList<>(Arrays.asList(new Cont()));
-		System.out.println("Lista stringĂłw " + arr1);
-		System.out.println("Lista obiektĂłw " + arr2);
+		System.out.println("Lista stringów " + arr1);
+		System.out.println("Lista obiektów " + arr2);
 	}
 
-	// PorĂłwnywanie stringĂłw
+	// Porównywanie stringów
 	public static void StringCompare() {
 		String a = "World";
 		String greeting = "Hello, World!";
 		String location = greeting.substring(7, 12);
-		// == porĂłwnuje referencje wiÄ™c to da bĹ‚Ä…d
-		System.out.println("BĹ‚Ä™dne porĂłwanie stringĂłw '==': " + (location == "World"));
-		// a to true, bo oba stringi sÄ… 'systemowe'
-		System.out.println("BĹ‚Ä™dne porĂłwanie stringĂłw '==': " + ("World" == "World"));
-		System.out.println("Poprawne porĂłwanie stringĂłw 'equals()': " + (location.equals("World")));
+		// == porównuje referencje więc to da błąd
+		System.out.println("Błędne porówanie stringów '==': " + (location == "World"));
+		// a to true, bo oba stringi są 'systemowe'
+		System.out.println("Błędne porówanie stringów '==': " + ("World" == "World"));
+		System.out.println("Poprawne porówanie stringów 'equals()': " + (location.equals("World")));
 	}
 
 	// Sotrowanie list
@@ -146,11 +146,11 @@ public class MiscTest {
 		System.out.println("Pierwszy element listy (przed sortowaniem) " + arr[0]);
 
 		Arrays.sort(arr);
-		System.out.println("Pierwszy element listy (domyĹ›lne sortowanie) " + arr[0]);
+		System.out.println("Pierwszy element listy (domyślne sortowanie) " + arr[0]);
 
 		String[] arr2 = { "ola", "ala", "Ala" };
 		Arrays.sort(arr2, String::compareToIgnoreCase);
-		System.out.println("Pierwszy element listy (domyĹ›lne sortowanie + ignoreCase) " + arr2[0]);
+		System.out.println("Pierwszy element listy (domyślne sortowanie + ignoreCase) " + arr2[0]);
 	}
 
 	// postawowe operacje na listach; usuwanie pod warunkiem i forEach
@@ -161,7 +161,7 @@ public class MiscTest {
 		lst2.add(2);
 		System.out.print("Lista przed remove: " + lst2);
 		lst2.removeIf(e -> Objects.isNull(e));
-		// ForEach - pÄ™tla po wszystkich elementach
+		// ForEach - pętla po wszystkich elementach
 		System.out.print("\nList.forEach(1) ");
 		lst2.forEach(System.out::print);
 		System.out.print("\nList.forEach(2) ");
@@ -177,9 +177,9 @@ public class MiscTest {
 		System.out.println("'employesStream1'");
 		employesStream1.forEach(System.out::println);
 
-		// poniĹĽsze dziaĹ‚a tak samo. In to lista stringĂłw i szuka konstruktora z
-		// przyjmujÄ…cego jeden string
-		// 'name -> new Employee(name)' rĂłwnoznaczne 'Employee::new'
+		// poniższe działa tak samo. In to lista stringów i szuka konstruktora z
+		// przyjmującego jeden string
+		// 'name -> new Employee(name)' równoznaczne 'Employee::new'
 		Stream<Employee> employesStream2 = names.stream().map(Employee::new);
 		System.out.println("'employesStream2'");
 		employesStream2.forEach(System.out::println);
@@ -200,44 +200,44 @@ public class MiscTest {
 		return new ArrayList<>(Arrays.asList(CreateEmplArray()));
 	}
 
-	// Tworzenie tablicy obiektĂłw ze streama tych obiektĂłw.
-	// Obiekty w tablicy so TE SAME obiekty, ktĂłre sÄ… w streamie
+	// Tworzenie tablicy obiektów ze streama tych obiektów.
+	// Obiekty w tablicy so TE SAME obiekty, które są w streamie
 	public static void ObjectStreamToArray() {
-		// oba poniĹĽsze tworzÄ… Array obiektĂłw Employee o rozmiarze = iloĹ›ci
-		// obiektĂłw w stream
+		// oba poniższe tworzą Array obiektów Employee o rozmiarze = ilości
+		// obiektów w stream
 		Employee[] emplArr1 = CreateEmplStream().toArray(Employee[]::new);
 		Employee[] emplArr2 = CreateEmplStream().toArray(size -> new Employee[size]);
 	}
 
-	// Tworzenie listy obiektĂłw z tablicy tych obiektĂłw.
-	// Obiekty w liĹ›cie so TE SAME obiekty, ktĂłre sÄ… w tablicy
+	// Tworzenie listy obiektów z tablicy tych obiektów.
+	// Obiekty w liście so TE SAME obiekty, które są w tablicy
 	public static void ArrayToList() {
-		// poniĹĽsze odda nowÄ… listÄ™ z oryginalnymi elementami Employee pobranymi z
-		// Array, ktĂłrÄ… moĹĽna rozszerzaÄ‡
+		// poniższe odda nową listę z oryginalnymi elementami Employee pobranymi z
+		// Array, którą można rozszerzać
 		List<Employee> emplLst1 = new ArrayList<>(Arrays.asList(CreateEmplArray()));
-		// poniĹĽsze odda listÄ™ z oryginalnymi w elementami Employee pobranymi z Array,
-		// ktĂłra jest defacto opakowaniem dla array, NIE MOĹ»NA jej rozszerzaÄ‡
+		// poniższe odda listę z oryginalnymi w elementami Employee pobranymi z Array,
+		// która jest defacto opakowaniem dla array, NIE MOĹ»NA jej rozszerzać
 		List<Employee> emplLst2 = Arrays.asList(CreateEmplArray());
 	}
 
-	// Test wĹ‚anej funkcji z parametrem IF (interfejs funkcjyjny), czyli
-	// przyjmujÄ…cej LA (lambdÄ™)
+	// Test włanej funkcji z parametrem IF (interfejs funkcjyjny), czyli
+	// przyjmującej LA (lambdę)
 	public static void TestInterFunc() {
 		Employee emplIza = new Employee("iza", 1);
 		emplIza.Changer(emp -> emp.age += 2);
 	}
 
-	// ZasiÄ™g zmiennej i przechowywanie klas dla typow prostych w kontenerach i
+	// Zasięg zmiennej i przechowywanie klas dla typow prostych w kontenerach i
 	// tablicach
 	public static void ZasiegZmiennej() {
-		// to nie zadziaĹ‚a (bĹ‚ad kompilacji!), bo WL musi mĂłc zachomikowaÄ‡ wartoĹ›Ä‡
-		// i, a zniknie po zakoĹ„czeniu iteracji pÄ™tli
+		// to nie zadziała (bład kompilacji!), bo WL musi móc zachomikować wartość
+		// i, a zniknie po zakoĹ„czeniu iteracji pętli
 		// for (int i=0; i < 4; i++){
 		// new Thread( ()->System.out.println(i) );
 		// }
 
-		// to zadziaĹ‚a, bo choÄ‡ waroĹ›ci jest wiele, ale kaĹĽda jest przechowywana we
-		// wĹ‚anej "zmiannej" w tablicy
+		// to zadziała, bo choć warości jest wiele, ale każda jest przechowywana we
+		// włanej "zmiannej" w tablicy
 		int lp1 = 0;
 		Thread[] threadArr = new Thread[4];
 		int[] loopArr = { 0, 1, 2, 3 };
@@ -246,20 +246,20 @@ public class MiscTest {
 			threadArr[lp1] = new Thread(() -> System.out.print(i + ", "));
 			lp1++;
 		}
-		// Zmiana wartoĹ›ci nie bÄ™dzie zanotowana przez Thread
+		// Zmiana wartości nie będzie zanotowana przez Thread
 		loopArr[1] = 55;
-		System.out.print("Wyniki z TreadĂłw (int): ");
+		System.out.print("Wyniki z Treadów (int): ");
 		for (Thread t : threadArr) {
 			t.run();
 		}
 		System.out.print("\n");
 
 		// UWAGA !!! Tablica Integer[] przechowuje WARTOĹšCI a NIE REFERENCJE do
-		// obiektĂłw!
+		// obiektów!
 		// UWAGA !!! List<Integer> TEĹ» przechowuje WARTOĹšCI a NIE REFERENCJE do
-		// obiektĂłw!
-		// UWAGA !!! Prawdopodobnie kaĹĽdy kontener bÄ™dzie tak dziaĹ‚aĹ‚ z instancjami
-		// klas typĂłw prostych!
+		// obiektów!
+		// UWAGA !!! Prawdopodobnie każdy kontener będzie tak działał z instancjami
+		// klas typów prostych!
 		int lp2 = 0;
 		Thread[] threadArr2 = new Thread[4];
 		Integer[] loopArr2 = new Integer[4];
@@ -276,16 +276,16 @@ public class MiscTest {
 			threadArr2[lp2] = new Thread(() -> System.out.print(i.hashCode() + "|" + i.toString() + ", "));
 			lp2++;
 		}
-		// Zmiana wartoĹ›ci NIE BÄ�DZIE zanotowana przez Thread
+		// Zmiana wartości NIE BÄ�DZIE zanotowana przez Thread
 		loopArr2[1] = 55;
 		System.out.println("-->" + loopArr2[1].hashCode());
-		System.out.print("Wyniki z TreadĂłw (Integer): ");
+		System.out.print("Wyniki z Treadów (Integer): ");
 		for (Thread t : threadArr2) {
 			t.run();
 		}
 		System.out.print("\n");
 
-		// Przekazywanie ĹşrĂłdĹ‚owych obiektĂłw
+		// Przekazywanie Źródłowych obiektów
 		int lp3 = 0;
 		Thread[] threadArr3 = new Thread[4];
 		IntWrap[] loopArr3 = new IntWrap[4];
@@ -297,29 +297,29 @@ public class MiscTest {
 			threadArr3[lp3] = new Thread(() -> System.out.print(i.hashCode() + "|" + i.value + ", "));
 			lp3++;
 		}
-		// Zmiana wartoĹ›ci BÄ�DZIE zanotowana przez Thread
+		// Zmiana wartości BÄ�DZIE zanotowana przez Thread
 		loopArr3[1].value = 55;
 		System.out.println("-->" + loopArr3[1].hashCode());
-		System.out.print("Wyniki z TreadĂłw (IntWrap/for): ");
+		System.out.print("Wyniki z Treadów (IntWrap/for): ");
 		for (Thread t : threadArr3) {
 			t.run();
 		}
 		System.out.print("\n");
 	}
 
-	// PorĂłwnywanie po jednej zmiannej
+	// Porównywanie po jednej zmiannej
 	public static void CustomCompareOneVar() {
 		Employee[] emplArr = CreateEmplArray();
 		System.out.println(Arrays.toString(emplArr));
-		// porĂłwnywanie z wykorzystaniem domyĹ›lnego Comparator.comparing
+		// porównywanie z wykorzystaniem domyślnego Comparator.comparing
 		Arrays.sort(emplArr, Comparator.comparing(Employee::getName));
-		// wĹ‚asne porĂłwnywanie (nie po literach i dĹ‚ugoĹ›ci, ale tylko po dĹ‚ugoĹ›ci)
+		// własne porównywanie (nie po literach i długości, ale tylko po długości)
 		Arrays.sort(emplArr, Comparator.comparing(Employee::getName, (e1, e2) -> e1.length() - e2.length()));
 		System.out.println(Arrays.toString(emplArr));
 	}
 
-	// PorĂłwnywanie po wielu zmiannych
-	// Na wyniku porĂłwnania dokonujemy kolejnych porĂłwnaĹ„
+	// Porównywanie po wielu zmiannych
+	// Na wyniku porównania dokonujemy kolejnych porównaĹ„
 	public static void CustomCompareMultiVars() {
 		Employee[] emplArr = CreateEmplArray();
 		emplArr[0].age = 1;
@@ -329,8 +329,8 @@ public class MiscTest {
 		System.out.println(Arrays.toString(emplArr));
 	}
 
-	// Klasa anonimowa - klasa tworzona "w locie" - nadpisuje funkcjÄ™ dodajÄ…c jej
-	// opcjÄ™ logowania
+	// Klasa anonimowa - klasa tworzona "w locie" - nadpisuje funkcję dodając jej
+	// opcję logowania
 	public static void AnnonymousClass() {
 		ArrayList<String> arrNewConTest = new ArrayList<String>(10) {
 			private int counter;
@@ -353,10 +353,10 @@ public class MiscTest {
 		Class<?> cl = emplLst2.getClass();
 
 		// Nazwa klasy
-		// Cannonical name- czyli jak pokazaÄ‡ normalnÄ… informacjÄ™ o pewnych klasach
+		// Cannonical name- czyli jak pokazać normalną informację o pewnych klasach
 		System.out.println(String.format("Nazwa klasy: %s, %s", cl.getName(), cl.getCanonicalName()));
 
-		// Class nie udostÄ™pnia metod danej klasy (nawet statycznych), ale informacje o
+		// Class nie udostępnia metod danej klasy (nawet statycznych), ale informacje o
 		// klasie
 		Class<?> cl2 = StatiocCont.class;
 		System.out.println(String.format("Nazwa klasy: %s, %s", cl2.getName(), cl2.getCanonicalName()));
@@ -369,32 +369,32 @@ public class MiscTest {
 		System.out.println("Metoda '" + methods[0].getName() + "' modyfikatory: " + Integer.toBinaryString(modifiers));
 		System.out.println("Metoda '" + methods[0].getName() + "' static (T/N): " + Modifier.isStatic(modifiers));
 
-		// Pobieranie i modyfikacja wartoĹ›ci pola
-		// f odpowiada polu danej klasy a nie obiektu, wiÄ™c przy zmianie lub odczytaniu
-		// trzeba podaÄ‡ instancjÄ™ klasy
+		// Pobieranie i modyfikacja wartości pola
+		// f odpowiada polu danej klasy a nie obiektu, więc przy zmianie lub odczytaniu
+		// trzeba podać instancję klasy
 		// NoSuchFieldException, IllegalAccessException
 		StatiocCont stc = new StatiocCont();
 		stc.val = 9;
-		System.out.println("Val przed zmianÄ…: " + stc.val);
+		System.out.println("Val przed zmianą: " + stc.val);
 		Field f = stc.getClass().getField("val");
-		// ustalenie czegoĹ›
+		// ustalenie czegoś
 		// f.setAccessible(false);
 		f.setInt(stc, 6);
 		System.out.println("Val po zmianie: " + f.getInt(stc));
 
-		// WywoĹ‚ywanie metod statycznych i niestatycznych
+		// Wywoływanie metod statycznych i niestatycznych
 		// InvocationTargetException
 		int i = 0;
-		System.out.println(String.format("PrĂłba wywoĹ‚ania metody: %s; static: %s", methods[i].getName(),
+		System.out.println(String.format("Próba wywołania metody: %s; static: %s", methods[i].getName(),
 		    Modifier.isStatic(methods[i].getModifiers())));
 		methods[i].invoke(null, 7);
 		i = 1;
-		System.out.println(String.format("PrĂłba wywoĹ‚ania metody: %s; static: %s", methods[i].getName(),
+		System.out.println(String.format("Próba wywołania metody: %s; static: %s", methods[i].getName(),
 		    Modifier.isStatic(methods[i].getModifiers())));
 		try {
 			methods[i].invoke(null, 7);
 		} catch (Exception e) {
-			System.out.println("Nie udaĹ‚o siÄ™ wywoĹ‚aÄ‡ metody.");
+			System.out.println("Nie udało się wywołać metody.");
 		}
 
 		// Dynamiczne tworzenie Array danego typu hardcoded
@@ -410,7 +410,7 @@ public class MiscTest {
 		 * return m.invoke(value, margs); });
 		 */
 
-		// Proxies - czegoĹ› to jednak nie rozumiem
+		// Proxies - czegoś to jednak nie rozumiem
 		// https://dzone.com/articles/java-dynamic-proxy
 		/*
 		 * Employee emp = new Employee("Arek", 7); Object emplPrx =
@@ -424,19 +424,19 @@ public class MiscTest {
 	public static void ArrCopy() {
 		Employee[] emplArr = CreateEmplArray();
 		// Kopiowanie tablicy generycznej.
-		// Kopiowanie wspĂłĹ‚dzieli obiekty.
+		// Kopiowanie współdzieli obiekty.
 		Employee[] emplArr2 = (Employee[]) goodCopyOf(emplArr, 3);
-		// PoniĹĽsze nie zadziaĹ‚a, bo utworzona tablica o obiektach innego typu
+		// Poniższe nie zadziała, bo utworzona tablica o obiektach innego typu
 		// Niedozwolone jest: Employee[] b = (Employee[]) new Object[1];
 		try {
 			Employee[] emplArr3 = (Employee[]) badCopyOf(emplArr, 3);
 		} catch (Exception e) {
-			System.out.println("Nie udaĹ‚o siÄ™ skopiowaÄ‡ tablicy z uĹĽyciem 'badCopyOf'.");
+			System.out.println("Nie udało się skopiować tablicy z użyciem 'badCopyOf'.");
 		}
 	}
 
-	// UĹĽycie Class do wczytanie resouces
-	// WaĹĽne! Resource musi byÄ‡ w odpowiednim katalogu
+	// Użycie Class do wczytanie resouces
+	// Ważne! Resource musi być w odpowiednim katalogu
 	public static void ClassResource() {
 		InputStream stream1 = StatiocCont.class.getResourceAsStream("12.txt");
 		InputStream stream2 = StatiocCont.class.getResourceAsStream("res/11.txt");
@@ -456,11 +456,11 @@ public class MiscTest {
 		} catch (Exception e) {
 			// ...
 		} finally {
-			// tu nastÄ…pi samoczynna zamkniÄ™cie i zwolnienie resource
+			// tu nastąpi samoczynna zamknięcie i zwolnienie resource
 			// ...
 		}
 
-		// MoĹĽna teĹĽ uĹĽyÄ‡ w takiej sytuacji kodu, ktĂłry Ĺ‚apie potencjalne
+		// Można też użyć w takiej sytuacji kodu, który łapie potencjalne
 		// Exception z kodu finally
 		try {
 			try (Scanner in = new Scanner(Paths.get("/usr/share/dict/words"));
@@ -484,16 +484,16 @@ public class MiscTest {
 		}
 	}
 
-	// Zmiana jednego Exceprion na inny z uĹĽyciem initCause
-	// Pomimo rzycenia Throwable, wywoĹ‚ujÄ…c ExtendExceptInitCause w bloku
-	// try/catch moĹĽemy wyĹ‚apaÄ‡ Exception
+	// Zmiana jednego Exceprion na inny z użyciem initCause
+	// Pomimo rzycenia Throwable, wywołując ExtendExceptInitCause w bloku
+	// try/catch możemy wyłapać Exception
 	public static void ExtendExceptInitCause() throws Throwable {
 		try {
 			// Access the database
 			throw new IOException();
 		} catch (IOException ex) {
 			Throwable ex2 = new Exception("database error");
-			// Exception ex2 = new Exception("database error"); //teĹĽ zadziaĹ‚a
+			// Exception ex2 = new Exception("database error"); //też zadziała
 			ex2.initCause(ex);
 			throw ex2;
 		}
@@ -504,24 +504,24 @@ public class MiscTest {
 		try {
 			throw new Exception("TEST EXCEPTION!");
 		} catch (Exception e) {
-			// drukuje Ĺ‚adny stos w kolejnych liniach na konsolÄ™
+			// drukuje ładny stos w kolejnych liniach na konsolę
 			e.printStackTrace();
 
-			// drukuje Ĺ‚adny stos w kolejnych liniach do wskazanego sreamu (tutaj pliku)
+			// drukuje ładny stos w kolejnych liniach do wskazanego sreamu (tutaj pliku)
 			File file = new File("D:\\a.txt");
 			PrintStream s = new PrintStream(file);
 			e.printStackTrace(s);
 
-			// pobiera w jednÄ… liniÄ™ stos
+			// pobiera w jedną linię stos
 			System.out.println("--> \n" + Arrays.asList(e.getStackTrace()).toString());
 		}
 
-		// PoniĹĽsze w kaĹĽym momencie (takĹĽe poza bĹ‚Ä™dami) pobiera stackTrace
+		// Poniższe w każym momencie (także poza błędami) pobiera stackTrace
 		String st0 = Arrays.asList(Thread.currentThread().getStackTrace()).toString();
 		System.out.println("---0>" + st0);
 
 		// Wycinek
-		String st1 = Arrays.asList(Thread.currentThread().getStackTrace()).subList(1, 3).toString(); // [od, do), wiÄ™c
+		String st1 = Arrays.asList(Thread.currentThread().getStackTrace()).subList(1, 3).toString(); // [od, do), więc
 		                                                                                             // (1,3) odda wiersz 2
 		                                                                                             // i 3
 		System.out.println("---1>" + st1);
@@ -530,7 +530,7 @@ public class MiscTest {
 		Arrays.asList(Thread.currentThread().getStackTrace()).stream().forEach(el -> System.out
 		    .println("---2>" + "(" + el.getLineNumber() + "): " + el.getFileName() + "~>" + el.getMethodName())); // [od,
 		                                                                                                          // do),
-		                                                                                                          // wiÄ™c
+		                                                                                                          // więc
 		                                                                                                          // (1,3)
 		                                                                                                          // odda
 		                                                                                                          // wiersz
@@ -539,12 +539,12 @@ public class MiscTest {
 		// .toArray(ts);/
 	}
 
-	// Asercje sÄ… tylko gdy odpalimy z asercjami. Properties->Run->MV Options i
-	// dodaÄ‡ "-ea"
-	// Asercje sÄ… Error wiÄ™c catch(Throwable t) ich NIE ZĹ�APIE. Nalezy uĹĽyÄ‡
+	// Asercje są tylko gdy odpalimy z asercjami. Properties->Run->MV Options i
+	// dodać "-ea"
+	// Asercje są Error więc catch(Throwable t) ich NIE ZĹ�APIE. Nalezy użyć
 	// catch (AssertionError e), ale... (patrz dalej)
-	// Asercje inaczej niĹĽ w Delphi powinny z zaĹ‚oĹĽenia stopowaÄ‡ program. Wpp
-	// uĹĽywaÄ‡ wyjÄ…tkĂłw
+	// Asercje inaczej niż w Delphi powinny z założenia stopować program. Wpp
+	// używać wyjątków
 	public static void Assert() {
 		int ii = 4;
 		assert ii == 3;
@@ -554,37 +554,37 @@ public class MiscTest {
 		// Najprostsze logowanie - globalne do System.err
 		Logger.getGlobal().info("Logowanie najprostsze");
 
-		// Logowanie ma kilka poziomow waĹĽnoĹ›c: SEVERE, WARNING, INFO, CONFIG, FINE,
+		// Logowanie ma kilka poziomow ważnośc: SEVERE, WARNING, INFO, CONFIG, FINE,
 		// FINER, FINEST
 		Logger logger = Logger.getLogger("MojTestowyLogger");
-		// Logger bÄ™dzie logowaĹ‚ wszystko od FINEST w gĂłrÄ™ (czyli wszystko)
+		// Logger będzie logował wszystko od FINEST w górę (czyli wszystko)
 		logger.setLevel(Level.FINEST);
 		logger.info("Logowanie z poziomem 'FINEST'.");
 
-		// Do loggera moĹĽna dodawaÄ‡ i usuwaÄ‡ handlery
+		// Do loggera można dodawać i usuwać handlery
 		// dodatkowe logowanie do pliku
 		FileHandler handler = new FileHandler("D:/a.txt");
-		// ustalamy, ĹĽe logowane do pliku bÄ™da wszystkie od CONFIG w gĂłrÄ™
+		// ustalamy, że logowane do pliku będa wszystkie od CONFIG w górę
 		handler.setLevel(Level.CONFIG);
 		logger.addHandler(handler);
 
-		// przykĹ‚ady logowaĹ„
+		// przykłady logowaĹ„
 		logger.severe("--> severe" + Arrays.asList(Thread.currentThread().getStackTrace()).toString());
 		logger.warning("--> warning");
 		logger.info("--> info");
-		logger.config("--> config");// nie pokaĹĽe siÄ™ na konsoli
-		logger.fine("--> fine");// nie pokaĹĽe siÄ™ na konsoli
+		logger.config("--> config");// nie pokaże się na konsoli
+		logger.fine("--> fine");// nie pokaże się na konsoli
 		// Ustalamy poziom logowania handlera konsoli handlera (konsola)
-		// Nie mamy dostÄ™pu do zaszytego handlera, wiÄ™c dodajemy nowy handler (wpisy
-		// nie bÄ™dÄ… siÄ™ dublowaÄ‡)
+		// Nie mamy dostępu do zaszytego handlera, więc dodajemy nowy handler (wpisy
+		// nie będą się dublować)
 		Handler consHand = new ConsoleHandler();
 		consHand.setLevel(Level.FINER);
 		logger.addHandler(consHand);
-		logger.finer("--> finer");// pokaĹĽe siÄ™
-		logger.finest("--> finest");// nie pokaĹĽe siÄ™
+		logger.finer("--> finer");// pokaże się
+		logger.finest("--> finest");// nie pokaże się
 
-		// logowanie rzucenia wyjÄ…tku wraz ze stosem jako FINER. Exception przerobiony
-		// jest na rezrezentacjÄ™ XMLowÄ…
+		// logowanie rzucenia wyjątku wraz ze stosem jako FINER. Exception przerobiony
+		// jest na rezrezentację XMLową
 		logger.setLevel(Level.FINER);
 		handler.setLevel(Level.FINER);
 		consHand.setLevel(Level.FINER);
@@ -593,10 +593,10 @@ public class MiscTest {
 		throw ex;
 	}
 
-	// Zastosowanie iteratora do wypeĹ‚niania listy w zadanej kolejnoĹ›ci i jej
+	// Zastosowanie iteratora do wypełniania listy w zadanej kolejności i jej
 	// edycji
-	// Iterator bÄ™dzie sĹ‚uĹĽyĹ‚ do chodzenia po liĹ›cie, co pozwala na jej
-	// wypeĹ‚nianie i modyfikacjÄ™
+	// Iterator będzie służył do chodzenia po liście, co pozwala na jej
+	// wypełnianie i modyfikację
 	public static void IteratorFillList() {
 		List<String> friends = new ArrayList<>();
 		ListIterator<String> iter = friends.listIterator();
@@ -609,11 +609,11 @@ public class MiscTest {
 		iter.add("Wilma"); // Fred Wilma |
 		System.out.println(friends);
 
-		// Jeden do tyĹ‚u
+		// Jeden do tyłu
 		iter.previous(); // Fred | Wilma
 		System.out.println(friends);
 
-		// Wstawienie onwej wartoĹ›ci we wskazane miejsce
+		// Wstawienie onwej wartości we wskazane miejsce
 		iter.set("Barney"); // Fred | Barney
 		System.out.println(friends);
 

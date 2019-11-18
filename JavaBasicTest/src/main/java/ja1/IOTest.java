@@ -83,11 +83,11 @@ public class IOTest {
 		final int BLOCKSIZE = 1024;
 		byte[] bytes = new byte[BLOCKSIZE];
 		int len;
-		while ((len = in.read(bytes)) != -1)// odczytuje kolejne porcje wielkoĹ›ci BLOCKSIZE
-			out.write(bytes, 0, len); // zapisueje do stream caĹ‚Ä… tablicÄ™ (od 0 do len)
+		while ((len = in.read(bytes)) != -1)// odczytuje kolejne porcje wielkości BLOCKSIZE
+			out.write(bytes, 0, len); // zapisueje do stream całą tablicę (od 0 do len)
 	}
 
-	// I/O - odczytanie wszystkich bajtĂłw z pliku
+	// I/O - odczytanie wszystkich bajtów z pliku
 	public static byte[] readAllBytes(InputStream in) throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		copy(in, out);
@@ -97,25 +97,25 @@ public class IOTest {
 
 	// Budowa obiektu path
 	public static void IOPath() {
-		// ĹšcieĹĽka nie jest walidowana
+		// Ĺšcieżka nie jest walidowana
 		Path p = Paths.get("...");
 
-		// Budowanie Ĺ›cieĹĽki
+		// Budowanie ścieżki
 		Path absolute = Paths.get("/", "home", "cay1");
 		Path relative = Paths.get("myapp", "conf", "user.properties");
 
-		// Dokleja Ĺ›cieĹĽkÄ™, czyli bÄ™dzie /home/cay/myapp/work
+		// Dokleja ścieżkę, czyli będzie /home/cay/myapp/work
 		Path workPath1 = absolute.resolve("myapp/work");
 
 		// Dokleja sibling /home/myapp/work
-		// UWAGA! Dal Ĺ›cieĹĽek Linux jest problem z rozpoczynajÄ…cym "\" i poniĹĽsze da
-		// bĹ‚Ä…d
+		// UWAGA! Dal ścieżek Linux jest problem z rozpoczynającym "\" i poniższe da
+		// błąd
 		// Paths.get("/", "sampleFolder").resolveSibling("myapp/work")
 		Path workPath2 = absolute.resolveSibling("myapp/work");
 
-		// Relatywizujemy 2 wzglÄ™cem 1 - ../freud/myapp - pastÄ™pije czeĹ›Ä‡ wspĂłlnÄ…
-		// (obu Ĺ›cieĹĽek) wielokotopkami
-		// MĂłwiÄ…c inaczej opisuje jak ze Ĺ›ciÄ™zki A doĹ›c do Ĺ›cieĹĽki B
+		// Relatywizujemy 2 wzglęcem 1 - ../freud/myapp - pastępije cześć wspólną
+		// (obu ścieżek) wielokotopkami
+		// Mówiąc inaczej opisuje jak ze ścięzki A dośc do ścieżki B
 		Path workPath3 = Paths.get("/home/cay1/cay2/cay3").relativize(Paths.get("/home/cay1/fred/myapp"));
 
 		int brk = 0;
@@ -126,11 +126,11 @@ public class IOTest {
 		// wczytywanie bez dodatkowych opcji
 		byte[] byteArr1 = readAllBytes(Files.newInputStream(Paths.get("C:/2.txt")));
 
-		// dodanie opcji (czy zakĹ‚adaÄ‡ nowe pliki etc)
-		OpenOption[] oos = new OpenOption[] { /* tu moĹĽna wstawiÄ‡ opcje */ };
+		// dodanie opcji (czy zakładać nowe pliki etc)
+		OpenOption[] oos = new OpenOption[] { /* tu można wstawić opcje */ };
 		byte[] byteArr2 = readAllBytes(Files.newInputStream(Paths.get("C:/2.txt"), oos));
 
-		// moĹĽna skrĂłciÄ‡ implementacjÄ™
+		// można skrócić implementację
 		byte[] byteArr3 = readAllBytes(Files.newInputStream(Paths.get("C:/2.txt"), new OpenOption[] {}));
 	}
 
@@ -140,66 +140,64 @@ public class IOTest {
 		InputStream inStream = Files.newInputStream(Paths.get("C:/2.txt"), new OpenOption[] { CREATE_NEW });
 		// Stworzenie readera dla inputStream
 		Reader in = new InputStreamReader(inStream);
-		inp = in.read(); // Read robi jednoczeĹ›nie Next
+		inp = in.read(); // Read robi jednocześnie Next
 		char[] chars = new char[5];
-		in.read(chars, 2, 3); // tablica docelowa, index od ktĂłrego zaczÄ…Ä‡ wstawianie, ile wstawiÄ‡ -
+		in.read(chars, 2, 3); // tablica docelowa, index od którego zacząć wstawianie, ile wstawić -
 		                      // [,,1,2,]
 	}
 
-	// Wczytanie caĹ‚ego pliku do Stringa -
-	// UWAGA!! Plik nie moĹĽe byÄ‡ duĹĽy
+	// Wczytanie całego pliku do Stringa -
+	// UWAGA!! Plik nie może być duży
 	public static void IOToString() throws IOException {
 		String content = new String(Files.readAllBytes(Paths.get("C:/2.txt")));
 	}
 
-	// Wczytanie wszystkich linii pliku do listy StringĂłw
+	// Wczytanie wszystkich linii pliku do listy Stringów
 	public static void IOLinesToStringList() throws IOException {
-		// Za pomocÄ… Files
+		// Za pomocą Files
 		List<String> lines1 = Files.readAllLines(Paths.get("C:/2.txt"));
 
-		// Za pomocÄ… streama 1
+		// Za pomocą streama 1
 		List lineList1;
 		try (Stream<String> lines2 = Files.lines(Paths.get("C:/2.txt"))) {
 			lineList1 = Arrays.asList(lines2.toArray());
 		}
 
-		// Za pomocÄ… streama 2
+		// Za pomocą streama 2
 		List lineList2;
 		try (Stream<String> lines2 = Files.lines(Paths.get("C:/2.txt"))) {
 			lineList2 = lines2.collect(Collectors.toList());
 		}
 
-		// Za pomocÄ… BufferedReader
+		// Za pomocą BufferedReader
 		// try (BufferedReader reader = new BufferedReader(new
 		// InputStreamReader(url.openStream()) )) {
 		try (BufferedReader reader = new BufferedReader(
 		    new InputStreamReader(Files.newInputStream(Paths.get("C:/2.txt"))))) {
 			Stream<String> lines = reader.lines();
 			// lines.collect(...)
-
 			// lub
-
 			reader.readLine();
 		}
 	}
 
-	// Wczytanie pojedynczych sĹ‚Ăłw z pliku
+	// Wczytanie pojedynczych słów z pliku
 	public static void IOWordToVar() throws IOException {
 		int intWord;
 		Scanner scn = new Scanner(Paths.get("C:/2.txt"));
-		scn.next();// pomija sĹ‚owo
-		intWord = scn.nextInt();// to da Exception jeĹ›li kolejne "sĹ‚owo" nie bÄ™dzie liczbÄ…
+		scn.next();// pomija słowo
+		intWord = scn.nextInt();// to da Exception jeśli kolejne "słowo" nie będzie liczbą
 	}
 
-	// Wczytanie pliku jako mapy z listami sĹ‚Ăłw
+	// Wczytanie pliku jako mapy z listami słów
 	public static void IOWordsToMap() throws IOException {
 		try (BufferedReader reader = new BufferedReader(
 		    new InputStreamReader(Files.newInputStream(Paths.get("C:/2.txt"))))) {
 			Stream<String> lines = reader.lines();
 			AtomicInteger lpline = new AtomicInteger();
 			Map<Integer, List<String>> map = lines.peek(System.out::println).
-			// zbudowanie mapy. Key to rosnÄ…cy licznik a value to lista stringĂłw
-			// stanowiÄ…cych sĹ‚owa w danej liĹ›cie
+			// zbudowanie mapy. Key to rosnący licznik a value to lista stringów
+			// stanowiących słowa w danej liście
 			    collect(Collectors.toMap(s -> lpline.getAndIncrement(), s -> Arrays.asList(s.split("[^\\S]+"))));
 		}
 	}
@@ -212,7 +210,7 @@ public class IOTest {
 		out1.flush();
 	}
 
-	// Writer do pliku - dodatkowo ma print i println i pozwala formatowaÄ‡ tekst
+	// Writer do pliku - dodatkowo ma print i println i pozwala formatować tekst
 	public static void IOPrintWriter() throws IOException {
 		PrintWriter out2 = new PrintWriter(
 		    Files.newBufferedWriter(Paths.get("D:/4.txt"), StandardCharsets.UTF_8, new OpenOption[] { CREATE }));
@@ -225,7 +223,7 @@ public class IOTest {
 	public static void IOOutputStreamWriter() throws IOException {
 		// Wybieramy zapis do pliku
 		OutputStream outStream = Files.newOutputStream(Paths.get("D:/5.txt"), new OpenOption[] { CREATE });
-		// Tu mamy papis na konsolÄ™
+		// Tu mamy papis na konsolę
 		// OutputStream outStream2 = System.out;
 		Writer out2 = new OutputStreamWriter(outStream, StandardCharsets.UTF_8);
 		out2.write("3 111\n");
@@ -233,98 +231,80 @@ public class IOTest {
 		out2.flush();
 	}
 
-	// Zapis gotowego stringa (caĹ‚y tekst) do pliku
+	// Zapis gotowego stringa (cały tekst) do pliku
 	public static void IOStringToFile() throws IOException {
 		String content2 = ".......\n%%%%%";
 		Files.write(Paths.get("D:/6.txt"), content2.getBytes(StandardCharsets.UTF_8));
 	}
 
-	// Zapis kolecji linii do pliku - to moĹĽe byÄ‡ cokolwiek co jest
+	// Zapis kolecji linii do pliku - to może być cokolwiek co jest
 	// Collection<String> lub nawet Iterable<? extends CharSequence>.
 	public static void IOManyStringsToFile() throws IOException {
-		List<String> lines = Arrays.asList("1\n2", "3"); // zapisza siÄ™ 3 linie
+		List<String> lines = Arrays.asList("1\n2", "3"); // zapisza się 3 linie
 		Files.write(Paths.get("D:/7.txt"), lines, StandardCharsets.UTF_8);
 	}
 
-	// IO danych inaczej niĹĽ jako String - jest szybszy
+	// IO danych inaczej niż jako String - jest szybszy
 	public static void IODataInputStream() throws IOException {
 		DataInput in2 = new DataInputStream(Files.newInputStream(Paths.get("D:/7.txt")));
 		DataOutput out2 = new DataOutputStream(Files.newOutputStream(Paths.get("D:/7.txt")));
 	}
 
-	// DostÄ™p do dowolnej czeĹ›ci pliku
+	// Dostęp do dowolnej cześci pliku
 	public static void IORandomAccessFile() throws IOException {
 		int i = 1;
 		RandomAccessFile file = new RandomAccessFile("D:/7.txt", "rw");
-		// file.readLine();//wczytanie caĹ‚ej linii (i robi next)
+		// file.readLine();//wczytanie całej linii (i robi next)
 		// file.read();//oddaje kod znaku (i robi next), np 1 da 49
 		// file.readInt();//oddaje dziwne rzeczy - nie rozumiem tego
-		// file.seek(i);//przesĂłwa karetÄ™ na wskazanÄ… pozycjÄ™ po poczÄ…tku pliku
+		// file.seek(i);//przesówa karetę na wskazaną pozycję po początku pliku
 		file.writeChar('a');
 
-		// PoniĹĽszy przyklad nie dziaĹ‚. moĹĽe kodowanie jest nierodpowiednie, albo
-		// cioĹ› innego.
-		// mechanizm jest maĹ‚o potrzebny, wiÄ™c nie bÄ™dÄ™ siÄ™ w to zagĹ‚Ä™biaĹ‚
-		// PrzykĹ‚ad ++ dla integera w pliku
+		// Poniższy przyklad nie dział. może kodowanie jest nierodpowiednie, albo
+		// cioś innego.
+		// mechanizm jest mało potrzebny, więc nie będę się w to zagłębiał
+		// Przykład ++ dla integera w pliku
 		// int value = file.readInt();
 		// file.seek(file.getFilePointer() - 4);
 		// file.writeInt(value + 1);
 	}
 
-	// DostÄ™p do duĹĽych plikĂłw - moĹĽemy zmapowaÄ‡ fragment pliku i tylko w tym
-	// fragmencie wprowadaÄ‡ zmiany
+	// Dostęp do dużych plików - możemy zmapować fragment pliku i tylko w tym
+	// fragmencie wprowadać zmiany
 	public static void IOBigFileFileChannel() throws IOException {
-		// Totalnie nie wiem jednak jak tego uĹĽywaÄ‡ ???
+		// Totalnie nie wiem jednak jak tego używać ???
 		FileChannel channel = FileChannel.open(Paths.get("D:/3.txt"), READ, StandardOpenOption.WRITE);
-		ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_WRITE, /* start */0, /* dĹ‚ugoĹ›Ä‡ bloku */channel.size());// to
-		                                                                                                                    // dziaĹ‚a
-		                                                                                                                    // poprawnie,
-		                                                                                                                    // czyli
-		                                                                                                                    // 2
-		                                                                                                                    // opiszcza
-		                                                                                                                    // znak
-		                                                                                                                    // o
-		                                                                                                                    // indeksach
-		                                                                                                                    // 0
-		                                                                                                                    // i
-		                                                                                                                    // 1
-		                                                                                                                    // i
-		                                                                                                                    // zaczyna
-		                                                                                                                    // zapis
-		                                                                                                                    // na
-		                                                                                                                    // znaku
-		                                                                                                                    // o
-		                                                                                                                    // indeksie
-		                                                                                                                    // 2
+		//Poniższe działa poprawnie, czyli 2 opuszcza znak o indeksach 0 i 1 i zaczyna zapis na znaku o indeksie  2
+		ByteBuffer buffer = channel.map(FileChannel.MapMode.READ_WRITE, /* start */0, /* długość bloku */channel.size());
 		int offset = 0;
-		byte value = buffer.get(offset); // oddaje bajtowÄ… rezprezentracjÄ™ znaku, czyli dla 0 odda "49"
-		// nie wiem co dokĹ‚adnie oddaje get/putInt etc
+		byte value = buffer.get(offset); // oddaje bajtową rezprezentrację znaku, czyli dla 0 odda "49"
+		// nie wiem co dokładnie oddaje get/putInt etc
 		// int value = buffer.getInt(offset);
 		// buffer.putInt(offset, 3);
 	}
 
-	// Blokada - czeka dopoki nie moĹĽna zaĹ‚oĹĽyÄ‡ blokady
+	// Blokada - czeka dopoki nie można założyć blokady
 	public static void BlokadaStop() throws IOException {
-		// JeĹ›li program (np Office) zablokowaĹ‚ plik, to ta linia rzuci
+		// Jeśli program (np Office) zablokował plik, to ta linia rzuci
 		// java.nio.file.FileSystemException
-		// Jest moĹĽliwoĹ›Ä‡, ĹĽe pewne aplikacje (np natywne) majÄ… moĹĽliwoĹ›Ä‡ na
+		// Jest możliwość, że pewne aplikacje (np natywne) mają możliwość na
 		// ostrzejsze.
-		// W takim przypadku nie moĹĽna liczyc na to ĹĽe dojdziemy do locka, ale trzeba
-		// badaÄ‡ rzycane wyjÄ…tki
+		// W takim przypadku nie można liczyc na to że dojdziemy do locka, ale trzeba
+		// badać rzycane wyjątki
 
 		FileChannel channel2 = FileChannel.open(Paths.get("D:/3.txt"), READ, StandardOpenOption.WRITE);
-		FileLock lock1 = channel2.lock(); // Tutaj wÄ…tek stanie i bÄ™dzie czekaÄ‡ dopĂłki nie zaĹ‚oĹĽy blokady
+		FileLock lock1 = channel2.lock(); // Tutaj wątek stanie i będzie czekać dopóki nie założy blokady
 		int i = 0;
 	}
 
-	// Blokada - czeka dopoki nie moĹĽna zaĹ‚oĹĽyÄ‡ blokady
+	// Blokada - czeka dopoki nie można założyć blokady
 	public static void BlokadaTry() throws IOException {
 		FileChannel channel = FileChannel.open(Paths.get("D:/3.txt"), READ, StandardOpenOption.WRITE);
 		FileLock lock2;
 		try {
 			lock2 = channel.tryLock();
 		} catch (OverlappingFileLockException e) {
-			// Ten wyjÄ…tek wystapi jeĹ›li ten program juĹĽ zablokowaĹ‚ ten plik
+			// Ten wyjątek wystapi jeśli ten program już zablokował ten plik
 		}
 
 		int i = 0;
@@ -341,10 +321,10 @@ public class IOTest {
 		;
 	}
 
-	// Tworzenie plikĂłw i katalogĂłw
+	// Tworzenie plików i katalogów
 	public static void IOCreate() throws IOException {
 		/*
-		 * W java Directory i File majÄ… jednÄ… klasÄ™. OdrĂłĹĽniajÄ… siÄ™ po
+		 * W java Directory i File mają jedną klasę. Odróżniają się po
 		 * isDirectory()
 		 */ if (((Paths.get("D:", "test2")).toFile()).isDirectory())
 			((Paths.get("D:", "test2")).toFile()).delete();
@@ -358,9 +338,8 @@ public class IOTest {
 		// Tworzenie tymczasowego pliku i katalogi
 		Path tempFile = Files.createTempFile(Paths.get("D:/"), "MY_", ".log"); // D:/MY_462324563250.log
 		Path tempDir = Files.createTempDirectory(Paths.get("D:"), "MY_");
-		Path tempDir2 = Files.createTempDirectory("MY_"); // katalog tymczasowy w domyĹ›lnej lokalizacji
+		Path tempDir2 = Files.createTempDirectory("MY_"); // katalog tymczasowy w domyślnej lokalizacji
 		                                                  // (...)/Local/Temp/MY_(...)
-
 		int brk = 0;
 	}
 
@@ -372,33 +351,33 @@ public class IOTest {
 		/* Przeniesienie */ Files.copy(Paths.get("D:/3.txt"), Paths.get("D:/34.txt"), StandardCopyOption.REPLACE_EXISTING,
 		    StandardCopyOption.COPY_ATTRIBUTES);
 		Files.move(Paths.get("D:/34.txt"), Paths.get("D:/35.txt"), StandardCopyOption.REPLACE_EXISTING);
-		// Prosty delete - rzuca wyjÄ…tkiem
+		// Prosty delete - rzuca wyjątkiem
 		Files.delete(Paths.get("D:/33.txt"));
-		// Delete - nie rzyca wyjÄ…tkiem, ale oddaje info o wykonaniu dziaĹ‚ania
+		// Delete - nie rzyca wyjątkiem, ale oddaje info o wykonaniu działania
 		boolean deleted = Files.deleteIfExists(Paths.get("D:/35.txt"));
 
 		int brk = 0;
 	}
 
-	// Parsowanie struktury katalogĂłw (pliki i katalogi)
+	// Parsowanie struktury katalogów (pliki i katalogi)
 	public static void IOParseDir() throws IOException {
-		// PĹ‚aska lista pliĂłw i katalogĂłw
+		// Płaska lista pliów i katalogów
 		try (Stream<Path> entries1 = Files.list(Paths.get("C:\\"))) {
 			entries1.forEach(System.out::println);
 		}
-		// WgĹ‚Ä…b lista pliĂłw i katalogĂłw
-		try (Stream<Path> entries2 = Files.walk(Paths.get("C:", "Situ"), 2/* max gĹ‚Ä™bokoĹ›Ä‡ */)) {
+		// Wgłąb lista pliów i katalogów
+		try (Stream<Path> entries2 = Files.walk(Paths.get("C:", "Situ"), 2/* max głębokość */)) {
 			entries2.forEach(System.out::println);
 		}
 	}
 
-	// URL wymaga innego ĹşrĂłdĹ‚a informacji niĹĽ ksiÄ…ĹĽka - tu jest bieda
+	// URL wymaga innego Źródła informacji niż książka - tu jest bieda
 	// Tu tylko podstawy pobierania informacji
 	public static void IOURL() throws IOException {
 		URL google = new URL("http://www.google.com");
 		URLConnection connection = google.openConnection();
 		// connection.setRequestProperty("Accept-Charset", "UTF-8, ISO-8859-1");//
-		// moĹĽna pominÄ…Ä‡
+		// można pominąć
 		// connection.setReadTimeout(1000);
 		// connection.setConnectTimeout(1000);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(google.openStream()));

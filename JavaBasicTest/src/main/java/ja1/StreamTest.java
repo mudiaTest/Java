@@ -84,31 +84,36 @@ public class StreamTest {
 	public static List<Employee> CreateEmplList() {
 		return new ArrayList<>(Arrays.asList(CreateEmplArray()));
 	}
+	
+	public static String intToStr(Object i) {
+		return i.toString();
+	}
+	
+	
 
 	// Stream: filtr, map, toArray
 	public static void StreamFiltrMapToAtrray() {
-		// PrzykĹ‚ad uĹĽycie strimienia: filter, map, toArray (z rzutowaniem)
+		// Przykład użycie strimienia: filter, map, toArray (z rzutowaniem)
 		List<Integer> ints1 = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 0));
 		List<Integer> ints2 = Arrays.asList(ints1.stream().filter(i -> i > 4).// filtrowanie
 		    map(i -> -i).// mapowanie, czyli obrabiamy element i zwracamy go
-		    toArray(Integer[]::new) // tworzenie tablicy z elementĂłw
+		    toArray(Integer[]::new) // tworzenie tablicy z elementów
 		);
-		System.out.println(ints2);
-
-		// Teraz jeszcze raz MAP, dla obiektĂłw innych niĹĽ klas prostych
+		System.out.println(ints2);		
+		// Teraz jeszcze raz MAP, dla obiektów innych niż klas prostych
 		List<Employee> emplLst = CreateEmplList();
-		// ZĹ�E powiÄ™kszanie wieku
-		emplLst.stream().map(i -> i.age = i.age + 100).// to spowoduje, ĹĽe zamiast obiektĂłw Employee zwracane bÄ™dÄ…
+		// ZĹ�E powiększanie wieku
+		emplLst.stream().map(i -> i.age = i.age + 100).// to spowoduje, że zamiast obiektów Employee zwracane będą
 		                                               // Integer
 		    forEach(System.out::println);
 
-		// PRAWIE DOBRE powiÄ™kszanie wieku, ale oddaje NOWE obiekty
+		// PRAWIE DOBRE powiększanie wieku, ale oddaje NOWE obiekty
 		emplLst.stream().map(i -> new Employee(i.name, i.age + 100)).// to jest poprawna implementacja
-		    forEach(System.out::println);
+		    forEach(StreamTest::intToStr); //Odwołanie do statycznej metody przyjmującej jeden parametr
 
-		// DOBRE powiÄ™kszanie wieku, oddaje STARE obiekty
+		// DOBRE powiększanie wieku, oddaje STARE obiekty
 		emplLst.stream().map(i -> i.SetAgeChain(i.age + 100)).// to jest poprawna implementacja, bo map oddaje ten sam
-		                                                      // obiet, ktĂłry dostaĹ‚o
+		                                                      // obiet, który dostało
 		    forEach(System.out::println);
 	}
 
@@ -116,7 +121,7 @@ public class StreamTest {
 	public static void StreamCount() {
 		List<Employee> emlp1 = CreateEmplList();
 
-		// Podliczenie ile obiektĂłw speĹ‚nia warunek
+		// Podliczenie ile obiektów spełnia warunek
 		long ile = emlp1.stream().filter(e -> e.age >= 2).count();// Zliczanie
 	}
 
@@ -124,7 +129,7 @@ public class StreamTest {
 	public static void StreamJoinCollect() {
 		List<Employee> emlp1 = CreateEmplList();
 
-		// odda stringa z poĹ‚Ä…czonych stringĂłw
+		// odda stringa z połączonych stringów
 		String joinedResult = emlp1.stream().filter(e -> e.age > 1).map(e -> e.name).collect(Collectors.joining("|"));
 
 		joinedResult = emlp1.stream().filter(e -> e.age > 1).map(Employee::toString).collect(Collectors.joining("|"));
@@ -146,7 +151,7 @@ public class StreamTest {
 	public static void StreamNewArray() {
 		List<Employee> emlp1 = CreateEmplList();
 
-		// wygenerowanie nowego zestawu (kopii) Employee ze zmienionymi wartoĹ›ciami
+		// wygenerowanie nowego zestawu (kopii) Employee ze zmienionymi wartościami
 		List<Employee> empl2 = Arrays.asList(emlp1.stream().filter(e -> e.age >= 2).map(e -> {
 			return new Employee(e.name, -e.age);
 		}).toArray(Employee[]::new));
@@ -156,16 +161,16 @@ public class StreamTest {
 	public static void StreamNewListCollect() {
 		List<Employee> emlp1 = CreateEmplList();
 
-		// Wykrojenie z obiektĂłw zĹ‚oĹĽonych pojedynczych wartoĹ›ci
+		// Wykrojenie z obiektów złożonych pojedynczych wartości
 		List<Integer> collect1 = emlp1.stream().filter(e -> e.age >= 0).map(x -> x.age).// przyjmuje obiekt Employee a
 		                                                                                // oddaje Integer z jego wiekiem
 		    collect(Collectors.toList());// zapisujemy do listy
-		// map to wciÄ…ĹĽ sÄ… wspĂłlne obiekty z emlp1 ALE jeĹ›li oddawany podobiekt
-		// jest klasy typu prostego to oddawane sÄ… wartoĹ›ci i poniĹĽsze nie
+		// map to wciąż są wspólne obiekty z emlp1 ALE jeśli oddawany podobiekt
+		// jest klasy typu prostego to oddawane są wartości i poniższe nie
 		// spowoduje zmian w collect1
 		emlp1.get(0).age = 88;
 
-		// Oddajemy w kolekcji te same elementy ze ĹşrĂłdĹ‚a
+		// Oddajemy w kolekcji te same elementy ze Źródła
 		List<Employee> collect2 = emlp1.stream().filter(e -> e.age >= 0).collect(Collectors.toList());
 		collect2.get(0).age = 4;
 
@@ -173,8 +178,8 @@ public class StreamTest {
 		emlp1.stream().filter(e -> e.age > 1).collect(Collectors.toSet());
 
 		// utworzy nowy set zadanego typu
-		// naleĹĽy pamiÄ™taÄ‡ o wymaganiach co do obiektĂłw, np TreeSet wymaga aby
-		// obiekt (Employee) implementowaĹ‚ Comparable
+		// należy pamiętać o wymaganiach co do obiektów, np TreeSet wymaga aby
+		// obiekt (Employee) implementował Comparable
 		emlp1.stream().filter(e -> e.age > 1).collect(Collectors.toCollection(HashSet::new));
 	}
 
@@ -185,26 +190,26 @@ public class StreamTest {
 		// key z obiektu i val z obiektu
 		Map<Integer, String> emplMap1 = emlp1.stream().filter(e -> e.age > 1)
 		    .collect(Collectors.toMap(Employee::getAge, Employee::getName));// tworzenie nowej mapy
-		// key zewnÄ™trzne i val caĹ‚y obiekt
-		// UWAGA!!! Na Parralel mapa moĹĽe mieÄ‡ innÄ… kolejnoĹ›Ä‡ (patrzÄ…c po key)
-		// niĹĽ dane wejĹ›ciowe
-		// UWAGA2!!! Dla kaĹĽdej toMap jest odpowiednik toConcurrentMap dla dziaĹ‚aĹ„ w
-		// wielu wÄ…tkach
+		// key zewnętrzne i val cały obiekt
+		// UWAGA!!! Na Parralel mapa może mieć inną kolejność (patrząc po key)
+		// niż dane wejściowe
+		// UWAGA2!!! Dla każdej toMap jest odpowiednik toConcurrentMap dla działaĹ„ w
+		// wielu wątkach
 
-		// Zapewnienie licznika (incrementatora) bezpiecznego dla dziaĹ‚aĹ„
-		// wielowÄ…tkowych
+		// Zapewnienie licznika (incrementatora) bezpiecznego dla działaĹ„
+		// wielowątkowych
 		AtomicInteger counter = new AtomicInteger();
 		Map<Integer, Employee> emplMap2 = emlp1.stream().filter(e -> e.age > 1)
 		    .collect(Collectors.toMap(s -> counter.getAndIncrement(), Function.identity()));
 
 	}
 
-	// Grupowanie elementĂłw streama po getAge
+	// Grupowanie elementów streama po getAge
 	// Collectors.groupingBy(a)
 	public static void StreamGroupByCollect() {
 		List<Employee> emlp1 = CreateEmplList();
 		Map<Integer, List<Employee>> emplMap3 = emlp1.stream().collect(Collectors.groupingBy(Employee::getAge));// dla
-		                                                                                                        // kaĹĽdego
+		                                                                                                        // każdego
 		                                                                                                        // wieku
 		                                                                                                        // zostanie
 		                                                                                                        // utworzona
@@ -212,14 +217,14 @@ public class StreamTest {
 		                                                                                                        // Employee
 	}
 
-	// Uproszczone grupowanie na elemnty speĹ‚niajÄ…ce warunek true/false -
+	// Uproszczone grupowanie na elemnty spełniające warunek true/false -
 	// UWAGA!!! NIE MYLIÄ† z MSSQL partitioning
 	// Collectors.partitioningBy(a)
 	public static void StreamBoolGroupCollect() {
 		List<Employee> emlp1 = CreateEmplList();
 		Map<Boolean, List<Employee>> emplMap4 = emlp1.stream().
 		// Utworzona zostanie mapa o kluczas true/false
-		// sprawdzamy, czy elemet speĹ‚nia warunrk i dodajemy do odpowieniej listy
+		// sprawdzamy, czy elemet spełnia warunrk i dodajemy do odpowieniej listy
 		    collect(Collectors.partitioningBy(e -> e.getAge() > 1));
 
 	}
@@ -246,16 +251,16 @@ public class StreamTest {
 
 	}
 
-	// MAX jednej kolumny dla grupy po innej kolumnie - coĹ› jak MSSQL partitioning
+	// MAX jednej kolumny dla grupy po innej kolumnie - coś jak MSSQL partitioning
 	// :)
 	// Collectors.mapping
 	public static void StreamPartitioningGruppsCollect() {
 		List<Employee> emlp1 = CreateEmplList();
 		Map<String, Optional<String>> emplMap = emlp1.stream().collect(Collectors.groupingBy(Employee::getName, // grupujemy
 		                                                                                                        // po name
-		    Collectors.mapping(// wewnÄ…rz takiej grupy wykonujemy dziaĹ‚anie
+		    Collectors.mapping(// wewnąrz takiej grupy wykonujemy działanie
 		        Employee::getSurname, // pobieramy surname
-		        Collectors.maxBy(Comparator.comparing(String::length))// dĹ‚ugoĹ›Ä‡ kaĹĽdego surname wrzycamy do funkcji max
+		        Collectors.maxBy(Comparator.comparing(String::length))// długość każdego surname wrzycamy do funkcji max
 				)));
 
 		System.out.println("->" + emlp1);
@@ -263,25 +268,25 @@ public class StreamTest {
 		Map<String, Optional<Employee>> emplMap2 = emlp1.stream().collect(Collectors.groupingBy(Employee::getName, // grupujemy
 		                                                                                                           // po
 		                                                                                                           // name
-		    Collectors.mapping(// wewnÄ…rz takiej grupy wykonujemy dziaĹ‚anie
-		        e -> e, // pobieramy caĹ‚y obiekt Employee
-		        Collectors.maxBy(Employee::older) // z grupy Employee bierzemy tego, ktĂłry oddaje najwiÄ™kszÄ… wartoĹ›Ä‡
-		                                          // przy wywoĹ‚aniu funkcji OLDER
+		    Collectors.mapping(// wewnąrz takiej grupy wykonujemy działanie
+		        e -> e, // pobieramy cały obiekt Employee
+		        Collectors.maxBy(Employee::older) // z grupy Employee bierzemy tego, który oddaje największą wartość
+		                                          // przy wywołaniu funkcji OLDER
 				)));
 
 		System.out.println("-->" + emplMap2);
 	}
 
 	// Stream: distinct
-	// PorĂłwnywanie odbywa siÄ™ za pomocÄ… eq wiÄ™c na new Employee("ala", 1) !=
+	// Porównywanie odbywa się za pomocą eq więc na new Employee("ala", 1) !=
 	// new Employee("ala", 1)
 	public static void StreamDistinct() {
-		// porĂłwnywanie odbywa siÄ™ za pomocÄ… eq wiÄ™c na new Employee("ala", 1) !=
+		// porównywanie odbywa się za pomocą eq więc na new Employee("ala", 1) !=
 		// new Employee("ala", 1)
 		Employee empl = new Employee("ala", 1);
-		// oba elementy listy dadzÄ…dla eq "true"
+		// oba elementy listy dadządla eq "true"
 		List<Employee> emlp3 = new ArrayList<>(Arrays.asList(empl, empl));
-		// wszystkie elmenty list sÄ… rĂłzne pomomo identycznych wartoĹ›Ä‡
+		// wszystkie elmenty list są rózne pomomo identycznych wartość
 		List<Employee> emlp4 = new ArrayList<>(
 		    Arrays.asList(new Employee("ala", 1), new Employee("ola", 2), new Employee("ala", 1)));
 		List<Employee> collect3 = emlp3.stream().distinct().collect(Collectors.toList());
@@ -299,34 +304,34 @@ public class StreamTest {
 	}
 
 	// Stream: peek, forEach
-	// MoĹĽliwoĹ›Ä‡ odczytu i zmiany przekazywanych obiektĂłw
+	// Możliwość odczytu i zmiany przekazywanych obiektów
 	public static void StreamPeekForEach() {
 		List<Employee> emlp1 = CreateEmplList();
 
-		// Zamiana waroĹ›ci w ĹşrĂłdle - nie oddajemy ĹĽadnych wartoĹ›ci
-		// JeĹ›li chcemy prozwadziÄ‡ dalsze dziaĹ‚ania naleĹĽy uzyÄ‡ peek
-		emlp1.stream().filter(e -> e.age >= 2).forEach(e -> e.age++); // podniesienie wieku pracownikĂłw o 1
+		// Zamiana warości w Źródle - nie oddajemy żadnych wartości
+		// Jeśli chcemy prozwadzić dalsze działania należy uzyć peek
+		emlp1.stream().filter(e -> e.age >= 2).forEach(e -> e.age++); // podniesienie wieku pracowników o 1
 
-		List<Employee> collect5 = emlp1.stream().peek(e -> e.age = e.age + 33).// podniesienie wieku ibiektĂłw o 33 lata
+		List<Employee> collect5 = emlp1.stream().peek(e -> e.age = e.age + 33).// podniesienie wieku ibiektów o 33 lata
 		    sorted((e1, e2) -> String.CASE_INSENSITIVE_ORDER.compare(e1.name, e2.name))
-		    .peek(e -> System.out.println("2:" + e)).// podglÄ…d oibektĂłw przekazywanych dalej
+		    .peek(e -> System.out.println("2:" + e)).// podgląd oibektów przekazywanych dalej
 		    collect(Collectors.toList());
 	}
 
 	// Stream: findFirst, findAny, Optional
 	public static void StreamFindFirstAnyOptional() {
 		List<Employee> emlp1 = CreateEmplList();
-		// Oba oddadzÄ…jeden element, ale rĂłĹĽnica moĹĽe byÄ‡ w zadaniach
-		// rĂłwnolegĹ‚ych.
-		// findAny bÄ™dzie szybsze, ale nie koniecznie odda pierwszy pasujÄ…cy element
+		// Oba oddadząjeden element, ale różnica może być w zadaniach
+		// równoległych.
+		// findAny będzie szybsze, ale nie koniecznie odda pierwszy pasujący element
 		Optional<Employee> collect6 = emlp1.stream().filter(e -> e.age >= 9).findFirst();
 		Optional<Employee> collect7 = emlp1.stream().filter(e -> e.age > 1).findAny();
 
-		// collect6.get(); // moĹĽe daÄ‡ bĹ‚ad (jeĹ›li optional jest pusty)
-		collect7.ifPresent(v -> v.age = 99); // nie rzuci bÄ™dem
+		// collect6.get(); // może dać bład (jeśli optional jest pusty)
+		collect7.ifPresent(v -> v.age = 99); // nie rzuci będem
 	}
 
-	// WyĹ›wietlanie w pÄ™tli
+	// Wyświetlanie w pętli
 	public static void StreamPrintToScr() {
 		List<Employee> emlp1 = CreateEmplList();
 		emlp1.stream().filter(e -> e.age > 1).forEach(x -> System.out.println(x.age));
@@ -338,12 +343,12 @@ public class StreamTest {
 	public static void IntStreamFromArr() {
 		int[] intArr = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 		// indexStart(inclusive), indexEnd(Exclusive) - 0, 1
-		// indexEnd(Exclusive) moĹĽe byÄ‡ wiÄ™kszy o 1 do ostatniego indexu
+		// indexEnd(Exclusive) może być większy o 1 do ostatniego indexu
 		IntStream intStr = Arrays.stream(intArr, 0, 2);
 		intStr.peek(e -> System.out.println(e)).sum();
 	}
 
-	// Tworzenie IntStream za pomocÄ… Range
+	// Tworzenie IntStream za pomocą Range
 	// Kolejne integery [0, 3)
 	public static void IntStreamFromRange() {
 		IntStream intStr2 = IntStream.range(0, 3); // 0,1,2
@@ -363,12 +368,12 @@ public class StreamTest {
 		lengths2.forEach(System.out::println);
 	}
 
-	// Opakowywanie - Konwersja ze stream typu prostego do stream obiektĂłw
+	// Opakowywanie - Konwersja ze stream typu prostego do stream obiektów
 	public static void StreamBoxing() {
 		Stream<Integer> integers = IntStream.range(0, 100).boxed();
 	}
 
-	// WielowÄ…tkowoĹ›Ä‡ streamĂłw
+	// Wielowątkowość streamów
 	public static void StreamParallel() {
 		// Create 1
 		List<String> namesList = Arrays.asList("ala", "ola");
@@ -381,7 +386,7 @@ public class StreamTest {
 		Map<Integer, Long> shortWordCounts = parallelWords2.filter(s -> s.length() < 10)
 		    .collect(groupingBy(String::length, counting()));
 
-		// WyĹ‚aczenie (domyĹ›lnego) Order by - moĹĽe przyspieszyÄ‡ np. distinc, limit,
+		// Wyłaczenie (domyślnego) Order by - może przyspieszyć np. distinc, limit,
 		Stream<String> sample = parallelWords2.unordered().limit(2);
 	}
 }

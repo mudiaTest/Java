@@ -25,9 +25,9 @@ public class RegExpTest {
 		REStream();
 	}
 
-	// RegExp - uĹĽyÄ‡ do znalezienia tylko pierwszego - mniej wydajne jeĹ›li chcemy
-	// uzywac w pÄ™tli
-	// Oddaje tylko wynik CZY speĹ‚nia, a nie ile razy i jak speĹ‚nia
+	// RegExp - użyć do znalezienia tylko pierwszego - mniej wydajne jeśli chcemy
+	// uzywac w pętli
+	// Oddaje tylko wynik CZY spełnia, a nie ile razy i jak spełnia
 	// matches
 	public static void RESingle() {
 		String regex = "\\sma[a-zA-Z]*\\s";
@@ -37,38 +37,38 @@ public class RegExpTest {
 		System.out.println("0-> " + Pattern.matches(regex, input));
 	}
 
-	// RegExp - odnajduje wszystkie wystÄ…pienia
+	// RegExp - odnajduje wszystkie wystąpienia
 	// matcher1.find
 	public static void REMulti() {
 		// "group()" = "group(0)" - oddaje po prostu odznaleziony wynik
 		// matcher.toMatchResult().start() - wkazuje na pierwszy element znalezionego
-		// ciÄ…gu
+		// ciągu
 		// matcher.toMatchResult().end() - wkazuje na pierwszy element PO znalezionym
-		// ciÄ…gu
-		String regex = "\\sma[a-zA-Z]*\\s"; // sĹ‚owa zaczynajÄ…ce nie na "ma"
+		// ciągu
+		String regex = "\\sma[a-zA-Z]*\\s"; // słowa zaczynające nie na "ma"
 		CharSequence input = "Ala ma kota i nie mam tego auta";
 		Pattern pattern1 = Pattern.compile(regex);
 		Matcher matcher1 = pattern1.matcher(input);
 		while (matcher1.find()) {
 			String match1 = matcher1.group();
 			System.out.print(matcher1.toMatchResult().group() + ": " + /* znaleziony wynik */
-			    matcher1.toMatchResult().start() + "-" + /* poczÄ…tek wyniku w ĹşrĂłdle */
-			    matcher1.toMatchResult().end()); /* koniec wyniku w ĹşrĂłdle */
+			    matcher1.toMatchResult().start() + "-" + /* początek wyniku w Źródle */
+			    matcher1.toMatchResult().end()); /* koniec wyniku w Źródle */
 			// drugi argument subSequence tpokazuje na pierwszy NIE NALEĹ»Ä„CY do podciagu
 			System.out.println(" | '"
 			    + input.subSequence(matcher1.toMatchResult().start(), matcher1.toMatchResult().end()).toString() + "'");
 		}
 	}
 
-	// Parsowanie poszczegĂłlnych fragmentĂłw wyniku.
+	// Parsowanie poszczególnych fragmentów wyniku.
 	public static void REParseResult() {
-		// KaĹĽdy () bÄ™dzie traktowany jako osobna grupa.
-		// "group(n)" oddaje n-tÄ… grupe w wyniku, czyli n-ty nawias. Aby siÄ™ nie
-		// pomyliÄ‡ najlepiej naywac nawiasy
-		// (?:...) zostanie pominiÄ™te. czasem dodajemy (...) w celu budowy samego
-		// regexpa, ale nie wyciÄ…gniÄ™cia z niego informacji
-		// ?<...> pozwala odwoĹ‚aÄ‡ siÄ™ do grupy poprzez jej nazwÄ™, a nie numer
-		// UWAGA! Grupa oddaje ostatnie "wystÄ…pienie", wiÄ™c (?<item>...)* odda tylko
+		// Każdy () będzie traktowany jako osobna grupa.
+		// "group(n)" oddaje n-tą grupe w wyniku, czyli n-ty nawias. Aby się nie
+		// pomylić najlepiej naywac nawiasy
+		// (?:...) zostanie pominięte. czasem dodajemy (...) w celu budowy samego
+		// regexpa, ale nie wyciągnięcia z niego informacji
+		// ?<...> pozwala odwołać się do grupy poprzez jej nazwę, a nie numer
+		// UWAGA! Grupa oddaje ostatnie "wystąpienie", więc (?<item>...)* odda tylko
 		// jeden string
 		Pattern pattern2 = Pattern.compile("(?<item>\\p{Alnum}+(?:\\s+\\p{Alnum}+)*)\\s+([A-Z]{3})([0-9.]*)");
 		Matcher matcher2 = pattern2.matcher("Blackwell Toaster USD29.95\nMono TV PLN11.22");
@@ -87,17 +87,17 @@ public class RegExpTest {
 			System.out.print("'" + matcher3.toMatchResult().group(1) + "', '" + matcher3.toMatchResult().group(2) + ": "
 			    + matcher3.toMatchResult().start() + "-" + matcher3.toMatchResult().end());
 			// drugi argument subSequence pokazuje na pierwszy NIE NALEĹ»Ä„CY do podciagu
-			System.out.println(" | '" + input.subSequence(matcher3.toMatchResult().start()/* pierwszy naleĹĽacy do grupy */,
-			    matcher3.toMatchResult().end() /* pierwszy nienaleĹĽacy do grupy */).toString() + "'");
+			System.out.println(" | '" + input.subSequence(matcher3.toMatchResult().start()/* pierwszy należacy do grupy */,
+			    matcher3.toMatchResult().end() /* pierwszy nienależacy do grupy */).toString() + "'");
 		}
 
 		int brk = 0;
 	}
 
-	// PodziaĹ‚ wg wzorca
+	// Podział wg wzorca
 	public static void REStringSplit() {
-		// UWAGA! PoniĹĽszy ciÄ…g ma 2 linie, ale split potrzktuje znak nowej lini jako
-		// "zwykĹ‚y" znak, wiÄ™c jeden z elementĂłw bÄ™dzie zawieraĹ‚ w sobie znak nowej
+		// UWAGA! Poniższy ciąg ma 2 linie, ale split potrzktuje znak nowej lini jako
+		// "zwykły" znak, więc jeden z elementów będzie zawierał w sobie znak nowej
 		// linii
 		String input4 = "1, 2,3,   4 \n 5, ,6";
 		Pattern commas1 = Pattern.compile("\\s*,\\s*");
@@ -110,8 +110,8 @@ public class RegExpTest {
 
 	// Podmiana wg wzorca
 	public static void REStringReplace() {
-		// $1 odwoĹ‚uje siÄ™ do () - tak jak group
-		// ${minutes} odwoĹ‚uje siÄ™ do (?<minutes>...) - tak jak group po nazwie
+		// $1 odwołuje się do () - tak jak group
+		// ${minutes} odwołuje się do (?<minutes>...) - tak jak group po nazwie
 		String stTime = "3:45".replaceAll("(\\d{1,2}):(?<minutes>\\d{2})", "$1 hours and ${minutes} minutes");
 		// Sets result to â€ś3 hours and 45 minutesâ€ť
 
@@ -121,22 +121,22 @@ public class RegExpTest {
 	// Patramtry wyszukiwania
 	public static void REParameters() {
 		String input = "BlAckwell Toaster model AC4 USD29.95";
-		// ".*(AC).*\\s" - odda caĹ‚y string jako wynik
-		// "\\w*(AC)\\w*" - odda pojedyncze sĹ‚owa
-		// wiÄ™cej atrybutĂłw wyszukiwania w Pattern.java (CTRL+ML na CASE_INSENSITIVE)
+		// ".*(AC).*\\s" - odda cały string jako wynik
+		// "\\w*(AC)\\w*" - odda pojedyncze słowa
+		// więcej atrybutów wyszukiwania w Pattern.java (CTRL+ML na CASE_INSENSITIVE)
 		Pattern pattern6 = Pattern.compile("\\w*(AC)\\w*", Pattern.CASE_INSENSITIVE);
 		Matcher matcher6 = pattern6.matcher(input);
 		while (matcher6.find()) {
 			System.out.print("'" + matcher6.toMatchResult().group(1) + ": " + matcher6.toMatchResult().start() + "-"
 			    + matcher6.toMatchResult().end());
 			// drugi argument subSequence pokazuje na pierwszy NIE NALEĹ»Ä„CY do podciagu
-			System.out.println(" | '" + input.subSequence(matcher6.toMatchResult().start()/* pierwszy naleĹĽacy do grupy */,
-			    matcher6.toMatchResult().end() /* pierwszy nienaleĹĽacy do grupy */).toString() + "'");
+			System.out.println(" | '" + input.subSequence(matcher6.toMatchResult().start()/* pierwszy należacy do grupy */,
+			    matcher6.toMatchResult().end() /* pierwszy nienależacy do grupy */).toString() + "'");
 		}
 	}
 
-	// regexp w streamie - pattern uĹĽyty jako predicate dopasowywany jest do
-	// kaĹĽdego elementu w streamie
+	// regexp w streamie - pattern użyty jako predicate dopasowywany jest do
+	// każdego elementu w streamie
 	public static void REStream() {
 		Stream<String> strings8 = Arrays.asList("ala", "ola", "bolo").stream();
 		Pattern pattern8 = Pattern.compile(".*(l)(a).*");

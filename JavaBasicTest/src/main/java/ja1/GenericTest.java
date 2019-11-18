@@ -76,7 +76,7 @@ public class GenericTest {
 			out.write(bytes, 0, len); // zapisueje do stream całą tablicę (od 0 do len)
 	}
 
-	// I/O - odczytanie wszystkich bajtĂłw z pliku
+	// I/O - odczytanie wszystkich bajtów z pliku
 	public static byte[] readAllBytes(InputStream in) throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		copy(in, out);
@@ -99,10 +99,10 @@ public class GenericTest {
 		return new ArrayList<>(Arrays.asList(CreateEmplArray()));
 	}
 
-	// Tworzenie tablicy obiektĂłw ze streama tych obiektĂłw.
-	// Obiekty w tablicy so TE SAME obiekty, ktĂłre są w streamie
+	// Tworzenie tablicy obiektów ze streama tych obiektów.
+	// Obiekty w tablicy so TE SAME obiekty, które są w streamie
 	public static void ObjectStreamToArray() {
-		// oba poniższe tworzą Array obiektĂłw Employee o rozmiarze = ilości obiektĂłw w
+		// oba poniższe tworzą Array obiektów Employee o rozmiarze = ilości obiektów w
 		// stream
 		Employee[] emplArr1 = CreateEmplStream().toArray(Employee[]::new);
 		Employee[] emplArr2 = CreateEmplStream().toArray(size -> new Employee[size]);
@@ -124,14 +124,14 @@ public class GenericTest {
 		List<Integer> cars = CreIntList(new Integer[] { 1, 2 });
 		// zadziała bo obie listy mają elementy tej samej klasy
 		swapFirstTwo(people, people2);
-		// Błąd kompilacji, bo typy elementĂłw list są rĂłżne
+		// Błąd kompilacji, bo typy elementów list są różne
 		// swapFirstTwo(people, cars);
-		// Zadziała, bo lażda lista może mieć swĂłj element
+		// Zadziała, bo każda lista może mieć swój element
 		swapFirstTwoDifferent(people, cars);
 		swapFirstTwoDifferent(people, people2);
 	}
 
-	// Przekazywanie interfejsĂłw funkcyjnych jako argumentu
+	// Przekazywanie interfejsów funkcyjnych jako argumentu
 	public static void GenFuncjeZGenArgPredicate() {
 		// //Przekazywanie Predykatu a generyczność
 		Employee[] emplArr = CreateEmplArray();
@@ -153,7 +153,7 @@ public class GenericTest {
 		printAllSuper(emplArr, printAllPredicate());// zadziała bo Employee dziedziczy po Object
 	}
 
-	// Generyczne dodawanie elementĂłw dziedziczących lub Employ
+	// Generyczne dodawanie elementów dziedziczących lub Employ
 	public static void GenInheritance() {
 		EmployeeList emplList = new EmployeeList();
 		emplList.add(new Employee("ala", 1));
@@ -165,7 +165,7 @@ public class GenericTest {
 		System.out.println(emplList.toString());
 	}
 
-	// Tworzenie listy elemetĂłw z jednczeną implementacją
+	// Tworzenie listy elemetów z jednczeną implementacją
 	public static void GenListCreateWithImpl() {
 		List<Manager1> manList = new ArrayList<>(Arrays.asList(new Manager1("ala", 11), new Manager1("ola", 12)));
 	}

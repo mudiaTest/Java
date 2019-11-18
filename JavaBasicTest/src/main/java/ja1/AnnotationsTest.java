@@ -9,7 +9,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Repeatable;
 
-//import java.lang.@NonNull String; // BĹ‚Ä…d! â€” nie moĹĽna odnotowaÄ‡ import
+//import java.lang.@NonNull String; // Błąd! â€” nie można odnotować import
 import org.junit.Test; // https://mvnrepository.com/artifact/junit/junit
 
 
@@ -20,7 +20,7 @@ import org.junit.Test; // https://mvnrepository.com/artifact/junit/junit
 @interface CustomAnnototation {
 }
 
-//------------
+//----- Definicja custom annotation -------
 
 @interface Schedules {
 	Schedule[] value();
@@ -39,26 +39,27 @@ class RepeatableTest{
 			}) 
 	void scheduledAlarm() {			
 	}
+	//W Runtime Wykorzystanie annotacji odbywa się w klasie opisanej annotacją lub np na starcie programu - ogólnie przez RTTI
 }
 
 //------------
 
-//adnotacje dodawane do klas i parametrĂłw w klasach generycznych
+//adnotacje dodawane do klas i parametrów w klasach generycznych
 @SuppressWarnings("unchecked")
 class User</* @Immutable */ V> {
 
 	public void DoSomething() {
-		String str = new /* @Localized */ String(""); // adnotacja do wywoĹ‚ania konstruktora
+		String str = new /* @Localized */ String(""); // adnotacja do wywołania konstruktora
 	}
 
 	@SuppressWarnings("unused")
 	int intVal;
-	List</* @NonNull */ String> users; // oznacza, ĹĽe na liĹ›cie nie ma stringĂłw
+	List</* @NonNull */ String> users; // oznacza, że na liście nie ma stringów
 	String /* @NonNull */ [][] arr;
 
 	private /* @NonNull */ String text;
-	// Adnotacja odnoszaca siÄ™
-	/* @Id */ private String userId; // Adnotacja odnoszÄ…ca siÄ™ do zmiennej
+	// Adnotacja odnoszaca się
+	/* @Id */ private String userId; // Adnotacja odnosząca się do zmiennej
 }
 
 class MyClass { // zastosowanie localized do superclass
@@ -68,14 +69,14 @@ class MyClass { // zastosowanie localized do superclass
 }
 
 class MyClass2 extends MyClass { // zastosowanie localized do superclass
-	@Override // sprawdza czy metoda nadpisuje metodÄ™ z klasy dziedziczonej
-	@Deprecated // IDE powinno daÄ‡ warninga jeĹ›li uĹĽyjemy, ale na razie tylko przekreĹ›la
+	@Override // sprawdza czy metoda nadpisuje metodę z klasy dziedziczonej
+	@Deprecated // IDE powinno dać warninga jeśli użyjemy, ale na razie tylko przekreśla
 	public void DoSomething() {
 		super.DoSomething();
 		System.out.println("MyClass2.DoSomething");
 	}
 
-	// PoniĹĽsze siÄ™ nie skompiluje, bo
+	// Poniższe się nie skompiluje, bo
 	/*
 	 * @Override public void DoSomething2() {
 	 * System.out.println("MyClass2.DoSomething2"); }
@@ -102,13 +103,13 @@ public class AnnotationsTest {
 		AnnotToString();
 	}
 
-	// PrzykĹ‚adowa odnotacja
+	// Przykładowa odnotacja
 	@Test(timeout = 10000) // Adnotacja dla junitTest z parametrem
-	@SuppressWarnings(value = "unchecked") // moĹĽe byÄ‡ wiele adnotacji do jednego kodu
-	// @Test == @Test(timeout=0L) - "0L" do wartoĹ›Ä‡ domyĹ›lna
+	@SuppressWarnings(value = "unchecked") // może być wiele adnotacji do jednego kodu
+	// @Test == @Test(timeout=0L) - "0L" do wartość domyślna
 	// @SuppressWarnings(value="unchecked") == @SuppressWarnings("unchecked") -
-	// "value=" moĹĽna pomijaÄ‡
-	// @BugReport(reportedBy={"Harry", "Fred"}) - wartoĹ›Ä‡ jest tablicÄ…
+	// "value=" można pomijać
+	// @BugReport(reportedBy={"Harry", "Fred"}) - wartość jest tablicą
 	public static void AnnotSample() {
 		// ...
 	}
@@ -118,8 +119,8 @@ public class AnnotationsTest {
 	}
 
 	public static void AnnotCompileTest() {
-		// spowoduje, ĹĽe nie bÄ™dzie pojawiaĹ‚o siÄ™ ostrzeĹĽenie o nieuzyciu zmiennej
-		// @SuppressWarnings - peĹ‚na lista wartoĹ›ci -
+		// spowoduje, że nie będzie pojawiało się ostrzeżenie o nieuzyciu zmiennej
+		// @SuppressWarnings - pełna lista wartości -
 		// https://stackoverflow.com/questions/2037326/all-suppresswarnings-values
 		@SuppressWarnings("unused")
 		int r = 0;

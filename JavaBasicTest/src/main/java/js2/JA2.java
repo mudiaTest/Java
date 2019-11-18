@@ -247,7 +247,7 @@ class Manager2 extends Employee {
 }
 
 class EmployeeList extends ArrayList<Employee> {
-	// pozwala na dołaczanie do listy wszystkich elementĂłw dziedziczących lub
+	// pozwala na dołaczanie do listy wszystkich elementów dziedziczących lub
 	// Employee
 	public void addFirst(List<? extends Employee> list) {
 		add(list.get(0));
@@ -305,12 +305,12 @@ public class JA2 {
 		Class<?> cl = array.getClass();
 		if (!cl.isArray())
 			return null;
-		// Pobieramy klasę obiektĂłw w Array
+		// Pobieramy klasę obiektów w Array
 		Class<?> componentType = cl.getComponentType();
 		// Pobieramy wielkość tablicy
 		int length = Array.getLength(array);
 		// Tworzymy nowy obiekt tablicy o zadanej długości i type przechowywantch
-		// obiektĂłw
+		// obiektów
 		Object newArray = Array.newInstance(componentType, newLength);
 		// Wypełniamy nową tablicę referencjami pobranymi ze starej tablicy
 		for (int i = 0; i < Math.min(length, newLength); i++)
@@ -466,7 +466,7 @@ public class JA2 {
 			out.write(bytes, 0, len); // zapisueje do stream całą tablicę (od 0 do len)
 	}
 
-	// I/O - odczytanie wszystkich bajtĂłw z pliku
+	// I/O - odczytanie wszystkich bajtów z pliku
 	public static byte[] readAllBytes(InputStream in) throws IOException {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		copy(in, out);
@@ -479,20 +479,20 @@ public class JA2 {
 	public static void CreateList() {
 		ArrayList<String> arr1 = new ArrayList<>(Arrays.asList("Ala, Igor"));
 		ArrayList<Object> arr2 = new ArrayList<>(Arrays.asList(new Cont()));
-		System.out.println("Lista stringĂłw " + arr1);
-		System.out.println("Lista obiektĂłw " + arr2);
+		System.out.println("Lista stringów " + arr1);
+		System.out.println("Lista obiektów " + arr2);
 	}
 
-	// PorĂłwnywanie stringĂłw
+	// Porównywanie stringów
 	public static void StringCompare() {
 		String a = "World";
 		String greeting = "Hello, World!";
 		String location = greeting.substring(7, 12);
-		// == porĂłwnuje referencje więc to da błąd
-		System.out.println("Błędne porĂłwanie stringĂłw '==': " + (location == "World"));
+		// == porównuje referencje więc to da błąd
+		System.out.println("Błędne porówanie stringów '==': " + (location == "World"));
 		// a to true, bo oba stringi są 'systemowe'
-		System.out.println("Błędne porĂłwanie stringĂłw '==': " + ("World" == "World"));
-		System.out.println("Poprawne porĂłwanie stringĂłw 'equals()': " + (location.equals("World")));
+		System.out.println("Błędne porówanie stringów '==': " + ("World" == "World"));
+		System.out.println("Poprawne porówanie stringów 'equals()': " + (location.equals("World")));
 	}
 
 	// Sotrowanie list
@@ -532,9 +532,9 @@ public class JA2 {
 		System.out.println("'employesStream1'");
 		employesStream1.forEach(System.out::println);
 
-		// poniższe działa tak samo. In to lista stringĂłw i szuka konstruktora z
+		// poniższe działa tak samo. In to lista stringów i szuka konstruktora z
 		// przyjmującego jeden string
-		// 'name -> new Employee(name)' rĂłwnoznaczne 'Employee::new'
+		// 'name -> new Employee(name)' równoznaczne 'Employee::new'
 		Stream<Employee> employesStream2 = names.stream().map(Employee::new);
 		System.out.println("'employesStream2'");
 		employesStream2.forEach(System.out::println);
@@ -555,23 +555,23 @@ public class JA2 {
 		return new ArrayList<>(Arrays.asList(CreateEmplArray()));
 	}
 
-	// Tworzenie tablicy obiektĂłw ze streama tych obiektĂłw.
-	// Obiekty w tablicy so TE SAME obiekty, ktĂłre są w streamie
+	// Tworzenie tablicy obiektów ze streama tych obiektów.
+	// Obiekty w tablicy so TE SAME obiekty, które są w streamie
 	public static void ObjectStreamToArray() {
-		// oba poniższe tworzą Array obiektĂłw Employee o rozmiarze = ilości obiektĂłw w
+		// oba poniższe tworzą Array obiektów Employee o rozmiarze = ilości obiektów w
 		// stream
 		Employee[] emplArr1 = CreateEmplStream().toArray(Employee[]::new);
 		Employee[] emplArr2 = CreateEmplStream().toArray(size -> new Employee[size]);
 	}
 
-	// Tworzenie listy obiektĂłw z tablicy tych obiektĂłw.
-	// Obiekty w liście so TE SAME obiekty, ktĂłre są w tablicy
+	// Tworzenie listy obiektów z tablicy tych obiektów.
+	// Obiekty w liście so TE SAME obiekty, które są w tablicy
 	public static void ArrayToList() {
 		// poniższe odda nową listę z oryginalnymi elementami Employee pobranymi z
-		// Array, ktĂłrą można rozszerzać
+		// Array, którą można rozszerzać
 		List<Employee> emplLst1 = new ArrayList<>(Arrays.asList(CreateEmplArray()));
 		// poniższe odda listę z oryginalnymi w elementami Employee pobranymi z Array,
-		// ktĂłra jest defacto opakowaniem dla array, NIE MOĹ»NA jej rozszerzać
+		// która jest defacto opakowaniem dla array, NIE MOĹ»NA jej rozszerzać
 		List<Employee> emplLst2 = Arrays.asList(CreateEmplArray());
 	}
 
@@ -585,7 +585,7 @@ public class JA2 {
 	// Zasięg zmiennej i przechowywanie klas dla typow prostych w kontenerach i
 	// tablicach
 	public static void ZasiegZmiennej() {
-		// to nie zadziała (bład kompilacji!), bo WL musi mĂłc zachomikować wartość i, a
+		// to nie zadziała (bład kompilacji!), bo WL musi móc zachomikować wartość i, a
 		// zniknie po zakoĹ„czeniu iteracji pętli
 		// for (int i=0; i < 4; i++){
 		// new Thread( ()->System.out.println(i) );
@@ -603,18 +603,18 @@ public class JA2 {
 		}
 		// Zmiana wartości nie będzie zanotowana przez Thread
 		loopArr[1] = 55;
-		System.out.print("Wyniki z TreadĂłw (int): ");
+		System.out.print("Wyniki z Treadów (int): ");
 		for (Thread t : threadArr) {
 			t.run();
 		}
 		System.out.print("\n");
 
 		// UWAGA !!! Tablica Integer[] przechowuje WARTOĹšCI a NIE REFERENCJE do
-		// obiektĂłw!
+		// obiektów!
 		// UWAGA !!! List<Integer> TEĹ» przechowuje WARTOĹšCI a NIE REFERENCJE do
-		// obiektĂłw!
+		// obiektów!
 		// UWAGA !!! Prawdopodobnie każdy kontener będzie tak działał z instancjami klas
-		// typĂłw prostych!
+		// typów prostych!
 		int lp2 = 0;
 		Thread[] threadArr2 = new Thread[4];
 		Integer[] loopArr2 = new Integer[4];
@@ -634,13 +634,13 @@ public class JA2 {
 		// Zmiana wartości NIE BÄłDZIE zanotowana przez Thread
 		loopArr2[1] = 55;
 		System.out.println("-->" + loopArr2[1].hashCode());
-		System.out.print("Wyniki z TreadĂłw (Integer): ");
+		System.out.print("Wyniki z Treadów (Integer): ");
 		for (Thread t : threadArr2) {
 			t.run();
 		}
 		System.out.print("\n");
 
-		// Przekazywanie ĹşrĂłdłowych obiektĂłw
+		// Przekazywanie Źródłowych obiektów
 		int lp3 = 0;
 		Thread[] threadArr3 = new Thread[4];
 		IntWrap[] loopArr3 = new IntWrap[4];
@@ -655,26 +655,26 @@ public class JA2 {
 		// Zmiana wartości BÄłDZIE zanotowana przez Thread
 		loopArr3[1].value = 55;
 		System.out.println("-->" + loopArr3[1].hashCode());
-		System.out.print("Wyniki z TreadĂłw (IntWrap/for): ");
+		System.out.print("Wyniki z Treadów (IntWrap/for): ");
 		for (Thread t : threadArr3) {
 			t.run();
 		}
 		System.out.print("\n");
 	}
 
-	// PorĂłwnywanie po jednej zmiannej
+	// Porównywanie po jednej zmiannej
 	public static void CustomCompareOneVar() {
 		Employee[] emplArr = CreateEmplArray();
 		System.out.println(Arrays.toString(emplArr));
-		// porĂłwnywanie z wykorzystaniem domyślnego Comparator.comparing
+		// porównywanie z wykorzystaniem domyślnego Comparator.comparing
 		Arrays.sort(emplArr, Comparator.comparing(Employee::getName));
-		// własne porĂłwnywanie (nie po literach i długości, ale tylko po długości)
+		// własne porównywanie (nie po literach i długości, ale tylko po długości)
 		Arrays.sort(emplArr, Comparator.comparing(Employee::getName, (e1, e2) -> e1.length() - e2.length()));
 		System.out.println(Arrays.toString(emplArr));
 	}
 
-	// PorĂłwnywanie po wielu zmiannych
-	// Na wyniku porĂłwnania dokonujemy kolejnych porĂłwnaĹ„
+	// Porównywanie po wielu zmiannych
+	// Na wyniku porównania dokonujemy kolejnych porównaĹ„
 	public static void CustomCompareMultiVars() {
 		Employee[] emplArr = CreateEmplArray();
 		emplArr[0].age = 1;
@@ -740,11 +740,11 @@ public class JA2 {
 		// Wywoływanie metod statycznych i niestatycznych
 		// InvocationTargetException
 		int i = 0;
-		System.out.println(String.format("PrĂłba wywołania metody: %s; static: %s", methods[i].getName(),
+		System.out.println(String.format("Próba wywołania metody: %s; static: %s", methods[i].getName(),
 		    Modifier.isStatic(methods[i].getModifiers())));
 		methods[i].invoke(null, 7);
 		i = 1;
-		System.out.println(String.format("PrĂłba wywołania metody: %s; static: %s", methods[i].getName(),
+		System.out.println(String.format("Próba wywołania metody: %s; static: %s", methods[i].getName(),
 		    Modifier.isStatic(methods[i].getModifiers())));
 		try {
 			methods[i].invoke(null, 7);
@@ -779,7 +779,7 @@ public class JA2 {
 	public static void ArrCopy() {
 		Employee[] emplArr = CreateEmplArray();
 		// Kopiowanie tablicy generycznej.
-		// Kopiowanie wspĂłłdzieli obiekty.
+		// Kopiowanie współdzieli obiekty.
 		Employee[] emplArr2 = (Employee[]) goodCopyOf(emplArr, 3);
 		// Poniższe nie zadziała, bo utworzona tablica o obiektach innego typu
 		// Niedozwolone jest: Employee[] b = (Employee[]) new Object[1];
@@ -815,7 +815,7 @@ public class JA2 {
 			// ...
 		}
 
-		// Można też użyć w takiej sytuacji kodu, ktĂłry łapie potencjalne Exception z
+		// Można też użyć w takiej sytuacji kodu, który łapie potencjalne Exception z
 		// kodu finally
 		try {
 			try (Scanner in = new Scanner(Paths.get("/usr/share/dict/words"));
@@ -899,7 +899,7 @@ public class JA2 {
 	// Asercje są Error więc catch(Throwable t) ich NIE ZĹłAPIE. Nalezy użyć catch
 	// (AssertionError e), ale... (patrz dalej)
 	// Asercje inaczej niż w Delphi powinny z założenia stopować program. Wpp używać
-	// wyjątkĂłw
+	// wyjątków
 	public static void Assert() {
 		int ii = 4;
 		assert ii == 3;
@@ -912,14 +912,14 @@ public class JA2 {
 		// Logowanie ma kilka poziomow ważnośc: SEVERE, WARNING, INFO, CONFIG, FINE,
 		// FINER, FINEST
 		Logger logger = Logger.getLogger("MojTestowyLogger");
-		// Logger będzie logował wszystko od FINEST w gĂłrę (czyli wszystko)
+		// Logger będzie logował wszystko od FINEST w górę (czyli wszystko)
 		logger.setLevel(Level.FINEST);
 		logger.info("Logowanie z poziomem 'FINEST'.");
 
 		// Do loggera można dodawać i usuwać handlery
 		// dodatkowe logowanie do pliku
 		FileHandler handler = new FileHandler("D:/a.txt");
-		// ustalamy, że logowane do pliku będa wszystkie od CONFIG w gĂłrę
+		// ustalamy, że logowane do pliku będa wszystkie od CONFIG w górę
 		handler.setLevel(Level.CONFIG);
 		logger.addHandler(handler);
 
@@ -964,14 +964,14 @@ public class JA2 {
 		List<Integer> cars = CreIntList(new Integer[] { 1, 2 });
 		// zadziała bo obie listy mają elementy tej samej klasy
 		swapFirstTwo(people, people2);
-		// Błąd kompilacji, bo typy elementĂłw list są rĂłżne
+		// Błąd kompilacji, bo typy elementów list są różne
 		// swapFirstTwo(people, cars);
-		// Zadziała, bo lażda lista może mieć swĂłj element
+		// Zadziała, bo lażda lista może mieć swój element
 		swapFirstTwoDifferent(people, cars);
 		swapFirstTwoDifferent(people, people2);
 	}
 
-	// Przekazywanie interfejsĂłw funkcyjnych jako argumentu
+	// Przekazywanie interfejsów funkcyjnych jako argumentu
 	public static void GenFuncjeZGenArgPredicate() {
 		// //Przekazywanie Predykatu a generyczność
 		Employee[] emplArr = CreateEmplArray();
@@ -993,7 +993,7 @@ public class JA2 {
 		printAllSuper(emplArr, printAllPredicate());// zadziała bo Employee dziedziczy po Object
 	}
 
-	// Generyczne dodawanie elementĂłw dziedziczących lub Employ
+	// Generyczne dodawanie elementów dziedziczących lub Employ
 	public static void GenInheritance() {
 		EmployeeList emplList = new EmployeeList();
 		emplList.add(new Employee("ala", 1));
@@ -1005,7 +1005,7 @@ public class JA2 {
 		System.out.println(emplList.toString());
 	}
 
-	// Tworzenie listy elemetĂłw z jednczeną implementacją
+	// Tworzenie listy elemetów z jednczeną implementacją
 	public static void GenLIstCreateWithImpl() {
 		List<Manager1> manList = new ArrayList<>(Arrays.asList(new Manager1("ala", 11), new Manager1("ola", 12)));
 	}
@@ -1109,7 +1109,7 @@ public class JA2 {
 	}
 
 	// Lista niemodyfikowalna - opakowanie dla standardowej listy
-	// Listy nie można modyfikować, ale modyfikacja listy ĹşrĂłdłowej jest widoczna
+	// Listy nie można modyfikować, ale modyfikacja listy Źródłowej jest widoczna
 	// także w liście niemodyfikowalnej
 	public static void ContUnmodifList() {
 		List<Employee> emplLst = CreateEmplList();
@@ -1130,14 +1130,14 @@ public class JA2 {
 		List<Integer> ints1 = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 0));
 		List<Integer> ints2 = Arrays.asList(ints1.stream().filter(i -> i > 4).// filtrowanie
 		    map(i -> -i).// mapowanie, czyli obrabiamy element i zwracamy go
-		    toArray(Integer[]::new) // tworzenie tablicy z elementĂłw
+		    toArray(Integer[]::new) // tworzenie tablicy z elementów
 		);
 		System.out.println(ints2);
 
-		// Teraz jeszcze raz MAP, dla obiektĂłw innych niż klas prostych
+		// Teraz jeszcze raz MAP, dla obiektów innych niż klas prostych
 		List<Employee> emplLst = CreateEmplList();
 		// ZĹłE powiększanie wieku
-		emplLst.stream().map(i -> i.age = i.age + 100).// to spowoduje, że zamiast obiektĂłw Employee zwracane będą Integer
+		emplLst.stream().map(i -> i.age = i.age + 100).// to spowoduje, że zamiast obiektów Employee zwracane będą Integer
 		    forEach(System.out::println);
 
 		// PRAWIE DOBRE powiększanie wieku, ale oddaje NOWE obiekty
@@ -1146,7 +1146,7 @@ public class JA2 {
 
 		// DOBRE powiększanie wieku, oddaje STARE obiekty
 		emplLst.stream().map(i -> i.SetAgeChain(i.age + 100)).// to jest poprawna implementacja, bo map oddaje ten sam
-		                                                      // obiet, ktĂłry dostało
+		                                                      // obiet, który dostało
 		    forEach(System.out::println);
 	}
 
@@ -1154,7 +1154,7 @@ public class JA2 {
 	public static void StreamCount() {
 		List<Employee> emlp1 = CreateEmplList();
 
-		// Podliczenie ile obiektĂłw spełnia warunek
+		// Podliczenie ile obiektów spełnia warunek
 		long ile = emlp1.stream().filter(e -> e.age >= 2).count();// Zliczanie
 	}
 
@@ -1162,7 +1162,7 @@ public class JA2 {
 	public static void StreamJoinCollect() {
 		List<Employee> emlp1 = CreateEmplList();
 
-		// odda stringa z połączonych stringĂłw
+		// odda stringa z połączonych stringów
 		String joinedResult = emlp1.stream().filter(e -> e.age > 1).map(e -> e.name).collect(Collectors.joining("|"));
 
 		joinedResult = emlp1.stream().filter(e -> e.age > 1).map(Employee::toString).collect(Collectors.joining("|"));
@@ -1194,16 +1194,16 @@ public class JA2 {
 	public static void StreamNewListCollect() {
 		List<Employee> emlp1 = CreateEmplList();
 
-		// Wykrojenie z obiektĂłw złożonych pojedynczych wartości
+		// Wykrojenie z obiektów złożonych pojedynczych wartości
 		List<Integer> collect1 = emlp1.stream().filter(e -> e.age >= 0).map(x -> x.age).// przyjmuje obiekt Employee a
 		                                                                                // oddaje Integer z jego wiekiem
 		    collect(Collectors.toList());// zapisujemy do listy
-		// map to wciąż są wspĂłlne obiekty z emlp1 ALE jeśli oddawany podobiekt
+		// map to wciąż są wspólne obiekty z emlp1 ALE jeśli oddawany podobiekt
 		// jest klasy typu prostego to oddawane są wartości i poniższe nie
 		// spowoduje zmian w collect1
 		emlp1.get(0).age = 88;
 
-		// Oddajemy w kolekcji te same elementy ze ĹşrĂłdła
+		// Oddajemy w kolekcji te same elementy ze Źródła
 		List<Employee> collect2 = emlp1.stream().filter(e -> e.age >= 0).collect(Collectors.toList());
 		collect2.get(0).age = 4;
 
@@ -1211,7 +1211,7 @@ public class JA2 {
 		emlp1.stream().filter(e -> e.age > 1).collect(Collectors.toSet());
 
 		// utworzy nowy set zadanego typu
-		// należy pamiętać o wymaganiach co do obiektĂłw, np TreeSet wymaga aby obiekt
+		// należy pamiętać o wymaganiach co do obiektów, np TreeSet wymaga aby obiekt
 		// (Employee) implementował Comparable
 		emlp1.stream().filter(e -> e.age > 1).collect(Collectors.toCollection(HashSet::new));
 	}
@@ -1237,7 +1237,7 @@ public class JA2 {
 
 	}
 
-	// Grupowanie elementĂłw streama po getAge
+	// Grupowanie elementów streama po getAge
 	// Collectors.groupingBy(a)
 	public static void StreamGroupByCollect() {
 		List<Employee> emlp1 = CreateEmplList();
@@ -1303,7 +1303,7 @@ public class JA2 {
 		                                                                                                           // name
 		    Collectors.mapping(// wewnąrz takiej grupy wykonujemy działanie
 		        e -> e, // pobieramy cały obiekt Employee
-		        Collectors.maxBy(Employee::older) // z grupy Employee bierzemy tego, ktĂłry oddaje największą wartość przy
+		        Collectors.maxBy(Employee::older) // z grupy Employee bierzemy tego, który oddaje największą wartość przy
 		                                          // wywołaniu funkcji OLDER
 				)));
 
@@ -1311,15 +1311,15 @@ public class JA2 {
 	}
 
 	// Stream: distinct
-	// PorĂłwnywanie odbywa się za pomocą eq więc na new Employee("ala", 1) != new
+	// Porównywanie odbywa się za pomocą eq więc na new Employee("ala", 1) != new
 	// Employee("ala", 1)
 	public static void StreamDistinct() {
-		// porĂłwnywanie odbywa się za pomocą eq więc na new Employee("ala", 1) != new
+		// porównywanie odbywa się za pomocą eq więc na new Employee("ala", 1) != new
 		// Employee("ala", 1)
 		Employee empl = new Employee("ala", 1);
 		// oba elementy listy dadządla eq "true"
 		List<Employee> emlp3 = new ArrayList<>(Arrays.asList(empl, empl));
-		// wszystkie elmenty list są rĂłzne pomomo identycznych wartość
+		// wszystkie elmenty list są rózne pomomo identycznych wartość
 		List<Employee> emlp4 = new ArrayList<>(
 		    Arrays.asList(new Employee("ala", 1), new Employee("ola", 2), new Employee("ala", 1)));
 		List<Employee> collect3 = emlp3.stream().distinct().collect(Collectors.toList());
@@ -1337,24 +1337,24 @@ public class JA2 {
 	}
 
 	// Stream: peek, forEach
-	// Możliwość odczytu i zmiany przekazywanych obiektĂłw
+	// Możliwość odczytu i zmiany przekazywanych obiektów
 	public static void StreamPeekForEach() {
 		List<Employee> emlp1 = CreateEmplList();
 
-		// Zamiana warości w ĹşrĂłdle - nie oddajemy żadnych wartości
+		// Zamiana warości w Źródle - nie oddajemy żadnych wartości
 		// Jeśli chcemy prozwadzić dalsze działania należy uzyć peek
-		emlp1.stream().filter(e -> e.age >= 2).forEach(e -> e.age++); // podniesienie wieku pracownikĂłw o 1
+		emlp1.stream().filter(e -> e.age >= 2).forEach(e -> e.age++); // podniesienie wieku pracowników o 1
 
-		List<Employee> collect5 = emlp1.stream().peek(e -> e.age = e.age + 33).// podniesienie wieku ibiektĂłw o 33 lata
+		List<Employee> collect5 = emlp1.stream().peek(e -> e.age = e.age + 33).// podniesienie wieku ibiektów o 33 lata
 		    sorted((e1, e2) -> String.CASE_INSENSITIVE_ORDER.compare(e1.name, e2.name))
-		    .peek(e -> System.out.println("2:" + e)).// podgląd oibektĂłw przekazywanych dalej
+		    .peek(e -> System.out.println("2:" + e)).// podgląd oibektów przekazywanych dalej
 		    collect(Collectors.toList());
 	}
 
 	// Stream: findFirst, findAny, Optional
 	public static void StreamFinfFirstAnyOptional() {
 		List<Employee> emlp1 = CreateEmplList();
-		// Oba oddadząjeden element, ale rĂłżnica może być w zadaniach rĂłwnoległych.
+		// Oba oddadząjeden element, ale różnica może być w zadaniach równoległych.
 		// findAny będzie szybsze, ale nie koniecznie odda pierwszy pasujący element
 		Optional<Employee> collect6 = emlp1.stream().filter(e -> e.age >= 9).findFirst();
 		Optional<Employee> collect7 = emlp1.stream().filter(e -> e.age > 1).findAny();
@@ -1400,12 +1400,12 @@ public class JA2 {
 		lengths2.forEach(System.out::println);
 	}
 
-	// Opakowywanie - Konwersja ze stream typu prostego do stream obiektĂłw
+	// Opakowywanie - Konwersja ze stream typu prostego do stream obiektów
 	public static void StreamBoxing() {
 		Stream<Integer> integers = IntStream.range(0, 100).boxed();
 	}
 
-	// Wielowątkowość streamĂłw
+	// Wielowątkowość streamów
 	public static void StreamParallel() {
 		// Create 1
 		List<String> namesList = Arrays.asList(new String("ala"), new String("ola"));
@@ -1440,9 +1440,9 @@ public class JA2 {
 		// Paths.get("/", "sampleFolder").resolveSibling("myapp/work")
 		Path workPath2 = absolute.resolveSibling("myapp/work");
 
-		// Relatywizujemy 2 wzglęcem 1 - ../freud/myapp - pastępije cześć wspĂłlną (obu
+		// Relatywizujemy 2 wzglęcem 1 - ../freud/myapp - pastępije cześć wspólną (obu
 		// ścieżek) wielokotopkami
-		// MĂłwiąc inaczej opisuje jak ze ścięzki A dośc do ścieżki B
+		// Mówiąc inaczej opisuje jak ze ścięzki A dośc do ścieżki B
 		Path workPath3 = Paths.get("/home/cay1/cay2/cay3").relativize(Paths.get("/home/cay1/fred/myapp"));
 
 		int brk = 0;
@@ -1457,7 +1457,7 @@ public class JA2 {
 		OpenOption[] oos = new OpenOption[] { /* tu można wstawić opcje */ };
 		byte[] byteArr2 = readAllBytes(Files.newInputStream(Paths.get("C:/2.txt"), oos));
 
-		// można skrĂłcić implementację
+		// można skrócić implementację
 		byte[] byteArr3 = readAllBytes(Files.newInputStream(Paths.get("C:/2.txt"), new OpenOption[] {}));
 	}
 
@@ -1469,7 +1469,7 @@ public class JA2 {
 		Reader in = new InputStreamReader(inStream);
 		inp = in.read(); // Read robi jednocześnie Next
 		char[] chars = new char[5];
-		in.read(chars, 2, 3); // tablica docelowa, index od ktĂłrego zacząć wstawianie, ile wstawić - [,,1,2,]
+		in.read(chars, 2, 3); // tablica docelowa, index od którego zacząć wstawianie, ile wstawić - [,,1,2,]
 	}
 
 	// Wczytanie całego pliku do Stringa -
@@ -1478,7 +1478,7 @@ public class JA2 {
 		String content = new String(Files.readAllBytes(Paths.get("C:/2.txt")));
 	}
 
-	// Wczytanie wszystkich linii pliku do listy StringĂłw
+	// Wczytanie wszystkich linii pliku do listy Stringów
 	public static void IOLinesToStringList() throws IOException {
 		// Za pomocą Files
 		List<String> lines1 = Files.readAllLines(Paths.get("C:/2.txt"));
@@ -1509,7 +1509,7 @@ public class JA2 {
 		}
 	}
 
-	// Wczytanie pojedynczych słĂłw z pliku
+	// Wczytanie pojedynczych słów z pliku
 	public static void IOWordToVar() throws IOException {
 		int intWord;
 		Scanner scn = new Scanner(Paths.get("C:/2.txt"));
@@ -1517,14 +1517,14 @@ public class JA2 {
 		intWord = scn.nextInt();// to da Exception jeśli kolejne "słowo" nie będzie liczbą
 	}
 
-	// Wczytanie pliku jako mapy z listami słĂłw
+	// Wczytanie pliku jako mapy z listami słów
 	public static void IOWordsToMap() throws IOException {
 		try (BufferedReader reader = new BufferedReader(
 		    new InputStreamReader(Files.newInputStream(Paths.get("C:/2.txt"))))) {
 			Stream<String> lines = reader.lines();
 			AtomicInteger lpline = new AtomicInteger();
 			Map<Integer, List<String>> map = lines.peek(System.out::println).
-			// zbudowanie mapy. Key to rosnący licznik a value to lista stringĂłw
+			// zbudowanie mapy. Key to rosnący licznik a value to lista stringów
 			// stanowiących słowa w danej liście
 			    collect(Collectors.toMap(s -> lpline.getAndIncrement(), s -> Arrays.asList(s.split("[^\\S]+"))));
 		}
@@ -1585,7 +1585,7 @@ public class JA2 {
 		// file.readLine();//wczytanie całej linii (i robi next)
 		// file.read();//oddaje kod znaku (i robi next), np 1 da 49
 		// file.readInt();//oddaje dziwne rzeczy - nie rozumiem tego
-		// file.seek(i);//przesĂłwa karetę na wskazaną pozycję po początku pliku
+		// file.seek(i);//przesówa karetę na wskazaną pozycję po początku pliku
 		file.writeChar('a');
 
 		// Poniższy przyklad nie dział. może kodowanie jest nierodpowiednie, albo cioś
@@ -1597,7 +1597,7 @@ public class JA2 {
 		// file.writeInt(value + 1);
 	}
 
-	// Dostęp do dużych plikĂłw - możemy zmapować fragment pliku i tylko w tym
+	// Dostęp do dużych plików - możemy zmapować fragment pliku i tylko w tym
 	// fragmencie wprowadać zmiany
 	public static void IOBigFileFileChannel() throws IOException {
 		// Totalnie nie wiem jednak jak tego używać ???
@@ -1638,7 +1638,7 @@ public class JA2 {
 		// badać rzycane wyjątki
 
 		FileChannel channel2 = FileChannel.open(Paths.get("D:/3.txt"), READ, StandardOpenOption.WRITE);
-		FileLock lock1 = channel2.lock(); // Tutaj wątek stanie i będzie czekać dopĂłki nie założy blokady
+		FileLock lock1 = channel2.lock(); // Tutaj wątek stanie i będzie czekać dopóki nie założy blokady
 		int i = 0;
 	}
 
@@ -1666,9 +1666,9 @@ public class JA2 {
 		;
 	}
 
-	// Tworzenie plikĂłw i katalogĂłw
+	// Tworzenie plików i katalogów
 	public static void IOCreate() throws IOException {
-		/* W java Directory i File mają jedną klasę. OdrĂłżniają się po isDirectory() */ if (((Paths.get("D:", "test2"))
+		/* W java Directory i File mają jedną klasę. Odróżniają się po isDirectory() */ if (((Paths.get("D:", "test2"))
 		    .toFile()).isDirectory())
 			((Paths.get("D:", "test2")).toFile()).delete();
 		Path dirPath = Files.createDirectories(Paths.get("D:", "test1") /* , Attributes */);
@@ -1703,19 +1703,19 @@ public class JA2 {
 		int brk = 0;
 	}
 
-	// Parsowanie struktury katalogĂłw (pliki i katalogi)
+	// Parsowanie struktury katalogów (pliki i katalogi)
 	public static void IOParseDir() throws IOException {
-		// Płaska lista pliĂłw i katalogĂłw
+		// Płaska lista pliów i katalogów
 		try (Stream<Path> entries1 = Files.list(Paths.get("C:\\"))) {
 			entries1.forEach(System.out::println);
 		}
-		// Wgłąb lista pliĂłw i katalogĂłw
+		// Wgłąb lista pliów i katalogów
 		try (Stream<Path> entries2 = Files.walk(Paths.get("C:", "Situ"), 2/* max głębokość */)) {
 			entries2.forEach(System.out::println);
 		}
 	}
 
-	// URL wymaga innego ĹşrĂłdła informacji niż książka - tu jest bieda
+	// URL wymaga innego Źródła informacji niż książka - tu jest bieda
 	// Tu tylko podstawy pobierania informacji
 	public static void IOURL() throws IOException {
 		URL google = new URL("http://www.google.com");
@@ -1755,15 +1755,15 @@ public class JA2 {
 		while (matcher1.find()) {
 			String match1 = matcher1.group();
 			System.out.print(matcher1.toMatchResult().group() + ": " + /* znaleziony wynik */
-			    matcher1.toMatchResult().start() + "-" + /* początek wyniku w ĹşrĂłdle */
-			    matcher1.toMatchResult().end()); /* koniec wyniku w ĹşrĂłdle */
+			    matcher1.toMatchResult().start() + "-" + /* początek wyniku w Źródle */
+			    matcher1.toMatchResult().end()); /* koniec wyniku w Źródle */
 			// drugi argument subSequence tpokazuje na pierwszy NIE NALEĹ»Ä„CY do podciagu
 			System.out.println(" | '"
 			    + input.subSequence(matcher1.toMatchResult().start(), matcher1.toMatchResult().end()).toString() + "'");
 		}
 	}
 
-	// Parsowanie poszczegĂłlnych fragmentĂłw wyniku.
+	// Parsowanie poszczególnych fragmentów wyniku.
 	public static void REParseResult() {
 		// Każdy () będzie traktowany jako osobna grupa.
 		// "group(n)" oddaje n-tą grupe w wyniku, czyli n-ty nawias. Aby się nie pomylić
@@ -1800,7 +1800,7 @@ public class JA2 {
 	// Podział wg wzorca
 	public static void REStringSplit() {
 		// UWAGA! Poniższy ciąg ma 2 linie, ale split potrzktuje znak nowej lini jako
-		// "zwykły" znak, więc jeden z elementĂłw będzie zawierał w sobie znak nowej
+		// "zwykły" znak, więc jeden z elementów będzie zawierał w sobie znak nowej
 		// linii
 		String input4 = "1, 2,3,   4 \n 5, ,6";
 		Pattern commas1 = Pattern.compile("\\s*,\\s*");
@@ -1826,7 +1826,7 @@ public class JA2 {
 		String input = "BlAckwell Toaster model AC4 USD29.95";
 		// ".*(AC).*\\s" - odda cały string jako wynik
 		// "\\w*(AC)\\w*" - odda pojedyncze słowa
-		// więcej atrybutĂłw wyszukiwania w Pattern.java (CTRL+ML na CASE_INSENSITIVE)
+		// więcej atrybutów wyszukiwania w Pattern.java (CTRL+ML na CASE_INSENSITIVE)
 		Pattern pattern6 = Pattern.compile("\\w*(AC)\\w*", Pattern.CASE_INSENSITIVE);
 		Matcher matcher6 = pattern6.matcher(input);
 		while (matcher6.find()) {
@@ -1860,12 +1860,12 @@ public class JA2 {
 		int brk = 0;
 	}
 
-	// Serializacja obiektĂłw z referencjami
+	// Serializacja obiektów z referencjami
 	public static void SerMultiTheSame() throws ClassNotFoundException, IOException {
-		// Serializacja obiektĂłw z referencjami powoduje zapamiętanie tych refernecji i
+		// Serializacja obiektów z referencjami powoduje zapamiętanie tych refernecji i
 		// przy odczytaniu TEGO SAMEGO podobiektu
 		// Podobnie zapis kilkukrotnie tego samego obiektu nie spowoduje odczytu 2
-		// obiektĂłw, ale tego samego obietu.
+		// obiektów, ale tego samego obietu.
 		// transient - spowoduje brak SD oznaczonego pola. Można temu zaradzić poprzed
 		// napisanie
 		// private void writeObject(ObjectOutputStream out) / private void
