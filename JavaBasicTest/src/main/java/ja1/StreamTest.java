@@ -103,7 +103,7 @@ public class StreamTest {
 		// Teraz jeszcze raz MAP, dla obiektów innych niż klas prostych
 		List<Employee> emplLst = CreateEmplList();
 		// ZĹ�E powiększanie wieku
-		emplLst.stream().map(i -> i.age = i.age + 100).// to spowoduje, że zamiast obiektów Employee zwracane będą
+		emplLst.stream().map(i -> i.age = i.age + 100).// 		to spowoduje, że zamiast obiektów Employee zwracane będą
 		                                               // Integer
 		    forEach(System.out::println);
 

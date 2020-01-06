@@ -140,7 +140,7 @@ public class MiscTest {
 		System.out.println("Poprawne porówanie stringów 'equals()': " + (location.equals("World")));
 	}
 
-	// Sotrowanie list
+	// Sotrowanie tablic
 	public static void SortList() {
 		String[] arr = { "ola", "ala", "Ala" };
 		System.out.println("Pierwszy element listy (przed sortowaniem) " + arr[0]);
