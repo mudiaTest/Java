@@ -1,11 +1,11 @@
-package validate;
+package eventNewApproach;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpringOtherTestsApplication {
+public class SpringNewEventsTestsApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(SpringOtherTestsApplication.class, args);
+		SpringApplication.run(SpringNewEventsTestsApplication.class, args);
 	}
 }
