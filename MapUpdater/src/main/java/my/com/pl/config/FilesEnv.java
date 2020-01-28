@@ -23,6 +23,7 @@ public class FilesEnv {
 	Integer priority;
 	Boolean transparency;
 	Integer kdDst;
+	Boolean recreateTrailforks;
 	
 	String typFid;
 }

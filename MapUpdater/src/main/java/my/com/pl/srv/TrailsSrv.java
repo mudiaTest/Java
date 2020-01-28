@@ -1,57 +1,30 @@
 package my.com.pl.srv;
 
+import static my.com.pl.srv.common.StringSrv.StrLstToFile;
+
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;	
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-
-import org.apache.commons.io.FileUtils;
-import org.assertj.core.util.Arrays;
-import org.assertj.core.util.Files;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import lombok.extern.java.Log;
-import lombok.extern.log4j.Log4j;
-import lombok.extern.slf4j.Slf4j;
-import my.com.pl.component.RawTrackData;
-import my.com.pl.component.TrailData;
-import my.com.pl.component.TrailXML;
-import my.com.pl.component.TrailsXML;
-import my.com.pl.config.TrailForksEnv;
-import my.com.pl.srv.common.HttpJsoupSrv;
-import my.com.pl.srv.common.ParameterStringBuilder;
-import my.com.pl.srv.common.StringSrv;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ch.qos.logback.classic.Logger;
-
-import static my.com.pl.srv.common.AssertionSrv.*;
-import static my.com.pl.srv.common.StringSrv.*;
+import lombok.extern.slf4j.Slf4j;
+import my.com.pl.component.TrailData;
+import my.com.pl.config.TrailForksEnv;
+import my.com.pl.srv.common.HttpJsoupSrv;
 
 @Service
 @Slf4j
@@ -507,8 +480,7 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 				trails = AskTrails(tfv.getRows(), loop, tfv.getBbox_poland());
 				allTrails.addAll(trails);
 				System.out.println("Łącznie traili:" + allTrails.size());//aktualnie jest 4348 traili (2019-09-29)
-			}
-			while(trails.size() > 0);
+			} while(trails.size() > 0);
 			
 			//Utworzenie linii pliku MP z traili
 			List<String> lines = mps.getMpLines(allTrails);
@@ -525,7 +497,7 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 				if (tfv.isDeleteMpFile()) {
 					System.out.println("Usuwanie pliku: '" + tfv.getMpFile() + "'");
 					log.info("Usuwanie pliku: '" + tfv.getMpFile() + "'");
-					Files.delete(new File(tfv.getMpFile()));
+					Files.deleteIfExists(Paths.get(tfv.getMpFile()));
 				}
 			}
 			
@@ -555,7 +527,7 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 			if (tfv.isDeleteMpFile()) {
 				System.out.println("Usuwanie pliku: '" + tfv.getMpFile() + "'");
 				log.info("Usuwanie pliku: '" + tfv.getMpFile() + "'");
-				Files.delete(new File(tfv.getMpFile()));
+				Files.deleteIfExists(Paths.get(tfv.getMpFile()));
 			}
 		}
 	}
@@ -569,7 +541,7 @@ https://www.trailforks.com/api/1/trail?id=48667&scope=track&api_key=docs - nie m
 			if (tfv.isDeleteMpFile()) {
 				System.out.println("Usuwanie pliku: '" + tfv.getMpFile() + "'");
 				log.info("Usuwanie pliku: '" + tfv.getMpFile() + "'");
-				Files.delete(new File(tfv.getMpFile()));
+				Files.deleteIfExists(Paths.get(tfv.getMpFile()));
 			}
 		}
 	}

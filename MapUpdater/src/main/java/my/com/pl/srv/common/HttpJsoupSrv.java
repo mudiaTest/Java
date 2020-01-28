@@ -1,25 +1,18 @@
 package my.com.pl.srv.common;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.aspectj.bridge.context.PinpointingMessageHandler;
-import org.javatuples.Pair;
-//import org.javatuples.Pair;
-//import org.javatuples.Triplet;
-import org.javatuples.Quartet;
 import org.javatuples.Quintet;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.springframework.stereotype.Service;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.springframework.stereotype.Service;
 
 @Service
 public class HttpJsoupSrv {

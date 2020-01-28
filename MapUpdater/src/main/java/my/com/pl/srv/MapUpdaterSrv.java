@@ -5,9 +5,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -66,18 +63,22 @@ public class MapUpdaterSrv {
 		 * Tworzenie mapy
 		 */
 		if (fenv.getKdDst() == 1 || fenv.getKdDst() == 3) {
+			System.out.println();
 			goNext = addMapToMapSource();
 			if (!goNext){
 				System.out.println("Nie powiodła się akcja instalacji mapy");
 				return;	
 			}
+			System.out.println();
 		}
 		if (fenv.getKdDst() == 2 || fenv.getKdDst() == 3) {
+			System.out.println();
 			goNext = addMapToCard();
 			if (!goNext){
 				System.out.println("Nie powiodła się akcja zapisu mapy na nośniku");
 				return;	
 			}
+			System.out.println();
 		}
 	}	
 	
@@ -96,7 +97,7 @@ public class MapUpdaterSrv {
 	}
 	
 	private boolean addMapToMapSource() {
-		try {			
+		try {						
 			gs.addToMapSource(
 					fenv.getTypFid(), 
 					fenv.getDstMapSourceDir(), 

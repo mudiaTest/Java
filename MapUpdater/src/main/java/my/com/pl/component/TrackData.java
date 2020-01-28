@@ -1,11 +1,9 @@
 package my.com.pl.component;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.assertj.core.util.Arrays;
 
 public class TrackData {
 	public List<Float> latitude = new ArrayList<>();

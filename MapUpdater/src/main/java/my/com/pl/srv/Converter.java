@@ -1,5 +1,7 @@
 package my.com.pl.srv;
 
+import static my.com.pl.srv.common.AssertionSrv.Assert;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import my.com.pl.config.TrailForksEnv;
-import static my.com.pl.srv.common.AssertionSrv.*;
 
 @Service
 public class Converter {

@@ -1,5 +1,7 @@
 package my.com.pl.srv;
 
+import static my.com.pl.srv.common.StringSrv.Concat;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,10 +10,6 @@ import org.springframework.stereotype.Service;
 
 import my.com.pl.component.TrackData;
 import my.com.pl.component.TrailData;
-import my.com.pl.config.TrailForksEnv;
-
-import static my.com.pl.srv.common.AssertionSrv.*;
-import static my.com.pl.srv.common.StringSrv.*;
 
 @Service
 public class MPSrv {
@@ -119,6 +117,7 @@ public class MPSrv {
 		//Wstawienie linii
 		lines.add("[POLYLINE]");
 		lines.add("Type="+DifficultyToLineType(trail.difficulty));
+		lines.add("Label="+trail.title);
 		lines.add("EndLevel=9");
 		lines.add("Data0=" + GetLine(trail));
 		lines.add("[END]");				
