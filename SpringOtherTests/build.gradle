@@ -27,7 +27,23 @@ dependencies {
     implementation 'org.hibernate.validator:hibernate-validator-annotation-processor:6.0.2.Final'
      
   implementation 'javax.el:javax.el-api:3.0.0'
-    implementation 'org.glassfish.web:javax.el:2.2.6'
+  implementation 'org.glassfish.web:javax.el:2.2.6'
+  
+  // Postgres
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+  implementation 'org.postgresql:postgresql'
+  
+  
+  //implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+  implementation 'org.projectlombok:lombok:1.18.4'
+     
+  compile group: 'org.projectlombok', name: 'lombok', version:'1.18.8'
+  
+  compile group: 'org.jdbi', name: 'jdbi3-spring4', version:'3.9.1'
+  
+  // W³aczenie JMS - dla @JmsListener i @EnableJms
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-activemq'
+  compile group: 'org.apache.activemq', name: 'activemq-broker'
 }
 
 test {

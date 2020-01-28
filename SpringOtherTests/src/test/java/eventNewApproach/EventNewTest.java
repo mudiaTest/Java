@@ -26,7 +26,7 @@ public class EventNewTest {
     aep.publishEvent(myEvent12);
     aep.publishEvent(myEvent21);
     
-    //Program mo¿e zakoñczyæ siê przed wykonaniem wszykich w¹tków, dlatego celowo opóiamy jego zakoñczenie - rozwi¹zanie tlko dla testów 
+    //Program mo¿e zakoñczyæ siê przed wykonaniem wszykich w¹tków, dlatego celowo opóziamy jego zakoñczenie - rozwi¹zanie tlko dla testów 
     Thread.sleep(10000);
 	}
 }
