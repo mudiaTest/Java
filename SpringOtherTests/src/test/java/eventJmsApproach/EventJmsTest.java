@@ -12,7 +12,7 @@ import eventNewApproach.MyEventNew2;
 @SpringBootTest
 public class EventJmsTest {
 
-	@Autowired
+  @Autowired
   private JmsTemplate jms;
 
 	// Przesy³anie 

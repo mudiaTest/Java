@@ -49,7 +49,6 @@ public class JmsConfiguration implements JmsListenerConfigurer
     // Customowe ustawienia Back-off, czyli po jakim czasie JMS ponownie 
     // spróbuje odwo³aæ siê do brokera jeœli ten nie odpowiada.
     //factory.setBackOff(new ExponentialBackOff());
-    
     return factory;
   }
 
@@ -57,8 +56,8 @@ public class JmsConfiguration implements JmsListenerConfigurer
   // Tworzymy konwerter do serializacji na bezie json, aby przekazywaæ obiekty z danymi.
   // Obowi¹zuj¹ zasady konwersji jackson (adnotacje etc)
   // Niewiele rozumiem
-  @Bean 
-  public MessageConverter jacksonJmsMessageConverter()
+  @Bean
+  public MessageConverter jacksonJmsMessageConverter1()
   {
     MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
     converter.setTargetType(MessageType.TEXT);
