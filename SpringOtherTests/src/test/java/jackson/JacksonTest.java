@@ -17,8 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 //@ComponentScan(basePackageClasses = { DszApplication.class, BaseDszDatabaseTest.class })
 public class JacksonTest {
 
-	@Test
-	public void testValidate() throws Exception {
+	//@Test
+	public void testBasic() throws Exception {
 		ObjectMapper objectMapper = new ObjectMapper();
 		MyObject1 mo1 = new MyObject1();
 		mo1.txt1 = "test1";
@@ -53,13 +53,44 @@ public class JacksonTest {
 		//objectMapper.readValue(new File("target/mo.json"), MyObject1.class);
 		//objectMapper.readValue(new URL("file:src/test/resources/mo.json"), MyObject1.class);
 		
-		// Stringa J mo¿na przerobi na drzewo J i potem je parsowac
+		// Stringa J mo¿na przerobic na drzewo J i potem je parsowac
 		JsonNode jsonNode = objectMapper.readTree(stMo1);
 		String txt1 = jsonNode.get("txt1").asText();
-		
-		
-		
+						
 		System.out.println("END");
 	}	
+	
+	//@Test
+	public void testSubObject() throws Exception {
+		MyObject3 mo3 = new MyObject3();
+		MyObject32 o = new MyObject32();
+		o.txt32 = "test32";
+		mo3.m32.put(1L, o);
+		mo3.l32.add(new MyObject32());
+		o = new MyObject32();
+		o.txt32 = "test32";
+		mo3.l32.add(new MyObject32());
+		mo3.m32.put(2L, o);
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		String stMo3 = objectMapper.writeValueAsString(mo3);
+		System.out.println("-> " + stMo3);
+		
+		System.out.println("END");
+	}
+	
+	@Test
+	public void testAnnotation() throws Exception {
+		MyObject4 mo4 = new MyObject4();
+		ObjectMapper objectMapper = new ObjectMapper();
+		String stMo4 = objectMapper.writeValueAsString(mo4);
+		System.out.println("-> " + stMo4);
+		
+		System.out.println("<-");
+		
+		MyObject4 newMo4 = objectMapper.readValue(stMo4, MyObject4.class);
+		System.out.println("END");
+		
+	}
 	
 }
