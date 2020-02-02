@@ -44,6 +44,10 @@ dependencies {
   // W³aczenie JMS - dla @JmsListener i @EnableJms
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-activemq'
   compile group: 'org.apache.activemq', name: 'activemq-broker'
+  
+  // Jackson - wymagane dla 2.x do konwerski formatów dat z Java 8
+  // Do dzia³ania wymaga objectMapper.findAndRegisterModules();
+  compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.10.2'
 }
 
 test {
