@@ -1,7 +1,7 @@
-package com.my.pl;
+package jooq;
 
-import static com.my.pl.jooq.db1.tables.Test1.TEST1;
 import static com.my.pl.jooq.db2.tables.Test2.TEST2;
+import static jooq.jooq.db1.tables.Test1.TEST1;
 
 import javax.persistence.EntityManager;
 
@@ -22,13 +22,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.my.pl.config.PersistenceContextDb1;
-import com.my.pl.config.PersistenceContextDb2;
-import com.my.pl.db1.dao.Test1Db1Dao;
-import com.my.pl.db1.domain.Test1;
-import com.my.pl.db2.dao.Test2Dao;
-import com.my.pl.db2.domain.Test2;
-import com.my.pl.utils.NewTransactionWrapper;
+import jooq.config.PersistenceContextDb1;
+import jooq.config.PersistenceContextDb2;
+import jooq.db1.dao.Test1Db1Dao;
+import jooq.db1.domain.Test1;
+import jooq.db2.dao.Test2Dao;
+import jooq.db2.domain.Test2;
+import jooq.utils.NewTransactionWrapper;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

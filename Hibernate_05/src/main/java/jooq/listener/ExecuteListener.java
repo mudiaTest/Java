@@ -1,4 +1,4 @@
-package com.my.pl.listener;
+package jooq.listener;
 
 import org.jooq.ExecuteContext;
 import org.jooq.Query;

@@ -1,4 +1,4 @@
-package com.my.pl.config;
+package jooq.config;
 
 import org.jooq.ExecuteContext;
 import org.jooq.SQLDialect;

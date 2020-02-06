@@ -1,4 +1,4 @@
-package com.my.pl.config;
+package jooq.config;
 
 import org.springframework.context.annotation.Configuration;
 

@@ -1,4 +1,4 @@
-package com.my.pl.db1.domain;
+package jooq.db1.domain;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

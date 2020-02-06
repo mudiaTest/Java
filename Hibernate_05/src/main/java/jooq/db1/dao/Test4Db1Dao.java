@@ -1,11 +1,11 @@
-package com.my.pl.db1.dao;
+package jooq.db1.dao;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-import com.my.pl.db1.domain.Test1;
-import com.my.pl.db1.domain.Test4;
+import jooq.db1.domain.Test1;
+import jooq.db1.domain.Test4;
 
 public interface Test4Db1Dao extends CrudRepository<Test4, Long>{
 

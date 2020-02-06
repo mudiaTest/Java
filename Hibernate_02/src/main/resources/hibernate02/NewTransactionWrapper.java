@@ -1,4 +1,4 @@
-package com.example.demo;
+package hibernate02;
 
 import java.lang.reflect.Executable;
 import java.util.function.Supplier;

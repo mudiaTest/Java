@@ -1,4 +1,4 @@
-package com.example.demo.inheritance.dto;
+package hibernate02.inheritance.dto;
 
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;

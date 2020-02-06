@@ -1,4 +1,4 @@
-package com.my.pl.utils;
+package jooq.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;

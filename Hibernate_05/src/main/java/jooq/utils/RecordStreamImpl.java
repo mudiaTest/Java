@@ -1,4 +1,4 @@
-package com.my.pl.utils;
+package jooq.utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;

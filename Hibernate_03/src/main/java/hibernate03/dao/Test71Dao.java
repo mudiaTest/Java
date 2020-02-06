@@ -1,11 +1,11 @@
-package my.com.pl.Hibernate_03.dao;
+package hibernate03.dao;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import my.com.pl.Hibernate_03.domain.Test71;
+import hibernate03.domain.Test71;
 
 public interface Test71Dao extends CrudRepository<Test71, Long>{
 

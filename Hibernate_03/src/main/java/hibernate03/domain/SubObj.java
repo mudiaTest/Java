@@ -1,4 +1,4 @@
-package my.com.pl.Hibernate_03.domain;
+package hibernate03.domain;
 
 /*
  * Zamiast klasy tworzymy interfejs, czyli rodzaj View.

@@ -1,4 +1,4 @@
-package com.my.pl;
+package jooq;
 
 interface IA {
 	//public Integer doit();

@@ -1,4 +1,4 @@
-package com.example.demo.db1.domain;
+package hibernate04.db1.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;

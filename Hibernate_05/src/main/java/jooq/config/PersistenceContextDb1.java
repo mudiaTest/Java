@@ -3,7 +3,7 @@
  * wskazywali na konkretny entityManager, transakcje etc 
  */
 
-package com.my.pl.config;
+package jooq.config;
 
 import java.util.HashMap;
 

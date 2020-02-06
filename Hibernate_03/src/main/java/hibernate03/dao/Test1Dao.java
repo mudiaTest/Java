@@ -1,4 +1,4 @@
-package my.com.pl.Hibernate_03.dao;
+package hibernate03.dao;
 
 import java.util.List;
 
@@ -20,11 +20,11 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import my.com.pl.Hibernate_03.domain.SubObj;
-import my.com.pl.Hibernate_03.domain.Test1;
-import my.com.pl.Hibernate_03.domain.Test3;
-import my.com.pl.Hibernate_03.domain.Test4;
-import my.com.pl.Hibernate_03.domain.Test5_1;
+import hibernate03.domain.SubObj;
+import hibernate03.domain.Test1;
+import hibernate03.domain.Test3;
+import hibernate03.domain.Test4;
+import hibernate03.domain.Test5_1;
 
 @Repository
 public interface Test1Dao extends CrudRepository<Test1, Long>, CustomDao {

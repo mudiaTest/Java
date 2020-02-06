@@ -1,10 +1,10 @@
-package com.my.pl.listener;
+package jooq.listener;
 
 import org.jooq.RecordContext;
 import org.jooq.impl.DefaultRecordListener;
 
-import com.my.pl.jooq.db1.tables.Test1;
-import com.my.pl.jooq.db1.tables.records.Test1Record;
+import jooq.jooq.db1.tables.Test1;
+import jooq.jooq.db1.tables.records.Test1Record;
 
 public class RecordListener2 extends DefaultRecordListener {
 

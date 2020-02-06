@@ -1,9 +1,9 @@
-package com.example.demo.inheritance.doa;
+package hibernate02.inheritance.doa;
 
 import org.springframework.stereotype.Repository;
 
-import com.example.demo.inheritance.dto.Person;
-import com.example.demo.inheritance.dto.Worker;
+import hibernate02.inheritance.dto.Person;
+import hibernate02.inheritance.dto.Worker;
 
 import org.springframework.data.repository.CrudRepository;
 

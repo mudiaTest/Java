@@ -1,4 +1,4 @@
-package com.my.pl.db2.domain;
+package jooq.db2.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;

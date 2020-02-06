@@ -1,4 +1,4 @@
-package com.example.demo;
+package hibernate04;
 
 import java.util.HashMap;
 

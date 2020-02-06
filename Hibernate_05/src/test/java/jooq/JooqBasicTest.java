@@ -52,19 +52,19 @@
 	$function$
  */
 
-package com.my.pl;
+package jooq;
 
-import static com.my.pl.jooq.db1.tables.Test1.TEST1;
-import static com.my.pl.jooq.db1.tables.Test4.TEST4;
-import static com.my.pl.jooq.db1.tables.Test5.TEST5;
-import static com.my.pl.jooq.db1.tables.Test4SubObjSet.TEST4_SUB_OBJ_SET;
-import static com.my.pl.jooq.db1.tables.Test41.TEST41;
-import static com.my.pl.jooq.db1.tables.Test51.TEST51;
-import static com.my.pl.jooq.db1.Keys.*;
-import static com.my.pl.jooq.db1.tables.Test2.TEST2;
-import static com.my.pl.jooq.db1.tables.Test11.TEST11;
-import static com.my.pl.jooq.db1.Routines.*;
-import static com.my.pl.jooq.db1.Sequences.*;
+import static jooq.jooq.db1.Keys.*;
+import static jooq.jooq.db1.Routines.*;
+import static jooq.jooq.db1.Sequences.*;
+import static jooq.jooq.db1.tables.Test1.TEST1;
+import static jooq.jooq.db1.tables.Test11.TEST11;
+import static jooq.jooq.db1.tables.Test2.TEST2;
+import static jooq.jooq.db1.tables.Test4.TEST4;
+import static jooq.jooq.db1.tables.Test41.TEST41;
+import static jooq.jooq.db1.tables.Test4SubObjSet.TEST4_SUB_OBJ_SET;
+import static jooq.jooq.db1.tables.Test5.TEST5;
+import static jooq.jooq.db1.tables.Test51.TEST51;
 import static org.jooq.impl.DSL.name;
 import static org.jooq.impl.DSL.select;
 import static org.jooq.impl.DSL.val;
@@ -151,50 +151,44 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.my.pl.config.PersistenceContextDb1;
-import com.my.pl.config.PersistenceContextDb2;
-import com.my.pl.db1.dao.Test11Db1Dao;
-import com.my.pl.db1.dao.Test1Db1Dao;
-import com.my.pl.db1.dao.Test2Db1Dao;
-import com.my.pl.db1.dao.Test4Db1Dao;
-import com.my.pl.db1.dao.Test5Db1Dao;
-import com.my.pl.db1.domain.Test1;
-import com.my.pl.db1.domain.Test11;
-import com.my.pl.db1.domain.Test2;
-import com.my.pl.db1.domain.Test4;
-import com.my.pl.db1.domain.Test41;
-import com.my.pl.db1.domain.Test5;
-import com.my.pl.db1.domain.Test51;
-import com.my.pl.jooq.db1.routines.Echo;
-import com.my.pl.jooq.db1.tables.Echo2;
-import com.my.pl.jooq.db1.tables.Echo3;
-import com.my.pl.jooq.db1.tables.Test4SubObjSet;
-import com.my.pl.jooq.db1.tables.daos.Test1Dao;
-import com.my.pl.jooq.db1.tables.records.Test11Record;
-import com.my.pl.jooq.db1.tables.records.Test1Record;
-import com.my.pl.jooq.db1.tables.records.Test2Record;
-import com.my.pl.jooq.db1.tables.records.Test41Record;
-import com.my.pl.jooq.db1.tables.records.Test4Record;
-import com.my.pl.jooq.db1.tables.records.Test4SubObjSetRecord;
-import com.my.pl.jooq.db1.tables.records.Test51Record;
-import com.my.pl.jooq.db1.tables.records.Test5Record;
-/*
- * Nie można załozyć przez H, bo ten wymaga ID, a cała rzecz w tym, żeby ID właśnie nie było.
- * Tabelę nalezy założyć osobno. 
- */
-//import com.my.pl.jooq.db1.tables.records.TestnoupdatableRecord;
-import com.my.pl.listener.ExecuteListener;
-import com.my.pl.listener.RecordListener;
-import com.my.pl.listener.RecordListener2;
-import com.my.pl.listener.VisitListener;
-import com.my.pl.utils.ExtModelMapper;
-import com.my.pl.utils.IntToStringConverter;
-import com.my.pl.utils.MapperUtils;
-import com.my.pl.utils.NewTransactionWrapper;
-import com.my.pl.utils.PrefixValueReader;
-import com.my.pl.utils.RecordStream;
-import com.my.pl.utils.RecordStreamImpl;
-
+import jooq.config.PersistenceContextDb1;
+import jooq.config.PersistenceContextDb2;
+import jooq.db1.dao.Test11Db1Dao;
+import jooq.db1.dao.Test1Db1Dao;
+import jooq.db1.dao.Test2Db1Dao;
+import jooq.db1.dao.Test4Db1Dao;
+import jooq.db1.dao.Test5Db1Dao;
+import jooq.db1.domain.Test1;
+import jooq.db1.domain.Test11;
+import jooq.db1.domain.Test2;
+import jooq.db1.domain.Test4;
+import jooq.db1.domain.Test41;
+import jooq.db1.domain.Test5;
+import jooq.db1.domain.Test51;
+import jooq.jooq.db1.routines.Echo;
+import jooq.jooq.db1.tables.Echo2;
+import jooq.jooq.db1.tables.Echo3;
+import jooq.jooq.db1.tables.Test4SubObjSet;
+import jooq.jooq.db1.tables.daos.Test1Dao;
+import jooq.jooq.db1.tables.records.Test11Record;
+import jooq.jooq.db1.tables.records.Test1Record;
+import jooq.jooq.db1.tables.records.Test2Record;
+import jooq.jooq.db1.tables.records.Test41Record;
+import jooq.jooq.db1.tables.records.Test4Record;
+import jooq.jooq.db1.tables.records.Test4SubObjSetRecord;
+import jooq.jooq.db1.tables.records.Test51Record;
+import jooq.jooq.db1.tables.records.Test5Record;
+import jooq.listener.ExecuteListener;
+import jooq.listener.RecordListener;
+import jooq.listener.RecordListener2;
+import jooq.listener.VisitListener;
+import jooq.utils.ExtModelMapper;
+import jooq.utils.IntToStringConverter;
+import jooq.utils.MapperUtils;
+import jooq.utils.NewTransactionWrapper;
+import jooq.utils.PrefixValueReader;
+import jooq.utils.RecordStream;
+import jooq.utils.RecordStreamImpl;
 import lombok.Getter;
 import lombok.Setter;
 

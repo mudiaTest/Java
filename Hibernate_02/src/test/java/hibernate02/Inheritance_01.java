@@ -1,4 +1,4 @@
-package com.example.demo;
+package hibernate02;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -13,11 +13,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.demo.inheritance.doa.Person_01Doa;
-import com.example.demo.inheritance.doa.WorkerDoa;
-import com.example.demo.inheritance.dto.Person;
-import com.example.demo.inheritance.dto.Person_gen;
-import com.example.demo.inheritance.dto.Worker;
+import hibernate02.NewTransactionWrapper;
+import hibernate02.inheritance.doa.Person_01Doa;
+import hibernate02.inheritance.doa.WorkerDoa;
+import hibernate02.inheritance.dto.Person;
+import hibernate02.inheritance.dto.Person_gen;
+import hibernate02.inheritance.dto.Worker;
 
 @EnableTransactionManagement
 @RunWith(SpringRunner.class)

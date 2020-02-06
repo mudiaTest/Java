@@ -25,14 +25,10 @@ repositories {
 
 
 dependencies {
-	//compile('org.springframework.boot:spring-boot-starter')
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	runtime('org.postgresql:postgresql')
-	//runtime('org.springframework.boot:spring-boot-devtools')
-	//compileOnly('org.springframework.boot:spring-boot-configuration-processor')
 	compileOnly('org.projectlombok:lombok')
 	compile 'javax.xml.bind:jaxb-api:2.3.0'
-	//Dla wykorzystania mechanizmów: @Projection
 	compile 'org.springframework.boot:spring-boot-starter-data-rest'
 	compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version:'2.9.2'	
 	testCompile('org.springframework.boot:spring-boot-starter-test')

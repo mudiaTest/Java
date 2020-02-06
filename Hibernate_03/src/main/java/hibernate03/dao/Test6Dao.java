@@ -1,4 +1,4 @@
-package my.com.pl.Hibernate_03.dao;
+package hibernate03.dao;
 
 import java.util.Optional;
 
@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import my.com.pl.Hibernate_03.domain.Test6;
+import hibernate03.domain.Test6;
 
 public interface Test6Dao extends CrudRepository<Test6, Long> {
 	

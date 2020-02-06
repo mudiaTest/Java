@@ -1,4 +1,4 @@
-package com.example.demo.inheritance.dto;
+package hibernate02.inheritance.dto;
 
 public class PersonInWork extends Person {
 

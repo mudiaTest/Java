@@ -1,4 +1,4 @@
-package com.my.pl;
+package jooq;
 
 import static org.jooq.impl.DSL.name;
 import static org.jooq.impl.DSL.select;
@@ -47,14 +47,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.my.pl.config.PersistenceContextDb1;
-import com.my.pl.config.PersistenceContextDb2;
-import com.my.pl.db1.dao.Test1Db1Dao;
-import com.my.pl.db1.dao.Test2Db1Dao;
-import com.my.pl.db1.domain.Test1;
-import com.my.pl.db1.domain.Test2;
-import com.my.pl.utils.NewTransactionWrapper;
-
+import jooq.config.PersistenceContextDb1;
+import jooq.config.PersistenceContextDb2;
+import jooq.db1.dao.Test1Db1Dao;
+import jooq.db1.dao.Test2Db1Dao;
+import jooq.db1.domain.Test1;
+import jooq.db1.domain.Test2;
+import jooq.utils.NewTransactionWrapper;
 import lombok.Getter;
 import lombok.Setter;
 

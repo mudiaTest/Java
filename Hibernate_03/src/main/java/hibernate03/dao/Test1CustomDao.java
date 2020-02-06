@@ -1,11 +1,11 @@
-package my.com.pl.Hibernate_03.dao;
+package hibernate03.dao;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 import org.springframework.data.jpa.repository.Query;
 
-import my.com.pl.Hibernate_03.domain.Test1;
+import hibernate03.domain.Test1;
 
 public interface Test1CustomDao extends Test1GenDao<Test1, Integer>{
 	@Query("SELECT a FROM Test1 a")

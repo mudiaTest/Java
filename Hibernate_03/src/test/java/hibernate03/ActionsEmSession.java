@@ -1,4 +1,4 @@
-package my.com.pl.Hibernate_03;
+package hibernate03;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -11,10 +11,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import my.com.pl.Hibernate_03.dao.Test1Dao;
-import my.com.pl.Hibernate_03.domain.SubClass1;
-import my.com.pl.Hibernate_03.domain.Test1;
-import my.com.pl.Hibernate_03.utils.NewTransactionWrapper;
+import hibernate03.dao.Test1Dao;
+import hibernate03.domain.SubClass1;
+import hibernate03.domain.Test1;
+import hibernate03.utils.NewTransactionWrapper;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

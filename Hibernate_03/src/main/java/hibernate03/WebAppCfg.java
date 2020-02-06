@@ -1,4 +1,4 @@
-package my.com.pl.Hibernate_03;
+package hibernate03;
 
 import java.util.Properties;
 

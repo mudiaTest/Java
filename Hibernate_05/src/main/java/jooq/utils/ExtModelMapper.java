@@ -1,4 +1,4 @@
-package com.my.pl.utils;
+package jooq.utils;
 
 import org.jooq.Field;
 import org.modelmapper.ModelMapper;

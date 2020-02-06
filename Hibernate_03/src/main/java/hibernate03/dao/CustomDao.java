@@ -1,4 +1,4 @@
-package my.com.pl.Hibernate_03.dao;
+package hibernate03.dao;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;

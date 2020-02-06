@@ -1,4 +1,4 @@
-package my.com.pl.Hibernate_03;
+package hibernate03;
 
 import java.util.List;
 
@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import my.com.pl.Hibernate_03.dao.Test1Dao;
-import my.com.pl.Hibernate_03.domain.SubObj;
-import my.com.pl.Hibernate_03.domain.Test2;
-import my.com.pl.Hibernate_03.domain.Test3;
-import my.com.pl.Hibernate_03.utils.NewTransactionWrapper;
+import hibernate03.dao.Test1Dao;
+import hibernate03.domain.SubObj;
+import hibernate03.domain.Test2;
+import hibernate03.domain.Test3;
+import hibernate03.utils.NewTransactionWrapper;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

@@ -1,4 +1,4 @@
-package my.com.pl.Hibernate_03;
+package hibernate03;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import my.com.pl.Hibernate_03.dao.Test6Dao;
-import my.com.pl.Hibernate_03.domain.Test6;
-import my.com.pl.Hibernate_03.utils.NewTransactionWrapper;
+import hibernate03.dao.Test6Dao;
+import hibernate03.domain.Test6;
+import hibernate03.utils.NewTransactionWrapper;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

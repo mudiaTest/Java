@@ -1,4 +1,4 @@
-package my.com.pl.Hibernate_03.dao;
+package hibernate03.dao;
 
 import java.io.Serializable;
 import java.util.List;

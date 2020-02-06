@@ -1,4 +1,4 @@
-package my.com.pl.Hibernate_03.utils;
+package hibernate03.utils;
 
 import java.lang.reflect.Executable;
 import java.util.function.Supplier;

@@ -1,4 +1,4 @@
-package com.example.demo;
+package hibernate04;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,10 +10,12 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.example.demo.db1.dao.Test1Dao;
-import com.example.demo.db1.domain.Test1;
-import com.example.demo.db2.dao.Test2Dao;
-import com.example.demo.db2.domain.Test2;
+import hibernate04.ConfigDB1;
+import hibernate04.ConfigDB2;
+import hibernate04.db1.dao.Test1Dao;
+import hibernate04.db1.domain.Test1;
+import hibernate04.db2.dao.Test2Dao;
+import hibernate04.db2.domain.Test2;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
