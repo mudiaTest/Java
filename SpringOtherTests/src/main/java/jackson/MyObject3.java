@@ -23,7 +23,7 @@ public class MyObject3 {
   private MyObject32 p_o32 = new MyObject32();
   // getTheTxt5 dzia³a jak getTxt2
   @JsonSetter("o33") 
-  public void getTheObj32(MyObject32 obj) {
+  public void setTheObj32(MyObject32 obj) {
   	p_o32 = obj;
   }
   // Wy³¹cza serializacjê i wk³ada do wynikowego stringa wartoœæ tak¹, jaka jest

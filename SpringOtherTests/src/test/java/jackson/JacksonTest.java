@@ -37,7 +37,7 @@ public class JacksonTest {
 		objectMapper.writeValue(System.out, mo1); // Wypisuje wynik na output stream 
 		
 		System.out.println("->1");
-//		objectMapper.writeValue(new File("target/mo.json"), mo1); // Wypisuje wynik do pliku
+		objectMapper.writeValue(new File("target/mo.json"), mo1); // Wypisuje wynik do pliku
 		
 		System.out.println("writeValueAsString: " + objectMapper.writeValueAsString(mo1));
 		System.out.println("->2");
@@ -55,8 +55,8 @@ public class JacksonTest {
 		//MyObject2 newMo2 = objectMapper.readValue(stMo1, MyObject2.class); // Zapis do obiektu innej klasy
 				
 		// Zród³a: plik, input stream, URL, string 
-		//objectMapper.readValue(new File("target/mo.json"), MyObject1.class);
-		//objectMapper.readValue(new URL("file:src/test/resources/mo.json"), MyObject1.class);
+//		objectMapper.readValue(new File("target/mo.json"), MyObject1.class);
+//		objectMapper.readValue(new URL("file:src/test/resources/mo.json"), MyObject1.class);
 		
 		// Stringa J mo¿na przerobic na drzewo J i potem je parsowac
 		JsonNode jsonNode = objectMapper.readTree(stMo1);

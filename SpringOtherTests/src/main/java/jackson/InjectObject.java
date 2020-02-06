@@ -3,8 +3,8 @@ package jackson;
 import com.fasterxml.jackson.annotation.JacksonInject;
 
 /**
- * Wskazuje, ¿e warroœæ bêdzie wstrzykiwana injectorem, podczas deserializacji .
- * @JacksonInject wymaga id i domuœlnie nadaje klasê (np String), wiêc nie mo¿e 
+ * Wskazuje, ¿e wartoœæ bêdzie wstrzykiwana injectorem, podczas deserializacji .
+ * @JacksonInject wymaga id i domyœlnie nadaje klasê (np String), wiêc nie mo¿e 
  * byæ 2 domyœlnych adnotacji, bo id musi byæ unikalne.
  * Pierwszeñstwo maj¹ wartoœæi ze string, wiêc mog¹ nadpisywaæ injekcje
  * Wymaga takiego u¿ycia
