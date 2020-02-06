@@ -4,9 +4,14 @@ buildscript {
 	}
 	repositories {
 		mavenCentral()
+		mavenLocal()
+		maven {
+	      url "https://plugins.gradle.org/m2/"
+	    }
+	    jcenter()
 	}
 	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")		
 	}
 }
 
@@ -23,11 +28,18 @@ repositories {
 	mavenCentral()
 }
 
-
-dependencies {
+dependencies {    
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	runtime('org.postgresql:postgresql')
 	compileOnly('org.projectlombok:lombok')
 	compile group: 'org.javatuples', name: 'javatuples', version: '1.2'
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+	
+	// hibernate03
+	compile 'javax.xml.bind:jaxb-api:2.3.0'
+	compile 'org.springframework.boot:spring-boot-starter-data-rest'
+	compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version:'2.9.2'	
+	
+	// hibernate04
+	compileOnly('org.springframework.boot:spring-boot-configuration-processor')
 }
