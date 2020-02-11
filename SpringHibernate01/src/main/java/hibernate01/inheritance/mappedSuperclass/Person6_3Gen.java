@@ -15,8 +15,8 @@ import lombok.Data;
 @Data
 @MappedSuperclass
 public abstract class Person6_3Gen {
-	@Id
-	@GeneratedValue
-	public Integer id;
-	public String name;
+  @Id
+  @GeneratedValue
+  public Integer id;
+  public String name;
 }

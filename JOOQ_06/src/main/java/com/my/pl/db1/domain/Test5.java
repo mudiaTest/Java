@@ -25,9 +25,9 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Test5 {
-	@Id
-	private long id;
-	private int intVal1;
-	@OneToMany(mappedBy = "test5", cascade=CascadeType.ALL)
-	private Set<Test51> subObjSet = new HashSet<>();;
+  @Id
+  private long id;
+  private int intVal1;
+  @OneToMany(mappedBy = "test5", cascade=CascadeType.ALL)
+  private Set<Test51> subObjSet = new HashSet<>();;
 }

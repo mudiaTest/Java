@@ -8,14 +8,14 @@ import lombok.Data;
 @Embeddable
 public class Contact6_2 {
 
-	public String envelope;
-	
-	public Contact6_2(String envelope) {
-		super();
-		this.envelope = envelope;
-	}
+  public String envelope;
+  
+  public Contact6_2(String envelope) {
+    super();
+    this.envelope = envelope;
+  }
 
-	public Contact6_2() {
-		super();
-	}	
+  public Contact6_2() {
+    super();
+  }  
 }

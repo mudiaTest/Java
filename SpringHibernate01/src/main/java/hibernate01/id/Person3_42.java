@@ -8,30 +8,30 @@ import javax.persistence.TableGenerator;
 
 @Entity
 public class Person3_42 {
-	
-	@Id
-	/*
-	 * TABLE - wykorzystuje tabele DB do przechowywania klucza 
-	 * Jedna tabeli mo¿e byæ wykorzystywana przez wiele klas
-	 * 
-	 */
-	@GeneratedValue(
-			strategy = GenerationType.TABLE, 
-			generator="tab34gen")
-	@TableGenerator(
-			name="tab34gen", 
-				/*
-				 * Opcjonalne - nazwa tabeli
-				 */
-			table = "tab34Id",
-				/*
-				 * Opcjoanlne - nazwa kolumny PK
-				 */
-			pkColumnName = "id",
-				/*
-				 * "kod" grupuj¹cy klucze nale¿¹ce do tej Person3_4, bo
-				 */
-			pkColumnValue = "val42")
-	public Long key1;
-	public String name;		
+  
+  @Id
+  /*
+   * TABLE - wykorzystuje tabele DB do przechowywania klucza 
+   * Jedna tabeli moï¿½e byï¿½ wykorzystywana przez wiele klas
+   * 
+   */
+  @GeneratedValue(
+      strategy = GenerationType.TABLE, 
+      generator="tab34gen")
+  @TableGenerator(
+      name="tab34gen", 
+        /*
+         * Opcjonalne - nazwa tabeli
+         */
+      table = "tab34Id",
+        /*
+         * Opcjoanlne - nazwa kolumny PK
+         */
+      pkColumnName = "id",
+        /*
+         * "kod" grupujï¿½cy klucze naleï¿½ï¿½ce do tej Person3_4, bo
+         */
+      pkColumnValue = "val42")
+  public Long key1;
+  public String name;    
 }

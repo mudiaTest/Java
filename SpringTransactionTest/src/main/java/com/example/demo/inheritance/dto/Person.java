@@ -14,22 +14,22 @@ import lombok.Data;
 //})
 public class Person {// extends Person_gen{
 
-	@Id
-	@GeneratedValue
-	private Integer id;
-	private String name;
+  @Id
+  @GeneratedValue
+  private Integer id;
+  private String name;
 
-	public Person(String name) {
-		super();
-		this.name = name;
-	}
+  public Person(String name) {
+    super();
+    this.name = name;
+  }
 
-	public Person(Integer id, String name) {
-		this.id = id;
-		this.name = name;
-	}
+  public Person(Integer id, String name) {
+    this.id = id;
+    this.name = name;
+  }
 
-	public Person() {
-	}
+  public Person() {
+  }
 
 }

@@ -24,51 +24,51 @@ import hibernate02.inheritance.dto.Worker;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class Inheritance_01 {
-	@Autowired
-	Person_01Doa repo01;
-	@Autowired
-	WorkerDoa repoWrk;
-	@Autowired
-	EntityManager em;
-	@Autowired
-	NewTransactionWrapper ntw;
-	
-	//bez znaczenia, bo wywo³ujemy to nie przez beana
-	//@Transactional//(propagation=Propagation.REQUIRES_NEW)
-	@Rollback(false)
-	public Integer initPerson_01() {
-		Query q = em.createNamedQuery("delAll");
-		//q.executeUpdate();
-		Worker w1 = new Worker("p01", "tech");
-		//repo01.save(w1);
-		//ntw.inTrans(() -> em.persist(w1));
-		em.persist(w1);	
-		return w1.getId();
-	}
-	
-	//bez znaczenia, bo wywo³ujemy to nie przez beana
-	//@Transactional
-	@Rollback(false)
-	private void getPerson_01(Integer id) {
-		Worker w1 = repoWrk.findById(id).get();		
-//		Worker w2 =  ntw.inTrans(() -> em.find(Worker.class, id)); 
-		
-		Query q = em.createNamedQuery("getById").setParameter("id", id);
-		Worker w3 = (Worker)q.getSingleResult();
-		
-		int t=0;		
-	}
-	
-	
-	@Test
-	//@Transactional(propagation = Propagation.NOT_SUPPORTED)
-//	@Transactional
-	@Rollback(false)
-	public void test01() {
-//		Integer id = ntw.inTrans(()-> initPerson_01()); 
-		Integer id = initPerson_01();
-		if (id != null)
-//			ntw.inTrans(()->getPerson_01(id));
-			getPerson_01(id);
-	}
+  @Autowired
+  Person_01Doa repo01;
+  @Autowired
+  WorkerDoa repoWrk;
+  @Autowired
+  EntityManager em;
+  @Autowired
+  NewTransactionWrapper ntw;
+  
+  //bez znaczenia, bo wywoï¿½ujemy to nie przez beana
+  //@Transactional//(propagation=Propagation.REQUIRES_NEW)
+  @Rollback(false)
+  public Integer initPerson_01() {
+    Query q = em.createNamedQuery("delAll");
+    //q.executeUpdate();
+    Worker w1 = new Worker("p01", "tech");
+    //repo01.save(w1);
+    //ntw.inTrans(() -> em.persist(w1));
+    em.persist(w1);  
+    return w1.getId();
+  }
+  
+  //bez znaczenia, bo wywoï¿½ujemy to nie przez beana
+  //@Transactional
+  @Rollback(false)
+  private void getPerson_01(Integer id) {
+    Worker w1 = repoWrk.findById(id).get();    
+//    Worker w2 =  ntw.inTrans(() -> em.find(Worker.class, id)); 
+    
+    Query q = em.createNamedQuery("getById").setParameter("id", id);
+    Worker w3 = (Worker)q.getSingleResult();
+    
+    int t=0;    
+  }
+  
+  
+  @Test
+  //@Transactional(propagation = Propagation.NOT_SUPPORTED)
+//  @Transactional
+  @Rollback(false)
+  public void test01() {
+//    Integer id = ntw.inTrans(()-> initPerson_01()); 
+    Integer id = initPerson_01();
+    if (id != null)
+//      ntw.inTrans(()->getPerson_01(id));
+      getPerson_01(id);
+  }
 }

@@ -8,19 +8,19 @@ import lombok.Data;
 //@Entity
 @Embeddable
 public class PersonFeature1 {
-	//@Id
-	//@GeneratedValue
-	//Integer id;
-	String name;
-	String value;
-	
-	public PersonFeature1(String name, String value){
-		this.name = name;
-		this.value = value;
-	}
+  //@Id
+  //@GeneratedValue
+  //Integer id;
+  String name;
+  String value;
+  
+  public PersonFeature1(String name, String value){
+    this.name = name;
+    this.value = value;
+  }
 
-	public PersonFeature1() {
-		super();
-	}
-	
+  public PersonFeature1() {
+    super();
+  }
+  
 }

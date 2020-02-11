@@ -17,22 +17,22 @@ import lombok.Data;
 
 @Data
 @Entity
-	/*
-	 * InheritanceType.TABLE_PER_CLASS - ka¿da klasa koñcowa ma osobn¹ tabelê 
-	 * ze wszystkimi polami, tak¿e tymi odziedziczonymi
-	 * 
-	 * Bardzo kiepsko odwzorowuje polimorfizm, ale nie potrzebuje joinów. 
-	 * Niestety w zamian wymaga UNIONów lub wielu osobnych QUERY do pokrycia 
-	 * ca³ej hierarhii.
-	 * 
-	 * Wsparcie dla tej strategii jest opcjonalne, ale HIBERNATE j¹ wspiera.
-	 * 
-	 * SINGLE_TABLE to watroœc domyœlna
-	 */
+  /*
+   * InheritanceType.TABLE_PER_CLASS - kaï¿½da klasa koï¿½cowa ma osobnï¿½ tabelï¿½ 
+   * ze wszystkimi polami, takï¿½e tymi odziedziczonymi
+   * 
+   * Bardzo kiepsko odwzorowuje polimorfizm, ale nie potrzebuje joinï¿½w. 
+   * Niestety w zamian wymaga UNIONï¿½w lub wielu osobnych QUERY do pokrycia 
+   * caï¿½ej hierarhii.
+   * 
+   * Wsparcie dla tej strategii jest opcjonalne, ale HIBERNATE jï¿½ wspiera.
+   * 
+   * SINGLE_TABLE to watroï¿½c domyï¿½lna
+   */
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
 public abstract class Person6_43Gen {
-	@Id
-	@GeneratedValue
-	public Integer id;
-	public String name;
+  @Id
+  @GeneratedValue
+  public Integer id;
+  public String name;
 }

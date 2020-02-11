@@ -23,42 +23,42 @@ import eventOldApproach.MyEvent2;
 //@ComponentScan(basePackageClasses = { DszApplication.class, BaseDszDatabaseTest.class })
 public class ValidateObjTest {
 
-	@Test
-	public void testValidate() {
-		ValidatedObj vo1 = new ValidatedObj();
+  @Test
+  public void testValidate() {
+    ValidatedObj vo1 = new ValidatedObj();
 
-		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-		Validator validator = factory.getValidator();
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    Validator validator = factory.getValidator();
 
-		vo1.s = "1";
-		vo1.i = 5;
-		Set<ConstraintViolation<ValidatedObj>> res = validator.validate(vo1, ValGroup1.class, ValGroup2.class);
+    vo1.s = "1";
+    vo1.i = 5;
+    Set<ConstraintViolation<ValidatedObj>> res = validator.validate(vo1, ValGroup1.class, ValGroup2.class);
 
-		if (res.size() > 0) {
-			for (ConstraintViolation<ValidatedObj> violation : res) {
-				violation.getExecutableParameters();
-			}
-		}
+    if (res.size() > 0) {
+      for (ConstraintViolation<ValidatedObj> violation : res) {
+        violation.getExecutableParameters();
+      }
+    }
 
-		int t = 0;
-	}
-	
-	@Autowired
+    int t = 0;
+  }
+  
+  @Autowired
   private ApplicationEventPublisher aep;
-	
-	/*
-	 * Event zostanie obs³u¿ony synchronicznie, tzn, jeœli wy³apie go wiele listenerów, to bêd¹ 
-	 * wykonywa³y siê jeden po drugim (a nie jednoczeœnie)
-	 */
-	@Test
-	public void testSynchronousEvent() {		
-		// Tworzymy Event
-		MyEvent myEvent11 = new MyEvent(this, "To tylko test old 11.");
-		MyEvent myEvent12 = new MyEvent(this, "To tylko test old 12.");
-		MyEvent2 myEvent21 = new MyEvent2(this, "To tylko test old 21.");
-		// Rzucamy event "w powietrze" aby zosta³ obs³u¿ony przez klasy "implements ApplicationListener<MyEvent>"
+  
+  /*
+   * Event zostanie obsï¿½uï¿½ony synchronicznie, tzn, jeï¿½li wyï¿½apie go wiele listenerï¿½w, to bï¿½dï¿½ 
+   * wykonywaï¿½y siï¿½ jeden po drugim (a nie jednoczeï¿½nie)
+   */
+  @Test
+  public void testSynchronousEvent() {    
+    // Tworzymy Event
+    MyEvent myEvent11 = new MyEvent(this, "To tylko test old 11.");
+    MyEvent myEvent12 = new MyEvent(this, "To tylko test old 12.");
+    MyEvent2 myEvent21 = new MyEvent2(this, "To tylko test old 21.");
+    // Rzucamy event "w powietrze" aby zostaï¿½ obsï¿½uï¿½ony przez klasy "implements ApplicationListener<MyEvent>"
     aep.publishEvent(myEvent11);
     aep.publishEvent(myEvent12);
     aep.publishEvent(myEvent21);
-	}
+  }
 }

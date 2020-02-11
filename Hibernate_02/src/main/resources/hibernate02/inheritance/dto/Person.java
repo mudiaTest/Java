@@ -10,15 +10,15 @@ import lombok.Data;
 @Data
 public class Person extends Person_gen{
 
-	private String name;
-	
-	public Person(String name) {
-		super();
-		this.name = name;
-	}
-	
-	public Person() {
-		
-	}
-	
+  private String name;
+  
+  public Person(String name) {
+    super();
+    this.name = name;
+  }
+  
+  public Person() {
+    
+  }
+  
 }

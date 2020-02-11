@@ -5,11 +5,11 @@ import org.jooq.impl.CustomQueryPart;
 
 public class MyQueryPart extends CustomQueryPart {
 
-	@Override
-	public void accept(Context<?> ctx) {
-		// TODO Auto-generated method stub
-		int t = 0;
-	}
+  @Override
+  public void accept(Context<?> ctx) {
+    // TODO Auto-generated method stub
+    int t = 0;
+  }
 
-	
+  
 }

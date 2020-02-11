@@ -8,35 +8,35 @@ import javax.persistence.OneToOne;
 
 import lombok.Data;
 
-	/*
-	 * Bidirectional bêd¹ce w rzeczywistoœci podwójnym unidirectional 
-	 */
+  /*
+   * Bidirectional bï¿½dï¿½ce w rzeczywistoï¿½ci podwï¿½jnym unidirectional 
+   */
 @Data
 @Entity
 public class Address5_12 {
-	
-	@Id
-	@GeneratedValue
-	Integer id;
+  
+  @Id
+  @GeneratedValue
+  Integer id;
 
-	public String city;
-	
-		/*
-		 * Spowoduje powstanie FK i kolumny
-		 */
-	@OneToOne(
-				/*
-				 * LAZY zadzia³a tak jak dla innego unidirectional
-				 */
-			fetch=FetchType.LAZY)
-	public Person5_12 person;
-	
-	public Address5_12(String city, String street) {
-		super();
-		this.city = city;
-	}
+  public String city;
+  
+    /*
+     * Spowoduje powstanie FK i kolumny
+     */
+  @OneToOne(
+        /*
+         * LAZY zadziaï¿½a tak jak dla innego unidirectional
+         */
+      fetch=FetchType.LAZY)
+  public Person5_12 person;
+  
+  public Address5_12(String city, String street) {
+    super();
+    this.city = city;
+  }
 
-	public Address5_12() {
-		super();
-	}	
+  public Address5_12() {
+    super();
+  }  
 }

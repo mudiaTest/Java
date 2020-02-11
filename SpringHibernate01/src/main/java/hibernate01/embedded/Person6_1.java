@@ -14,10 +14,10 @@ import lombok.Data;
 @Data
 @Entity
 public class Person6_1 {
-	@Id
-	@GeneratedValue
-	public Integer id;
-	public String name;
-	@Embedded
-	public HomeData6_1 homeData;
+  @Id
+  @GeneratedValue
+  public Integer id;
+  public String name;
+  @Embedded
+  public HomeData6_1 homeData;
 }

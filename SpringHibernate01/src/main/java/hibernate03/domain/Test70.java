@@ -11,12 +11,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Test70 {
-	@Id
-	Long id;
-	
-	int val;
-	
-	//@Version
-	int ver;
+  @Id
+  Long id;
+  
+  int val;
+  
+  //@Version
+  int ver;
 
 }

@@ -11,21 +11,21 @@ import eventOldApproach.MyEvent2;
 @SpringBootTest
 public class EventOldTest {
 
-	@Autowired
+  @Autowired
   private ApplicationEventPublisher aep;
 
-	@Test
-	public void testSynchronousEvent() throws InterruptedException {		
-		// Tworzymy Event
-		MyEvent myEvent11 = new MyEvent(this, "To tylko test old 11.");
-		MyEvent myEvent12 = new MyEvent(this, "To tylko test old 12.");
-		MyEvent2 myEvent21 = new MyEvent2(this, "To tylko test old 21.");
-		// Rzucamy event "w powietrze" aby zosta³ obs³u¿ony przez klasy "implements ApplicationListener<MyEvent>"
+  @Test
+  public void testSynchronousEvent() throws InterruptedException {    
+    // Tworzymy Event
+    MyEvent myEvent11 = new MyEvent(this, "To tylko test old 11.");
+    MyEvent myEvent12 = new MyEvent(this, "To tylko test old 12.");
+    MyEvent2 myEvent21 = new MyEvent2(this, "To tylko test old 21.");
+    // Rzucamy event "w powietrze" aby zostaï¿½ obsï¿½uï¿½ony przez klasy "implements ApplicationListener<MyEvent>"
     aep.publishEvent(myEvent11);
     aep.publishEvent(myEvent12);
     aep.publishEvent(myEvent21);
     
-    //Program mo¿e zakoñczyæ siê przed wykonaniem wszykich w¹tków, dlatego celowo opóiamy jego zakoñczenie - rozwi¹zanie tlko dla testów 
+    //Program moï¿½e zakoï¿½czyï¿½ siï¿½ przed wykonaniem wszykich wï¿½tkï¿½w, dlatego celowo opï¿½iamy jego zakoï¿½czenie - rozwiï¿½zanie tlko dla testï¿½w 
     Thread.sleep(10000);
-	}
+  }
 }

@@ -18,5 +18,5 @@ import lombok.Data;
 @Data
 @Entity
 public class Person6_4212 extends Person6_421{
-	public String color;
+  public String color;
 }

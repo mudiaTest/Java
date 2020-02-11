@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * Bez ustalenia deserializatora obiekt zostanie odtworzony z prefixem
  */
 public class MyObject5 {
-	public String txt1 = "test1";
-	@JsonSerialize(using = PrefixStringSerializer.class)
-	@JsonDeserialize(using = PrefixStringDeserializer.class)
-	public String txt2 = "test2";
+  public String txt1 = "test1";
+  @JsonSerialize(using = PrefixStringSerializer.class)
+  @JsonDeserialize(using = PrefixStringDeserializer.class)
+  public String txt2 = "test2";
 }

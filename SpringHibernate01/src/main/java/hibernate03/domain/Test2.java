@@ -8,8 +8,8 @@ import lombok.Data;
 @Data
 @Entity
 public class Test2 {
-	@Id
-	private long id;
-	private int intVal;
-	private String strVal;
+  @Id
+  private long id;
+  private int intVal;
+  private String strVal;
 }

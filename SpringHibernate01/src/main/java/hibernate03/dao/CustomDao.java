@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 //@Component("CustomDaoy")
 public interface CustomDao {
-	public int getCustomImplRef();
+  public int getCustomImplRef();
 }

@@ -3,10 +3,10 @@ package jackson;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 public class ChildLoopObject {
-	public String txt = "child";
+  public String txt = "child";
   // Zapobiega loop gdy parent ma child, a child parent
-	// Powoduje, ¿e nie bêdzie pasowane. Dzia³a pryz serializacji dziecka, ale przy 
-	// serializacji parenta dziecko w ogóle jest pomijane
-	@JsonManagedReference
-	public ParentLoopObject parent;
+  // Powoduje, ï¿½e nie bï¿½dzie pasowane. Dziaï¿½a pryz serializacji dziecka, ale przy 
+  // serializacji parenta dziecko w ogï¿½le jest pomijane
+  @JsonManagedReference
+  public ParentLoopObject parent;
 }

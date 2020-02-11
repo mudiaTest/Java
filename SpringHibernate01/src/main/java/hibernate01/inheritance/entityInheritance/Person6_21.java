@@ -15,5 +15,5 @@ import lombok.Data;
 @Data
 @Entity
 public class Person6_21 extends Person6_2Gen{
-	public Address6_2 addr;
+  public Address6_2 addr;
 }

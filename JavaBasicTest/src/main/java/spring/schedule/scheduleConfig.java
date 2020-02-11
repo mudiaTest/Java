@@ -19,34 +19,34 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 @EnableScheduling
 public class scheduleConfig implements SchedulingConfigurer{
 
-	@Override
+  @Override
   public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
       taskRegistrar.setScheduler(taskExecutor());
   }
-	
-	@Bean(destroyMethod = "shutdown")
-	public Executor taskExecutor() {
-		return Executors.newScheduledThreadPool(1);
-	}
-	
-	// Rejestracja 2 kolejnych zarządzaczy zadaniami - patrz SecondPool
-	// Wszytstkie scedulery domyślny, tpts1 i tpts2 zarządzają własnymi pulami 
-	// wątków i zaiwszenie się jednej puli nie powoduje zablokowania akcji w innych pulach
-	
-	@Bean(name = "tpts1")
-	public ThreadPoolTaskScheduler tpts1() {
-		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-		 threadPoolTaskScheduler.setPoolSize(2);
+  
+  @Bean(destroyMethod = "shutdown")
+  public Executor taskExecutor() {
+    return Executors.newScheduledThreadPool(1);
+  }
+  
+  // Rejestracja 2 kolejnych zarządzaczy zadaniami - patrz SecondPool
+  // Wszytstkie scedulery domyślny, tpts1 i tpts2 zarządzają własnymi pulami 
+  // wątków i zaiwszenie się jednej puli nie powoduje zablokowania akcji w innych pulach
+  
+  @Bean(name = "tpts1")
+  public ThreadPoolTaskScheduler tpts1() {
+    ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+     threadPoolTaskScheduler.setPoolSize(2);
      threadPoolTaskScheduler.initialize();
      threadPoolTaskScheduler.setThreadNamePrefix("FirstThreadPoolTaskScheduler");
      return threadPoolTaskScheduler;
-	}
-	@Bean(name = "tpts2")
-	public ThreadPoolTaskScheduler tpts2() {
-		ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-		threadPoolTaskScheduler.setPoolSize(2);
-		threadPoolTaskScheduler.initialize();
-		threadPoolTaskScheduler.setThreadNamePrefix("SecondThreadPoolTaskScheduler");
-		return threadPoolTaskScheduler;
-	}
+  }
+  @Bean(name = "tpts2")
+  public ThreadPoolTaskScheduler tpts2() {
+    ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
+    threadPoolTaskScheduler.setPoolSize(2);
+    threadPoolTaskScheduler.initialize();
+    threadPoolTaskScheduler.setThreadNamePrefix("SecondThreadPoolTaskScheduler");
+    return threadPoolTaskScheduler;
+  }
 }

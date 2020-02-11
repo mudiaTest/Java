@@ -22,10 +22,10 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Test41 {
-	@Id
-	private long id;
-	private int intVal1;	
-	//@ManyToOne
-	//private Test4 test4;
+  @Id
+  private long id;
+  private int intVal1;  
+  //@ManyToOne
+  //private Test4 test4;
 
 }

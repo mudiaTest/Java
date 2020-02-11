@@ -3,14 +3,14 @@ package jackson;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
- * Reguluje, które pola s¹ seializowane
- * Deserializacjia jest jakaœ dziwna, wiêc olewamy przy niej wiodoki, 
- * nadmiarowe pola i tak pozostaj¹ null/domyœlne.
+ * Reguluje, ktï¿½re pola sï¿½ seializowane
+ * Deserializacjia jest jakaï¿½ dziwna, wiï¿½c olewamy przy niej wiodoki, 
+ * nadmiarowe pola i tak pozostajï¿½ null/domyï¿½lne.
  */
 public class ViewObject {
-	public String txt1;
-	@JsonView(Views.Public.class)
-	public String txt2;
-	@JsonView(Views.Internal.class)
-	public String txt3;
+  public String txt1;
+  @JsonView(Views.Public.class)
+  public String txt2;
+  @JsonView(Views.Internal.class)
+  public String txt3;
 }

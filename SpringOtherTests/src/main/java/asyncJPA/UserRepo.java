@@ -11,21 +11,21 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepo extends CrudRepository<User, Integer> {
 
-	@Async
-	@Query(""
-			+ " SELECT u"
-			+ " FROM User u"
-			+ " WHERE u.id = ?1")
-	public User getById(Integer id);
-	
-	@Query(""
-			+ " SELECT u"
-			+ " FROM User u")
-	public List<User> getUsers();
-	
-	@Async
-	@Query(""
-			+ " SELECT u"
-			+ " FROM User u")
-	public CompletableFuture<List<User>> getUsersComp();
+  @Async
+  @Query(""
+      + " SELECT u"
+      + " FROM User u"
+      + " WHERE u.id = ?1")
+  public User getById(Integer id);
+  
+  @Query(""
+      + " SELECT u"
+      + " FROM User u")
+  public List<User> getUsers();
+  
+  @Async
+  @Query(""
+      + " SELECT u"
+      + " FROM User u")
+  public CompletableFuture<List<User>> getUsersComp();
 }

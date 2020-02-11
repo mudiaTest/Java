@@ -3,12 +3,12 @@ package jackson;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 /**
- * Spowoduje ¿e zadzia³aj¹ poni¿sze
+ * Spowoduje ï¿½e zadziaï¿½ajï¿½ poniï¿½sze
  * {\"txt\":\"dummy\"} 
  * {\"_txt\":\"dummy\"} 
  * {\"f_txt\":\"dummy\"} 
  */
 public class AliasObject {
-	@JsonAlias({ "txt", "_txt", "f_txt" })
-	public String txt = "test";
+  @JsonAlias({ "txt", "_txt", "f_txt" })
+  public String txt = "test";
 }

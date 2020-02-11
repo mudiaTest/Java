@@ -19,7 +19,7 @@ import org.springframework.util.ErrorHandler;
 import org.springframework.util.backoff.ExponentialBackOff;
 
 @Configuration
-@EnableJms // Jest niezbêdne, aby dzia³ay annotacje @JmsListener
+@EnableJms // Jest niezbï¿½dne, aby dziaï¿½ay annotacje @JmsListener
 public class JmsConfiguration implements JmsListenerConfigurer
 {
   @Autowired
@@ -38,23 +38,23 @@ public class JmsConfiguration implements JmsListenerConfigurer
   @Bean
   public JmsListenerContainerFactory<?> containerFactory()
   {
-  	// Tworzymy defaultowy ListenerContainerFactory
+    // Tworzymy defaultowy ListenerContainerFactory
     DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();    
     configurer.configure(factory, connectionFactory);
     // Nadpisujemy wymagane dane
     
-    // Ustawienie customowej obs³ugi b³edów. JmsErrorHandler implements org.springframework.util.ErrorHandler
+    // Ustawienie customowej obsï¿½ugi bï¿½edï¿½w. JmsErrorHandler implements org.springframework.util.ErrorHandler
     //factory.setErrorHandler(new JmsErrorHandler()); 
     
     // Customowe ustawienia Back-off, czyli po jakim czasie JMS ponownie 
-    // spróbuje odwo³aæ siê do brokera jeœli ten nie odpowiada.
+    // sprï¿½buje odwoï¿½aï¿½ siï¿½ do brokera jeï¿½li ten nie odpowiada.
     //factory.setBackOff(new ExponentialBackOff());
     return factory;
   }
 
-  // NIEZBÊDNE do przekazywania obiektów innych ni¿ serializable
-  // Tworzymy konwerter do serializacji na bezie json, aby przekazywaæ obiekty z danymi.
-  // Obowi¹zuj¹ zasady konwersji jackson (adnotacje etc)
+  // NIEZBï¿½DNE do przekazywania obiektï¿½w innych niï¿½ serializable
+  // Tworzymy konwerter do serializacji na bezie json, aby przekazywaï¿½ obiekty z danymi.
+  // Obowiï¿½zujï¿½ zasady konwersji jackson (adnotacje etc)
   // Niewiele rozumiem
   @Bean
   public MessageConverter jacksonJmsMessageConverter1()

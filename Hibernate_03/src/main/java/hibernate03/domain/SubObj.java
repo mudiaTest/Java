@@ -6,6 +6,6 @@ package hibernate03.domain;
  * Wa¿ne jest aby nazewnictwo geeterów odpowiada³o "as V3" z kodzie SQL/HQL 
  */
 public interface SubObj {
-	public Integer getV3();
-	public Integer getint_val();
+  public Integer getV3();
+  public Integer getint_val();
 }

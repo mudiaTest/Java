@@ -26,11 +26,11 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Test4 {
-	@Id
-	private long id;
-	private int intVal1;
-	@OneToMany(cascade=CascadeType.ALL)
-	private Set<Test41> subObjSet = new HashSet<>();
-	@Transient
-	private Set<Test41> subObjSet2 = new HashSet<>();
+  @Id
+  private long id;
+  private int intVal1;
+  @OneToMany(cascade=CascadeType.ALL)
+  private Set<Test41> subObjSet = new HashSet<>();
+  @Transient
+  private Set<Test41> subObjSet2 = new HashSet<>();
 }

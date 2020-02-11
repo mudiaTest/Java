@@ -16,19 +16,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserCustomRepoImpl implements UserCustomRepo{
 
-	@Autowired
-	EntityManager em;
-	
-	@Override
-	@Async
-	public CompletableFuture<List<Object>> getUsersCustomComp() {
-		Query q = em.createQuery(""
-				+ " SELECT u"
-				+ " FROM User u");
-		log.info("getUsersCustomComp; before getResultList"); 
-		List<Object> res = q.getResultList();
-		log.info("getUsersCustomComp; after getResultList"); 
-		return CompletableFuture.completedFuture(res);
-	}
+  @Autowired
+  EntityManager em;
+  
+  @Override
+  @Async
+  public CompletableFuture<List<Object>> getUsersCustomComp() {
+    Query q = em.createQuery(""
+        + " SELECT u"
+        + " FROM User u");
+    log.info("getUsersCustomComp; before getResultList"); 
+    List<Object> res = q.getResultList();
+    log.info("getUsersCustomComp; after getResultList"); 
+    return CompletableFuture.completedFuture(res);
+  }
 
 }

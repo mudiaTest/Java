@@ -17,45 +17,45 @@ import hibernate03.utils.NewTransactionWrapper;
 @SpringBootTest
 public class DomainEventTest {
 
-	//@Test
-	public void contextLoads() {
-	}
-	
-	@Autowired
-	EntityManager em;
-	@Autowired
-	NewTransactionWrapper ntw;
-	
-	@Autowired
-	Test1Dao t1d;
-	
-	private void fillTest1UsingRepo() {
-		Test1 t1 = new Test1();
-		t1.setId(1);
-		t1.setIntVal1(11);
-		SubClass1 so1 = new SubClass1();
-		t1.setSo1(so1);
-		so1.setSubIntVal1(11);
-		so1.setSubStVal1("a");
-		
-		/*
-		 * DomainEvents dzia³aja tylko gdy korzystany z Repozytoriów. 
-		 * Jeœli zapis jest wykonywany bezpoœrednio przez EM, to nie beda uruchamiane
-		 */
-		t1d.save(t1);
-		//em.persist(t1);
-	}
-	
-	//Testowanie domainEvents
-	@Test
-	public void joinInterfaceTest() {
-		try {
-			ntw.inNewTrans(()->fillTest1UsingRepo());	
-			int t = 0;
-		}
-		catch (Exception e) {
-			int t = 0;
-		}
-	}
+  //@Test
+  public void contextLoads() {
+  }
+  
+  @Autowired
+  EntityManager em;
+  @Autowired
+  NewTransactionWrapper ntw;
+  
+  @Autowired
+  Test1Dao t1d;
+  
+  private void fillTest1UsingRepo() {
+    Test1 t1 = new Test1();
+    t1.setId(1);
+    t1.setIntVal1(11);
+    SubClass1 so1 = new SubClass1();
+    t1.setSo1(so1);
+    so1.setSubIntVal1(11);
+    so1.setSubStVal1("a");
+    
+    /*
+     * DomainEvents dziaï¿½aja tylko gdy korzystany z Repozytoriï¿½w. 
+     * Jeï¿½li zapis jest wykonywany bezpoï¿½rednio przez EM, to nie beda uruchamiane
+     */
+    t1d.save(t1);
+    //em.persist(t1);
+  }
+  
+  //Testowanie domainEvents
+  @Test
+  public void joinInterfaceTest() {
+    try {
+      ntw.inNewTrans(()->fillTest1UsingRepo());  
+      int t = 0;
+    }
+    catch (Exception e) {
+      int t = 0;
+    }
+  }
 
 }

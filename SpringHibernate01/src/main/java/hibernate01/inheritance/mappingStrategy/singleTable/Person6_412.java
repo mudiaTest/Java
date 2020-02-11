@@ -17,17 +17,17 @@ import lombok.Data;
 
 @Data
 @Entity
-	/*
-	 * Dyscrminator column zadzia³a tylko dla najbardziej generycznej klasy
-	 */
+  /*
+   * Dyscrminator column zadziaï¿½a tylko dla najbardziej generycznej klasy
+   */
 //@DiscriminatorColumn(name="discCol12", discriminatorType=DiscriminatorType.STRING, length=20)
-	/*
-	 * Wartoœæ wpisywana do discriminatorColumn
-	 * Domyœlnie dla STRING jest to nazwa tabeli a dla INTEGER jakieœ liczby
-	 * 
-	 * Wartoœæ musi byæ zgodna z typem discriminatorType inaczej da exception
-	 */
+  /*
+   * Wartoï¿½ï¿½ wpisywana do discriminatorColumn
+   * Domyï¿½lnie dla STRING jest to nazwa tabeli a dla INTEGER jakieï¿½ liczby
+   * 
+   * Wartoï¿½ï¿½ musi byï¿½ zgodna z typem discriminatorType inaczej da exception
+   */
 @DiscriminatorValue(value="22")
 public class Person6_412 extends Person6_41Gen{
-	public Contact6_2 con;
+  public Contact6_2 con;
 }

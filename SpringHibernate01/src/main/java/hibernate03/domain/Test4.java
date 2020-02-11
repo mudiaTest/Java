@@ -16,9 +16,9 @@ import lombok.Data;
 @Data
 @Entity
 public class Test4 {
-	@Id
-	private long id;
-	private int intVal1;	
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-	private List<Test2> t2;
+  @Id
+  private long id;
+  private int intVal1;  
+  @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+  private List<Test2> t2;
 }

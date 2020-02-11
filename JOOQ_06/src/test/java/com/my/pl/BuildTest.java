@@ -61,8 +61,8 @@ import lombok.Setter;
 @Getter
 @Setter
 class Test1Res {
-	private Long id;
-	public Double cst;
+  private Long id;
+  public Double cst;
 }
 
 @RunWith(SpringRunner.class)
@@ -71,12 +71,12 @@ class Test1Res {
 @EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class) 
 @ContextConfiguration(classes = { PersistenceContextDb1.class, PersistenceContextDb2.class })
 public class BuildTest {
-	
-	@Test
-	@Transactional
-	@Commit
-	public void staticTest()
-	{
-		
-	}	
+  
+  @Test
+  @Transactional
+  @Commit
+  public void staticTest()
+  {
+    
+  }  
 }

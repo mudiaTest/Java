@@ -10,25 +10,25 @@ import javax.persistence.OneToOne;
 import lombok.Data;
 
 /*
- * Bidirectional bêd¹ce w rzeczywistoœci podwójnym unidirectional 
+ * Bidirectional bï¿½dï¿½ce w rzeczywistoï¿½ci podwï¿½jnym unidirectional 
  */
 
 @Data
 @Entity
 public class Person5_12 {
-	@Id
-	@GeneratedValue
-	public Integer id;
-	public String name;
-		/*
-		 * BIDIRECTIONAL
-		 * Spowowduje powstanie dodatkowej kolumny z kluczem adresu  
-		 */
-	@OneToOne(cascade=CascadeType.ALL,
-				/*
-				 * LAZY zadzia³a tak jak dla innego unidirectional
-				 */
-			fetch=FetchType.LAZY)
-	public Address5_12 address;
-	
+  @Id
+  @GeneratedValue
+  public Integer id;
+  public String name;
+    /*
+     * BIDIRECTIONAL
+     * Spowowduje powstanie dodatkowej kolumny z kluczem adresu  
+     */
+  @OneToOne(cascade=CascadeType.ALL,
+        /*
+         * LAZY zadziaï¿½a tak jak dla innego unidirectional
+         */
+      fetch=FetchType.LAZY)
+  public Address5_12 address;
+  
 }

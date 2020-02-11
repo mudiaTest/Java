@@ -19,7 +19,7 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Test1 {
-	@Id
-	private long id;
-	private int intVal1;	
+  @Id
+  private long id;
+  private int intVal1;  
 }

@@ -19,8 +19,8 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Test2 {
-	@Id
-	private long id;
-	private String stVal1;
+  @Id
+  private long id;
+  private String stVal1;
 
 }

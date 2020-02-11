@@ -4,21 +4,21 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
 @Entity
-	/*
-	 * Definiuje jakby logiczne opakowanie, które pozwala na obs³ugê.
-	 * Oznacza to, ¿e klucz bêdzie przechowywany w tabeli Person4_11
-	 * , a nie w jakiejœ osobnej strukturze
-	 */
+  /*
+   * Definiuje jakby logiczne opakowanie, ktï¿½re pozwala na obsï¿½ugï¿½.
+   * Oznacza to, ï¿½e klucz bï¿½dzie przechowywany w tabeli Person4_11
+   * , a nie w jakiejï¿½ osobnej strukturze
+   */
 public class Person4_12 {
-	
-	/*
-	 * @EmbeddedId wymaga @Embeddable po stronie Klasy klucza
-	 * 
-	 * Kluczy nie mo¿na generowaæ @GeneratedValue.
-	 * 
-	 * Do klucza odwo³ujemy siê poprzez Person4_11.key.key1
-	 */
-	@EmbeddedId
-	public Person4Id key;
-	public String name;		
+  
+  /*
+   * @EmbeddedId wymaga @Embeddable po stronie Klasy klucza
+   * 
+   * Kluczy nie moï¿½na generowaï¿½ @GeneratedValue.
+   * 
+   * Do klucza odwoï¿½ujemy siï¿½ poprzez Person4_11.key.key1
+   */
+  @EmbeddedId
+  public Person4Id key;
+  public String name;    
 }

@@ -4,23 +4,23 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-//Ustala kolejnoœæ serializacji. Niewymienione bêd¹ serializowane na koñcu w domyœlnej kolejnoœæi
+//Ustala kolejnoï¿½ï¿½ serializacji. Niewymienione bï¿½dï¿½ serializowane na koï¿½cu w domyï¿½lnej kolejnoï¿½ï¿½i
 @JsonPropertyOrder({ "txt3", "txt4" })
 public class MyObject4 {
-	
-	public String txt1 = "test1";
-	public String txt3 = "test3";
-	public String txt4 = "test4";
-	
-	private String txt2 = "test2";	 
-	// getTheTxt2 dzia³a jak getTxt2
+  
+  public String txt1 = "test1";
+  public String txt3 = "test3";
+  public String txt4 = "test4";
+  
+  private String txt2 = "test2";   
+  // getTheTxt2 dziaï¿½a jak getTxt2
   @JsonGetter("txt2") 
   public String getTheTxt2() {
       return txt2;
   }
-  // setTheTxt2 dzia³a jak getTxt2
+  // setTheTxt2 dziaï¿½a jak getTxt2
   @JsonSetter("txt2") 
   public void setTheTxt2(String val) {
-  	txt2 = val;
+    txt2 = val;
   }  
 }

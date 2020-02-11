@@ -11,38 +11,38 @@ import com.example.demo.inheritance.dto.Person;
 
 @Service
 public class PersonService2 {
-	@Autowired
-	EntityManager em;
+  @Autowired
+  EntityManager em;
 
-	public void insertNoTransactionalPerson(Person p) {
-		// em.persist(p);
-		em.merge(p);
-	}
+  public void insertNoTransactionalPerson(Person p) {
+    // em.persist(p);
+    em.merge(p);
+  }
 
-	@Transactional
-	public void insertPerson(Person p) {
-		// em.persist(p);
-		em.merge(p);
-	}
+  @Transactional
+  public void insertPerson(Person p) {
+    // em.persist(p);
+    em.merge(p);
+  }
 
-	@Transactional(propagation = Propagation.MANDATORY)
-	public void insert1(Person p) {
-		em.merge(p);
-	}
+  @Transactional(propagation = Propagation.MANDATORY)
+  public void insert1(Person p) {
+    em.merge(p);
+  }
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void insert2(Person p) {
-		em.merge(p);
-	}
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
+  public void insert2(Person p) {
+    em.merge(p);
+  }
 
-	@Transactional
-	public void insertPerson2() {
-		int i = 0;
-		insert1(new Person(4, "p1"));
-		i = 0;
-		insert2(new Person(4, "p2"));
-		i = 0;
-		insert1(new Person(4, "p3"));
-		i = 0;
-	}
+  @Transactional
+  public void insertPerson2() {
+    int i = 0;
+    insert1(new Person(4, "p1"));
+    i = 0;
+    insert2(new Person(4, "p2"));
+    i = 0;
+    insert1(new Person(4, "p3"));
+    i = 0;
+  }
 }

@@ -22,27 +22,27 @@ import hibernate04.db2.domain.Test2;
 @ContextConfiguration(classes = { ConfigDB1.class, ConfigDB2.class })
 @EnableAutoConfiguration(exclude = DataSourceAutoConfiguration.class) 
 public class Hibernate04ApplicationTests {
-	
-	@Autowired
-	Test1Dao t1d;
-	
-	@Autowired
-	Test2Dao t2d;
-		
-	@Test
-	@Commit
-	public void contextLoads() {
-		Test1 t1 = new Test1();
-		t1.setId(1);
-		t1.setIntVal1(11);
-		
-		Test2 t2 = new Test2();
-		t2.setId(2);
-		t2.setStVal1("b");
-				
-		t1d.save(t1);
-		t2d.save(t2);
-		int t = 0;
-	}
+  
+  @Autowired
+  Test1Dao t1d;
+  
+  @Autowired
+  Test2Dao t2d;
+    
+  @Test
+  @Commit
+  public void contextLoads() {
+    Test1 t1 = new Test1();
+    t1.setId(1);
+    t1.setIntVal1(11);
+    
+    Test2 t2 = new Test2();
+    t2.setId(2);
+    t2.setStVal1("b");
+        
+    t1d.save(t1);
+    t2d.save(t2);
+    int t = 0;
+  }
 
 }

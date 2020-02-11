@@ -8,16 +8,16 @@ import lombok.Data;
 @Data
 @Entity
 public class SubClass61 {
-	@Id
-	private Long id;
-	private int subIntVal1;
-	
-	public SubClass61() {}
-	
-	public SubClass61(long id, int subIntVal1) {
-		super();
-		this.id = id;
-		this.subIntVal1 = subIntVal1;
-	}
-	private String subStVal1;
+  @Id
+  private Long id;
+  private int subIntVal1;
+  
+  public SubClass61() {}
+  
+  public SubClass61(long id, int subIntVal1) {
+    super();
+    this.id = id;
+    this.subIntVal1 = subIntVal1;
+  }
+  private String subStVal1;
 }

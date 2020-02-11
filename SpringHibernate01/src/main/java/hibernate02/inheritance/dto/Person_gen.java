@@ -14,12 +14,12 @@ import lombok.Getter;
 //@Inheritance(strategy=InheritanceType.JOINED)
 public class Person_gen {
 
-	@Id
-	@GeneratedValue
-	private Integer id;
+  @Id
+  @GeneratedValue
+  private Integer id;
 
-	public Person_gen() {
-	}	
-	
-	
+  public Person_gen() {
+  }  
+  
+  
 }

@@ -3,9 +3,9 @@ package jackson;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Adnotacja wskazuje jedn¹ metodê do serializacji ca³ej klasy.
- * Tutaj u¿yte do Enum (dobry pomys³), ale mo¿na tak u¿yæ do ka¿dej
- * klasy i zwracaæ np: {\"txt32\":\"dummy\"}
+ * Adnotacja wskazuje jednï¿½ metodï¿½ do serializacji caï¿½ej klasy.
+ * Tutaj uï¿½yte do Enum (dobry pomysï¿½), ale moï¿½na tak uï¿½yï¿½ do kaï¿½dej
+ * klasy i zwracaï¿½ np: {\"txt32\":\"dummy\"}
  */
 public enum JsonEnum {
     TYPE1(1, "Type A"), 
@@ -15,8 +15,8 @@ public enum JsonEnum {
     private String name;
     
     JsonEnum(Integer id, String name) {
-    	this.id = id;
-    	this.name = name;
+      this.id = id;
+      this.name = name;
     }
  
     @JsonValue

@@ -21,10 +21,10 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Test11 {
-	@Id
-	private long id;
-	private int intVal1;	
-	private String stVal2;
-	@Column(name="rtv")
-	private LocalDateTime rtv;
+  @Id
+  private long id;
+  private int intVal1;  
+  private String stVal2;
+  @Column(name="rtv")
+  private LocalDateTime rtv;
 }

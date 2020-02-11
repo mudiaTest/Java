@@ -22,11 +22,11 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Test51 {
-	@Id
-	private long id;
-	private int intVal1;	
-	@ManyToOne
-	@JoinColumn(name = "test5_id")
-	private Test5 test5;
+  @Id
+  private long id;
+  private int intVal1;  
+  @ManyToOne
+  @JoinColumn(name = "test5_id")
+  private Test5 test5;
 
 }

@@ -17,36 +17,36 @@ import lombok.Data;
 
 @Data
 @Entity
-	/*
-	 * InheritanceType.SINGLE_TABLE - ca³a hierarchia mapiwana do jednej tabeli zawieraj¹cej sumê pól
-	 * 
-	 * Tabela ma discriminator column, która wskazuje na klasê na koñcy ³ancuszka
-	 * 
-	 * SINGLE_TABLE to watroœc domyœlna
-	 */
+  /*
+   * InheritanceType.SINGLE_TABLE - caï¿½a hierarchia mapiwana do jednej tabeli zawierajï¿½cej sumï¿½ pï¿½l
+   * 
+   * Tabela ma discriminator column, ktï¿½ra wskazuje na klasï¿½ na koï¿½cy ï¿½ancuszka
+   * 
+   * SINGLE_TABLE to watroï¿½c domyï¿½lna
+   */
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
-	/*
-	 * Opisuje kolumnê discriminator
-	 */
+  /*
+   * Opisuje kolumnï¿½ discriminator
+   */
 @DiscriminatorColumn(
-			/*
-			 * Nazwa kolumny
-			 */
-		name="discCol", 
-			/*
-			 * Typ kolumny
-			 * Wartoœc pobierana jest z @DiscriminatorValue z koñcowej klasy
-			 */
-		discriminatorType=DiscriminatorType.INTEGER,
-			/*
-			 * Liczba znakow kolumny - bedzie exception jeœli bêdzie za malo znaków
-			 * Dzia³a tylko dla STRING, pomijana dla reszty 
-			 * Domyœlnie 31
-			 */
-		length=5)
+      /*
+       * Nazwa kolumny
+       */
+    name="discCol", 
+      /*
+       * Typ kolumny
+       * Wartoï¿½c pobierana jest z @DiscriminatorValue z koï¿½cowej klasy
+       */
+    discriminatorType=DiscriminatorType.INTEGER,
+      /*
+       * Liczba znakow kolumny - bedzie exception jeï¿½li bï¿½dzie za malo znakï¿½w
+       * Dziaï¿½a tylko dla STRING, pomijana dla reszty 
+       * Domyï¿½lnie 31
+       */
+    length=5)
 public abstract class Person6_41Gen {
-	@Id
-	@GeneratedValue
-	public Integer id;
-	public String name;
+  @Id
+  @GeneratedValue
+  public Integer id;
+  public String name;
 }

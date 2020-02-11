@@ -20,18 +20,18 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Test71 {
-	@Id
-	Long id;
-	
-	int val;
-	
-	@Version
-	int ver;
+  @Id
+  Long id;
+  
+  int val;
+  
+  @Version
+  int ver;
 
-	@OneToMany(mappedBy = "t71"
-			, cascade = CascadeType.ALL
-			, orphanRemoval = true
-//			, fetch=FetchType.EAGER
-			)
-	Set<SubClass7> set = new HashSet<>();
+  @OneToMany(mappedBy = "t71"
+      , cascade = CascadeType.ALL
+      , orphanRemoval = true
+//      , fetch=FetchType.EAGER
+      )
+  Set<SubClass7> set = new HashSet<>();
 }

@@ -12,19 +12,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class SecondPool implements ApplicationContextAware{
 
-	ApplicationContext ac;
+  ApplicationContext ac;
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.ac = applicationContext;		
-	}
-	
-	//Wywołanie tej metody spowoduje, że scheduler1 i scheduler2 otzrymają swoje zadania 
-	public void doIt() {
-		ThreadPoolTaskScheduler tpts1 = ac.getBean("tpts1", ThreadPoolTaskScheduler.class); 
-		ThreadPoolTaskScheduler tpts2 = ac.getBean("tpts2", ThreadPoolTaskScheduler.class); 
-		tpts1.scheduleWithFixedDelay(ScheduleTest2.r, 500);
-		tpts2.scheduleWithFixedDelay(ScheduleTest3.r, 500);
-		int i=0;
-	}
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    this.ac = applicationContext;    
+  }
+  
+  //Wywołanie tej metody spowoduje, że scheduler1 i scheduler2 otzrymają swoje zadania 
+  public void doIt() {
+    ThreadPoolTaskScheduler tpts1 = ac.getBean("tpts1", ThreadPoolTaskScheduler.class); 
+    ThreadPoolTaskScheduler tpts2 = ac.getBean("tpts2", ThreadPoolTaskScheduler.class); 
+    tpts1.scheduleWithFixedDelay(ScheduleTest2.r, 500);
+    tpts2.scheduleWithFixedDelay(ScheduleTest3.r, 500);
+    int i=0;
+  }
 }

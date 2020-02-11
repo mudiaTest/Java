@@ -16,22 +16,22 @@ import lombok.Data;
 @Data
 @Entity
 public class Person5_14 {
-	@Id
-	@GeneratedValue
-	public Integer id;
-	public String name;
-		/*
-		 * dziwna odmiana BIDIRECTIONAL
-		 * To podejœcie w ogóle nie przewiduje posiadania podelementu.
-		 * W zamian podelement posiada nadelement i maj¹ wspólne id wiêc:
-		 *  - OD STRONY INVERSE NIE MAMY DOSTEPU DO OWNERA!!!
-		 * 	- Cascade zadzia³a tylko zapisuj¹c ownera
-		 *  - zapisuj¹c inverse nie zapewniamy ownera
-		 *  - odczytuj¹c inverse nie mamy ¿adnej mo¿lwoœci automatycznego 
-		 *    odczytu ownera (co mozna obejœæ robi¹c w³asne JOIN FETCH)
-		 *  + PO OBU stronach dzia³a LAZY. Po stronie ownera jest normalne, a po 
-		 *    stronie inverse... brak el. do wczytania
-		 *  + Owner i inverse maja taki sam id, wiêc ³atwo doczytaæ (zasymulowaæ LAZY)
-		 */
-	//public Address5_14 address;	
+  @Id
+  @GeneratedValue
+  public Integer id;
+  public String name;
+    /*
+     * dziwna odmiana BIDIRECTIONAL
+     * To podejï¿½cie w ogï¿½le nie przewiduje posiadania podelementu.
+     * W zamian podelement posiada nadelement i majï¿½ wspï¿½lne id wiï¿½c:
+     *  - OD STRONY INVERSE NIE MAMY DOSTEPU DO OWNERA!!!
+     *   - Cascade zadziaï¿½a tylko zapisujï¿½c ownera
+     *  - zapisujï¿½c inverse nie zapewniamy ownera
+     *  - odczytujï¿½c inverse nie mamy ï¿½adnej moï¿½lwoï¿½ci automatycznego 
+     *    odczytu ownera (co mozna obejï¿½ï¿½ robiï¿½c wï¿½asne JOIN FETCH)
+     *  + PO OBU stronach dziaï¿½a LAZY. Po stronie ownera jest normalne, a po 
+     *    stronie inverse... brak el. do wczytania
+     *  + Owner i inverse maja taki sam id, wiï¿½c ï¿½atwo doczytaï¿½ (zasymulowaï¿½ LAZY)
+     */
+  //public Address5_14 address;  
 }

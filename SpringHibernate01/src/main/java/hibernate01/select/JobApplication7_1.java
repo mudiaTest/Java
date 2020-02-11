@@ -16,21 +16,21 @@ import lombok.EqualsAndHashCode;
 @Entity
 @EqualsAndHashCode(exclude="person")
 public class JobApplication7_1 {
-	@Id
-	private Long id;
-	
-	@ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-//	@JoinColumn(name)
-	private Person7_1 person;
+  @Id
+  private Long id;
+  
+  @ManyToOne(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+//  @JoinColumn(name)
+  private Person7_1 person;
 
-	private String company;
-	
-	public JobApplication7_1(String envelope) {
-		super();
-		this.company = company;
-	}
+  private String company;
+  
+  public JobApplication7_1(String envelope) {
+    super();
+    this.company = company;
+  }
 
-	public JobApplication7_1() {
-		super();
-	}	
+  public JobApplication7_1() {
+    super();
+  }  
 }

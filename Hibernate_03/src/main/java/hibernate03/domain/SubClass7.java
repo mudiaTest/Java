@@ -14,13 +14,13 @@ import lombok.Setter;
 @Setter
 @Entity
 public class SubClass7 {
-	@Id
-	Integer id;
-	private int subIntVal1;
-	private String subStVal1;
-	@Version
-	private int ver;
-	@ManyToOne
-	@JoinColumn(name="t71id")
-	private Test71 t71;
+  @Id
+  Integer id;
+  private int subIntVal1;
+  private String subStVal1;
+  @Version
+  private int ver;
+  @ManyToOne
+  @JoinColumn(name="t71id")
+  private Test71 t71;
 }

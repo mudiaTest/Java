@@ -1,8 +1,8 @@
 package jackson;
 
 public class Views {
-	public static class Private {}
+  public static class Private {}
   public static class Public {}
-  // Internal powoduje te¿ na pokazywanie pól Public
+  // Internal powoduje teï¿½ na pokazywanie pï¿½l Public
   public static class Internal extends Public {}
 }

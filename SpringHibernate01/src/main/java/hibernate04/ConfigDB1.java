@@ -19,68 +19,68 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
 /*
- * basePackages wskazuje - na package gdzie bêd¹ dao. Wtedy odnosz¹c siê do tego dao bêdziemy odpytywaæ konkretn¹ bazê
- * 	w tym samym pakiecie bêd¹ entity
- * entityManagerFactoryRef wskazuje na to jakiego entityManagera maj¹ u¿ywac DAO
- * transactionManagerRef - wskazuje manager transakcji, którego maj¹ u¿ywaæ DAO
+ * basePackages wskazuje - na package gdzie bï¿½dï¿½ dao. Wtedy odnoszï¿½c siï¿½ do tego dao bï¿½dziemy odpytywaï¿½ konkretnï¿½ bazï¿½
+ *   w tym samym pakiecie bï¿½dï¿½ entity
+ * entityManagerFactoryRef wskazuje na to jakiego entityManagera majï¿½ uï¿½ywac DAO
+ * transactionManagerRef - wskazuje manager transakcji, ktï¿½rego majï¿½ uï¿½ywaï¿½ DAO
  */
 @Configuration
 @EnableJpaRepositories(
-		basePackages = "com.example.demo.db1",
-		entityManagerFactoryRef = "db1EntityManager",
-		transactionManagerRef = "db1TransactionManager")
+    basePackages = "com.example.demo.db1",
+    entityManagerFactoryRef = "db1EntityManager",
+    transactionManagerRef = "db1TransactionManager")
 public class ConfigDB1 {
-	@Autowired
+  @Autowired
     private Environment env;
-	
-	/*
-	 * Konfiguracja jest hardcoded
-	 */
-	@Bean
-	@Primary
-	public DataSource db1DataSource() {
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName("org.postgresql.Driver");
-		dataSource.setUrl("jdbc:postgresql://Ursus/ll/hibernate04_db1");
-		dataSource.setUsername("system");
-		dataSource.setPassword("system");
-		return dataSource;
-	}
-	
-	@Bean
-	@Primary
+  
+  /*
+   * Konfiguracja jest hardcoded
+   */
+  @Bean
+  @Primary
+  public DataSource db1DataSource() {
+    DriverManagerDataSource dataSource = new DriverManagerDataSource();
+    dataSource.setDriverClassName("org.postgresql.Driver");
+    dataSource.setUrl("jdbc:postgresql://Ursus/ll/hibernate04_db1");
+    dataSource.setUsername("system");
+    dataSource.setPassword("system");
+    return dataSource;
+  }
+  
+  @Bean
+  @Primary
     public LocalContainerEntityManagerFactoryBean db1EntityManager() {
-		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-		
-		em.setDataSource(db1DataSource());
-		em.setPackagesToScan("com.example.demo.db1");
-		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();		 
+    LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+    
+    em.setDataSource(db1DataSource());
+    em.setPackagesToScan("com.example.demo.db1");
+    HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();     
         em.setJpaVendorAdapter(vendorAdapter);
-		
-		//Pobieranie ustawieñ Hibernate z z application.properties lub hardcoded
-		HashMap<String, Object> properties = new HashMap<>();
-		properties.put("hibernate.hbm2ddl.auto", "create");
-		properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL9Dialect");
-		properties.put("hibernate.temp.use_jdbc_metadata_defaults",  false);
-		properties.put("hibernate.show_sql", true);
-		properties.put("hibernate.format_sql", true);
-		properties.put("hibernate.type", "TRACE");
-		properties.put("hibernate.use_sql_comments", true);
-		//Ustawia strategiê generowania nazw zgodnie z tym co domyœlnie ustawia spring.
-		//Bez tego intVal zostanie przerobiony na kolumnê intval, podczas gdy spring robi int_val
-		//Mog¹ byæ problemy co pod³¹czeniu gotowej bazy danych - koniecznoœæ rêczego ustalania nazw tabel i kolumn
-		properties.put("hibernate.physical_naming_strategy", SpringPhysicalNamingStrategy.class.getName());
-		properties.put("hibernate.implicit_naming_strategy", SpringImplicitNamingStrategy.class.getName());
-		//Pod³¹czenie mapy KONIECZNIE po jej wype³nieniu, bo inicjalizuje ono wartoœci w em.
-		em.setJpaPropertyMap(properties);
-		return em;
-	}
-	
-	@Bean
-	@Primary
-	public PlatformTransactionManager db1TransactionManager() {
-		JpaTransactionManager result = new JpaTransactionManager();
-		result.setEntityManagerFactory(db1EntityManager().getObject());
-		return result;
-	}
+    
+    //Pobieranie ustawieï¿½ Hibernate z z application.properties lub hardcoded
+    HashMap<String, Object> properties = new HashMap<>();
+    properties.put("hibernate.hbm2ddl.auto", "create");
+    properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL9Dialect");
+    properties.put("hibernate.temp.use_jdbc_metadata_defaults",  false);
+    properties.put("hibernate.show_sql", true);
+    properties.put("hibernate.format_sql", true);
+    properties.put("hibernate.type", "TRACE");
+    properties.put("hibernate.use_sql_comments", true);
+    //Ustawia strategiï¿½ generowania nazw zgodnie z tym co domyï¿½lnie ustawia spring.
+    //Bez tego intVal zostanie przerobiony na kolumnï¿½ intval, podczas gdy spring robi int_val
+    //Mogï¿½ byï¿½ problemy co podï¿½ï¿½czeniu gotowej bazy danych - koniecznoï¿½ï¿½ rï¿½czego ustalania nazw tabel i kolumn
+    properties.put("hibernate.physical_naming_strategy", SpringPhysicalNamingStrategy.class.getName());
+    properties.put("hibernate.implicit_naming_strategy", SpringImplicitNamingStrategy.class.getName());
+    //Podï¿½ï¿½czenie mapy KONIECZNIE po jej wypeï¿½nieniu, bo inicjalizuje ono wartoï¿½ci w em.
+    em.setJpaPropertyMap(properties);
+    return em;
+  }
+  
+  @Bean
+  @Primary
+  public PlatformTransactionManager db1TransactionManager() {
+    JpaTransactionManager result = new JpaTransactionManager();
+    result.setEntityManagerFactory(db1EntityManager().getObject());
+    return result;
+  }
 }

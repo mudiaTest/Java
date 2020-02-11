@@ -9,17 +9,17 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 public class PrefixStringSerializer extends StdSerializer<String> {
 
-		// WYMAGANE !
-		public PrefixStringSerializer() { 
+    // WYMAGANE !
+    public PrefixStringSerializer() { 
         this(null); 
     } 
  
-		// WYMAGANE !
+    // WYMAGANE !
     public PrefixStringSerializer(Class<String> t) {
         super(t); 
     }
  
-    // J¹dro customowej serializacji
+    // Jï¿½dro customowej serializacji
     @Override
     public void serialize(String value, JsonGenerator gen, SerializerProvider arg2) throws IOException, JsonProcessingException {
       gen.writeString("_" + value);

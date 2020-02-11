@@ -16,14 +16,14 @@ import lombok.Data;
 
 @Data
 @Entity
-	/*
-	 * Domyœlnie jest SINGLE_TABLE
-	 */
+  /*
+   * Domyï¿½lnie jest SINGLE_TABLE
+   */
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="Disc")
 public abstract class Person6_2Gen {
-	@Id
-	@GeneratedValue
-	public Integer id;
-	public String name;
+  @Id
+  @GeneratedValue
+  public Integer id;
+  public String name;
 }

@@ -8,14 +8,14 @@ import lombok.Data;
 @Embeddable
 public class Address7_1 {
 
-	public String city;
-	
-	public Address7_1(String city) {
-		super();
-		this.city = city;
-	}
+  public String city;
+  
+  public Address7_1(String city) {
+    super();
+    this.city = city;
+  }
 
-	public Address7_1() {
-		super();
-	}	
+  public Address7_1() {
+    super();
+  }  
 }

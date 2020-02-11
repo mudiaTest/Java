@@ -9,21 +9,21 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 public class PrefixStringDeserializer extends StdDeserializer<String> {
 
-		// WYMAGANE !
-		public PrefixStringDeserializer() { 
+    // WYMAGANE !
+    public PrefixStringDeserializer() { 
         this(null); 
     } 
  
-		// WYMAGANE !
+    // WYMAGANE !
     public PrefixStringDeserializer(Class<String> t) {
         super(t); 
     }
  
     @Override
-		public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-			// Ta linia pobiera stringow¹ reprezentacjê z JStringa
-			String value = p.getText();
-			// Oddajemy po obciêciu prefixa - substring(1) oznacza pominiêcie znaku [0]
-			return value.substring(1);
-		}
+    public String deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+      // Ta linia pobiera stringowï¿½ reprezentacjï¿½ z JStringa
+      String value = p.getText();
+      // Oddajemy po obciï¿½ciu prefixa - substring(1) oznacza pominiï¿½cie znaku [0]
+      return value.substring(1);
+    }
 }

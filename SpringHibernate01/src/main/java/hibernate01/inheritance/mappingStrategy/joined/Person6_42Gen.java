@@ -17,19 +17,19 @@ import lombok.Data;
 
 @Data
 @Entity
-	/*
-	 * InheritanceType.JOINED - wspólne pola trzymane s¹ w jednej tabeli, a szczególne w innej
-	 * Mo¿liwe s¹ ca³e ³añcuszki, czyli ka¿da klasa wskazyhje na inn¹ tabele a te ³acz¹ siê po FK
-	 * Wartoœæ klucza w rzêdach (w ró¿nych tabelach) reprezentuj¹cych jeden obiekt jest oczywiœcie taka sama.
-	 * 
-	 * Dobra rezrezentacja polimorfizu, ale potrzeba du¿o joinów aby wyci¹gn¹æ ca³y obiekt
-	 * 
-	 * SINGLE_TABLE to watroœc domyœlna
-	 */
+  /*
+   * InheritanceType.JOINED - wspï¿½lne pola trzymane sï¿½ w jednej tabeli, a szczegï¿½lne w innej
+   * Moï¿½liwe sï¿½ caï¿½e ï¿½aï¿½cuszki, czyli kaï¿½da klasa wskazyhje na innï¿½ tabele a te ï¿½aczï¿½ siï¿½ po FK
+   * Wartoï¿½ï¿½ klucza w rzï¿½dach (w rï¿½nych tabelach) reprezentujï¿½cych jeden obiekt jest oczywiï¿½cie taka sama.
+   * 
+   * Dobra rezrezentacja polimorfizu, ale potrzeba duï¿½o joinï¿½w aby wyciï¿½gnï¿½ï¿½ caï¿½y obiekt
+   * 
+   * SINGLE_TABLE to watroï¿½c domyï¿½lna
+   */
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Person6_42Gen {
-	@Id
-	@GeneratedValue
-	public Integer id;
-	public String name;
+  @Id
+  @GeneratedValue
+  public Integer id;
+  public String name;
 }

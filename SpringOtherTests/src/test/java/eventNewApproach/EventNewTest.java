@@ -11,22 +11,22 @@ import eventNewApproach.MyEventNew2;
 @SpringBootTest
 public class EventNewTest {
 
-	@Autowired
+  @Autowired
   private ApplicationEventPublisher aep;
 
-	@Test
-	public void testSynchronousEvent() throws InterruptedException {		
-		// Tworzymy Event
-		MyEventNew myEvent11 = new MyEventNew(this, "To tylko test new 11.");
-		MyEventNew myEvent12 = new MyEventNew(this, "To tylko test new 12.");
-		MyEventNew2 myEvent21 = new MyEventNew2(this, "To tylko test new 21.");
-		System.out.println("Test: " + Thread.currentThread().getId());
-		// Rzucamy event "w powietrze" aby zosta³ obs³u¿ony przez klasy "implements ApplicationListener<MyEvent>"
+  @Test
+  public void testSynchronousEvent() throws InterruptedException {    
+    // Tworzymy Event
+    MyEventNew myEvent11 = new MyEventNew(this, "To tylko test new 11.");
+    MyEventNew myEvent12 = new MyEventNew(this, "To tylko test new 12.");
+    MyEventNew2 myEvent21 = new MyEventNew2(this, "To tylko test new 21.");
+    System.out.println("Test: " + Thread.currentThread().getId());
+    // Rzucamy event "w powietrze" aby zostaï¿½ obsï¿½uï¿½ony przez klasy "implements ApplicationListener<MyEvent>"
     aep.publishEvent(myEvent11);
     aep.publishEvent(myEvent12);
     aep.publishEvent(myEvent21);
     
-    //Program mo¿e zakoñczyæ siê przed wykonaniem wszykich w¹tków, dlatego celowo opóziamy jego zakoñczenie - rozwi¹zanie tlko dla testów 
+    //Program moï¿½e zakoï¿½czyï¿½ siï¿½ przed wykonaniem wszykich wï¿½tkï¿½w, dlatego celowo opï¿½ziamy jego zakoï¿½czenie - rozwiï¿½zanie tlko dla testï¿½w 
     Thread.sleep(10000);
-	}
+  }
 }

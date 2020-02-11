@@ -10,18 +10,18 @@ import com.example.demo.inheritance.dto.Person;
 @SpringBootApplication
 public class SpringTransactionTestApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SpringTransactionTestApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(SpringTransactionTestApplication.class, args);
+  }
 
-	@Autowired
-	PersonService ps;
+  @Autowired
+  PersonService ps;
 
-	@Transactional
-	// @PostConstruct
-	public void post() {
-		System.out.println("START");
-		Person p = new Person(2, "p1");
+  @Transactional
+  // @PostConstruct
+  public void post() {
+    System.out.println("START");
+    Person p = new Person(2, "p1");
 
 //    //padnie z braku transakcji
 //    //ps.insertNoTransactionalPerson(new Person(2, "p1"));
@@ -29,7 +29,7 @@ public class SpringTransactionTestApplication {
 //    //Zadziała
 //    ps.insertPerson(new Person(3, "p1"));
 //
-		ps.insertPerson2();
+    ps.insertPerson2();
 
 //    int i = 0;
 //    ps.insert1(new Person(4, "p11"));
@@ -38,5 +38,5 @@ public class SpringTransactionTestApplication {
 //    i = 0;
 //    ps.insert1(new Person(4, "p13"));
 //    i = 0;
-	}
+  }
 }

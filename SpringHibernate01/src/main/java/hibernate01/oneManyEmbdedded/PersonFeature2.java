@@ -10,19 +10,19 @@ import lombok.Data;
 //@Entity
 @Entity
 public class PersonFeature2 {
-	@Id
-	@GeneratedValue
-	Integer id;
-	String name;
-	String value;
-	
-	public PersonFeature2(String name, String value){
-		this.name = name;
-		this.value = value;
-	}
+  @Id
+  @GeneratedValue
+  Integer id;
+  String name;
+  String value;
+  
+  public PersonFeature2(String name, String value){
+    this.name = name;
+    this.value = value;
+  }
 
-	public PersonFeature2() {
-		super();
-	}
-	
+  public PersonFeature2() {
+    super();
+  }
+  
 }

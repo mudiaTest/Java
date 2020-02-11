@@ -12,29 +12,29 @@ import lombok.Data;
 @Data
 @Entity
 public class Address5_13 {
-	
-	@Id
-	@GeneratedValue
-	Integer id;
+  
+  @Id
+  @GeneratedValue
+  Integer id;
 
-	public String city;
-	
-		/*
-		 * Spowoduje powstanie FK i kolumny
-		 */
-	@OneToOne(
-				/*
-				 * Dla strony parenta LAZY dzia³a
-				 */
-			fetch=FetchType.LAZY)
-	public Person5_13 person;
-	
-	public Address5_13(String city, String street) {
-		super();
-		this.city = city;
-	}
+  public String city;
+  
+    /*
+     * Spowoduje powstanie FK i kolumny
+     */
+  @OneToOne(
+        /*
+         * Dla strony parenta LAZY dziaï¿½a
+         */
+      fetch=FetchType.LAZY)
+  public Person5_13 person;
+  
+  public Address5_13(String city, String street) {
+    super();
+    this.city = city;
+  }
 
-	public Address5_13() {
-		super();
-	}	
+  public Address5_13() {
+    super();
+  }  
 }

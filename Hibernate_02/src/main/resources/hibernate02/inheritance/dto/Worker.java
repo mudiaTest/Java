@@ -13,20 +13,20 @@ import lombok.Data;
  ,@NamedQuery(name="getById", query="SELECT w FROM Worker w WHERE w.id=:id") 
 })
 public class Worker extends PersonInWork {
-	
-	private String position;	
+  
+  private String position;  
 
-	public Worker(String name, String position) {
-		super(name);
-		this.position = position;
-	}
+  public Worker(String name, String position) {
+    super(name);
+    this.position = position;
+  }
 
-	public Worker(String name) {
-		super(name);
-	}
-	
-	public Worker() {
-		super();
-	}
+  public Worker(String name) {
+    super(name);
+  }
+  
+  public Worker() {
+    super();
+  }
 
 }

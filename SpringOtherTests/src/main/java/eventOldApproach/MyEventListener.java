@@ -5,24 +5,24 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /*
- * Obiekt nas³uchoje i jeœli pojawi siê event do ob³u¿enia, to coœ z nim robi
+ * Obiekt nasï¿½uchoje i jeï¿½li pojawi siï¿½ event do obï¿½uï¿½enia, to coï¿½ z nim robi
  */
 @Component
-/*GENERYK nad konkretnym EVENTEM - ka¿da taka klasa obs³u¿y event, ale kolejnoœæ nie jest zadana*/
+/*GENERYK nad konkretnym EVENTEM - kaï¿½da taka klasa obsï¿½uï¿½y event, ale kolejnoï¿½ï¿½ nie jest zadana*/
 public class MyEventListener implements ApplicationListener<MyEvent> {
 
-	@Override
-	public void onApplicationEvent(MyEvent event) {
-		try {
-			System.out.println("Wykonujê event (1):" + event.stMessage);		
-			Thread.sleep(010);
-			System.out.println("Wykonujê event (2):" + event.stMessage);		
-			Thread.sleep(100);
-			System.out.println("Wykonujê event (3):" + event.stMessage);		
-		}
-		catch (Exception e) {
-			System.out.println("ERROR");
-		}
-	}
+  @Override
+  public void onApplicationEvent(MyEvent event) {
+    try {
+      System.out.println("Wykonujï¿½ event (1):" + event.stMessage);    
+      Thread.sleep(010);
+      System.out.println("Wykonujï¿½ event (2):" + event.stMessage);    
+      Thread.sleep(100);
+      System.out.println("Wykonujï¿½ event (3):" + event.stMessage);    
+    }
+    catch (Exception e) {
+      System.out.println("ERROR");
+    }
+  }
 
 }

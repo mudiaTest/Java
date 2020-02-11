@@ -20,10 +20,10 @@ import lombok.Setter;
 @Setter
 @Entity
 public class Test1 {
-	@Id
-	private long id;
-	private int intVal1;	
-	private String stVal2;
-	@Column(name="rv")
-	private int rv;
+  @Id
+  private long id;
+  private int intVal1;  
+  private String stVal2;
+  @Column(name="rv")
+  private int rv;
 }

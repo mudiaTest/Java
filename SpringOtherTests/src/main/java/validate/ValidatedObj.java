@@ -23,20 +23,20 @@ import javax.validation.constraints.DecimalMin;;
 
 public class ValidatedObj {
 
-	@Max(value = 2, groups = ValGroup1.class)
-	public Integer i;
-	@Email(groups = { ValGroup1.class, ValGroup2.class })
-	String s;
+  @Max(value = 2, groups = ValGroup1.class)
+  public Integer i;
+  @Email(groups = { ValGroup1.class, ValGroup2.class })
+  String s;
 
-//  @NotEmpty// – validates that the property is not null or empty; can be applied to String, Collection, Map or Array values
-//  @NotBlank// – can be applied only to text values and validated that the property is not null or whitespace
+//  @NotEmpty// ï¿½ validates that the property is not null or empty; can be applied to String, Collection, Map or Array values
+//  @NotBlank// ï¿½ can be applied only to text values and validated that the property is not null or whitespace
 //  @Positive 
-////  @PositiveOrZero// – apply to numeric values and validate that they are strictly positive, or positive including 0
+////  @PositiveOrZero// ï¿½ apply to numeric values and validate that they are strictly positive, or positive including 0
 ////  @Negative//
-////  @NegativeOrZero// – apply to numeric values and validate that they are strictly negative, or negative including 0
-	@Past
-////  //@PastOrPresent// – validate that a date value is in the past or the past including the present; can be applied to date types including those added in Java 8
+////  @NegativeOrZero// ï¿½ apply to numeric values and validate that they are strictly negative, or negative including 0
+  @Past
+////  //@PastOrPresent// ï¿½ validate that a date value is in the past or the past including the present; can be applied to date types including those added in Java 8
 ////  //@Future
 ////  //@FutureOrPresent 
-	public Integer i6;
+  public Integer i6;
 }
