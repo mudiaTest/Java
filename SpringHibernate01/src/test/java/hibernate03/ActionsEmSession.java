@@ -45,7 +45,31 @@ public class ActionsEmSession {
   
     
   //Testowanie 
-//  @Test
+  @Test
+  //@Transactional
+  @Commit
+  public void doublePersistTest() {
+    try {    
+      ntw.inNewTrans(() ->{
+        Test1 t1 = getTest1Obj();
+        ntw.inTrans(()->
+        {
+          em.persist(t1); //zapisze obiekt do cache              
+          em.flush(); //zrzuci cache do bazy
+          em.detach(t1); //odłaczy obiet od em
+          t1.setIntVal1(99); //odłączony obiekt nie wpłynie na cache
+          em.persist(t1); //PK VIOLATION                    
+          int t = 0;
+        });
+      });
+    }
+    catch (Exception e) {
+      int t = 0;
+    }
+  }
+  
+  //Testowanie 
+  //@Test
   //@Transactional
   @Commit
   public void mergeTest() {
@@ -54,15 +78,17 @@ public class ActionsEmSession {
         Test1 t1 = getTest1Obj();
         ntw.inTrans(()->
         {
-          em.persist(t1);        
-          em.flush();
-          em.detach(t1);
+          em.persist(t1); //zapisze obiekt do cache              
+          em.flush(); //zrzuci cache do bazy
+          em.detach(t1); //odłaczy obiet od em
         });
-        t1.setIntVal1(99);
+        t1.setIntVal1(99); //odłączony obiekt nie wpłynie na cache
         ntw.inTrans(()->{
-          em.merge(t1);
+          em.merge(t1); //podłączy obiekt do em (wykona SELECT)
         });
         int t = 0;
+        em.flush(); //wykona UPDATE obieky w DB
+        t = 0;
       });
     }
     catch (Exception e) {
@@ -70,7 +96,33 @@ public class ActionsEmSession {
     }
   }
   
-//  @Test
+  
+  @Test
+//  @Transactional
+  @Commit
+  public void persistTest() {
+    try {    
+//      ntw.inNewTrans(() ->{
+      ntw.inNewTrans(()->
+      {
+        Test1 t1 = getTest1Obj();
+        em.persist(t1);        
+        t1.setIntVal1(91);                
+        Test1 t2 = em.find(Test1.class, t1.getId());
+        t2.setIntVal1(92);                
+        int t = 0;
+        
+        t = 0;
+      });
+      int t = 0;
+//      });
+    }
+    catch (Exception e) {
+      int t = 0;
+    }
+  }
+  
+  @Test
 //  @Transactional
   @Commit
   public void persistErrTest() {
@@ -83,10 +135,16 @@ public class ActionsEmSession {
           em.flush();
           //em.detach(t1);
         });
-        t1.setIntVal1(99);
+        ntw.inNewTrans(()->
+        {
+          t1.setIntVal1(91);
+          em.merge(t1);
+          em.flush();
+        });
         ntw.inNewTrans(()->{
+          em.merge(t1);
           Test1 t2 = em.find(Test1.class, t1.getId());
-          em.detach(t2);
+          //em.detach(t2);
           t2.setIntVal1(99);        
           em.persist(t2);
           int t = 0;
@@ -117,8 +175,9 @@ public class ActionsEmSession {
         Session s = em.unwrap(Session.class);
         Test1 t2 = em.find(Test1.class, t1.getId());
         em.detach(t2);
-        //t2.setIntVal1(88);        
-        s.save(t2);
+        t2.setIntVal1(88); 
+        //s.save(t2); //PK VIOLATION
+        s.saveOrUpdate(t2);
         int t = 0;
       });
       int t = 0;

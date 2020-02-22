@@ -11,6 +11,8 @@ import lombok.Data;
 public class Person extends Person_gen{
 
   private String name;
+
+  private String st;
   
   public Person(String name) {
     super();

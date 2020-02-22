@@ -15,6 +15,7 @@ import lombok.Data;
 public class Worker extends PersonInWork {
   
   private String position;  
+  public String stWorker;
 
   public Worker(String name, String position) {
     super(name);

@@ -51,6 +51,24 @@ import lombok.Setter;
         @StoredProcedureParameter(mode = ParameterMode.IN, type = Integer.class) 
     }
     )
+,
+// Problemem nest zwracany wynik - REFCURSOR
+@NamedStoredProcedureQuery(
+    name = "it72", 
+    procedureName = "inctest72", 
+    resultClasses = Tbl.class,
+    parameters = {
+        @StoredProcedureParameter(name = "i", mode = ParameterMode.IN, type = Integer.class) 
+    }
+    )
+,
+@NamedStoredProcedureQuery(
+    name = "it73", 
+    procedureName = "inctest73",
+    parameters = {
+        @StoredProcedureParameter(name = "i", mode = ParameterMode.IN, type = Integer.class) 
+    }
+    )
 })
 
 public class Test1 {

@@ -119,6 +119,7 @@ public class ScrollableTest {
 //      EntityKey k = sk.iterator().next();
       
       StatelessSession s2= sf.openStatelessSession();
+      //Session s2 = sf.openSession();
       ScrollableResults r;
       //To query zostanie odpalone tylko 1 raz, ale wyniki b�da pobierane pojedynczo
       r = s2.createQuery("SELECT t1 FROM Test1 t1").scroll(ScrollMode.FORWARD_ONLY);

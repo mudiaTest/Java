@@ -55,7 +55,7 @@ public class ProcedureTest {
 //  @Test
   public void emReturnVoidTest() {
     try {
-      StoredProcedureQuery q = em.createStoredProcedureQuery("inctest2");
+      StoredProcedureQuery q = em.createStoredProcedureQuery("inctest61");
       q.registerStoredProcedureParameter(0, Integer.class, ParameterMode.IN);
       q.setParameter(0, Integer.valueOf(2));
 //      q.execute();
@@ -70,10 +70,10 @@ public class ProcedureTest {
   /*
    * Wywo�ujemy funkcj� przez native SQL zwracaj�c warto�� dummy - DZIA�A !
    */
-//  @Test
+  //@Test
   public void emReturnVoidNativeSQLTest() {
     try {
-      Query q = em.createNativeQuery("Select 1 FROM inctest2(:val);");
+      Query q = em.createNativeQuery("Select 1 FROM inctest61(:val);");
       q.setParameter("val", 3);      
       int res = (Integer)q.getSingleResult();
       int t = 0;
@@ -86,10 +86,10 @@ public class ProcedureTest {
   /*
    * Wywo�ujemy funkcj� przez native SQL zwracaj�c warto�� int - DZIA�A !
    */
-//  @Test
+  @Test
   public void emReturnIntNativeSQLTest() {
     try {
-      Query q = em.createNativeQuery("Select * FROM inctest3(:val);");
+      Query q = em.createNativeQuery("Select * FROM inctest61(:val);");
       q.setParameter("val", 3);      
       int res = (Integer)q.getSingleResult();
       int t = 0;
@@ -109,11 +109,9 @@ public class ProcedureTest {
       q.registerStoredProcedureParameter("x", Integer.class, ParameterMode.IN);
       q.registerStoredProcedureParameter("y", Integer.class, ParameterMode.OUT);
       q.setParameter("x", Integer.valueOf(4));
-      boolean gotRes = q.execute();
-      //Wyglada na to, �e Hibernate ma b��d
-      /*Poni�sze oddaje null*/
-      List<Object[]> postComments = q.getResultList();
-      /*Poni�sze rzuca Exception, ale to jest chyba b��d H, bo wszystkie tutoriale podaj� taki kod*/
+      // wywołanie któregokolwiek z poniższych da "Unable to extract OUT/INOUT" podczas getOutputParameterValue
+        //boolean gotRes = q.execute();
+        //List<Object[]> postComments = q.getResultList();
       int res = (Integer)q.getOutputParameterValue("y");
       int t = 0;
     }
@@ -162,10 +160,6 @@ public class ProcedureTest {
       q.registerStoredProcedureParameter("o1", Integer.class, ParameterMode.OUT);
       q.registerStoredProcedureParameter("o2", Integer.class, ParameterMode.OUT);
       q.setParameter("i", Integer.valueOf(4));
-      boolean gotRes = q.execute();
-      /*Poni�sze oddaje null*/
-      List<Object[]> postComments = q.getResultList();
-      /*Poni�sze rzuca Exception, ale to jest chyba b��d H, bo wszystkie tutoriale podaj� taki kod*/
       int res = (Integer)q.getOutputParameterValue("o2");
       int t = 0;
     }
@@ -245,9 +239,9 @@ public class ProcedureTest {
   
 // ------> Pojedyncza warto�� przez OUT: EM i createNamedStoredProcedureQuery
 
-  /* OK !!!
+  /* 
    * Zwracanie pojedynczej warto�ci z uzyciem @StoredProcedureQuery i output parameter
-   * KONIECZNIE wewn�trz transakcji !!!*/
+   */
 //  @Test
   public void domP61_2() {
     ntw.inTrans(()->{
@@ -261,23 +255,6 @@ public class ProcedureTest {
         int t = 0;
       }
     });
-  }
-  
-  /*
-   * EXCEPTION !!!
-   * Tak jak powy�sze, ale bez transakcji i zamyka zapytanie nie pozwalaj�c pobra� wyniku
-   */
-//  @Test
-  public void domP61_2_NoTrans() {
-    try {
-      StoredProcedureQuery q = em.createNamedStoredProcedureQuery("t62");
-      q.setParameter("i", 5);
-      q.execute();
-      Object r = q.getOutputParameterValue("o");
-    }
-    catch(Exception e) {
-      int t = 0;
-    }
   }
 
 // ------> Zwrot wielu wierszy "refCourse". Wymaga transakcji, tak jak ka�de uzycie OUT
@@ -424,6 +401,23 @@ public class ProcedureTest {
         int t = 0;
       }
     });
+  }
+  
+  @Test
+  public void ttt() {
+    //ntw.inTrans(()->{
+      try {
+        // it72 da blad bo zwraca REFCURSOR
+        //StoredProcedureQuery q = em.createNamedStoredProcedureQuery("it73");
+        StoredProcedureQuery q = em.createNamedStoredProcedureQuery("it73");
+        q.setParameter("i", 6);
+        List<Object> res = q.getResultList();//Zwraca liasté woerszy(lista object)        
+        int t = 0;
+      }
+      catch(Exception e) {
+        int t = 0;
+      }
+   // });
   }
   
   /*

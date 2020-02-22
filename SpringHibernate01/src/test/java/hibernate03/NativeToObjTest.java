@@ -148,7 +148,7 @@ public class NativeToObjTest {
   }
   
   //Zwot obiektu wg��b dla pojo i p�askiego dla sql
-  //@Test
+  @Test
   public void nativeToObj3() {
     try {
       ntw.inNewTrans(()->fillTest3());      
@@ -188,7 +188,7 @@ public class NativeToObjTest {
   }
   
   //Zwrot obiektu z podlist� embedded i join dla SQL
-  //@Test
+  @Test
   public void nativeToObj5() {
     try {
       ntw.inNewTrans(()->fillTest5());      
